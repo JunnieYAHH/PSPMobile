@@ -24,7 +24,7 @@ const Login = () => {
             <Formik
                 initialValues={{ email: "", password: "" }}
                 onSubmit={(values) => console.log(values)}
-                validationSchema={LoginSchema} // Corrected this line
+                validationSchema={LoginSchema}
             >
                 {({
                     handleChange,
