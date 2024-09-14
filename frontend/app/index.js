@@ -1,28 +1,45 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { Video, ResizeMode } from 'expo-av'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { Video, ResizeMode } from 'expo-av';
+import { useRouter } from "expo-router";
 
 const Home = () => {
-    const video = React.useRef(null)
+    const video = React.useRef(null);
+    const [status, setStatus] = React.useState({});
+    const router = useRouter();
 
     return (
         <View style={styles.container}>
             <Video
                 ref={video}
                 style={styles.video}
-                source={require(
-                    '../assets/PSPBackgroundVideo.mp4'
-                )}
+                source={require('../assets/PSPBackgroundVideo.mp4')}
                 resizeMode={ResizeMode.COVER}
                 shouldPlay
                 isLooping
+                isMuted
                 onError={(error) => console.error("Video error:", error)}
+                onPlaybackStatusUpdate={(status) => setStatus(() => status)}
             />
+            <View style={styles.buttons}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => router.push("/auth/login")}
+                >
+                    <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => router.push("/auth/register")}
+                >
+                    <Text style={styles.buttonText}>Register</Text>
+                </TouchableOpacity>
+            </View>
         </View>
-    )
-}
+    );
+};
 
-export default Home
+export default Home;
 
 const styles = StyleSheet.create({
     container: {
@@ -65,13 +82,14 @@ const styles = StyleSheet.create({
         bottom: 30,
         left: 0,
         right: 0,
+        padding: 10,
+        borderRadius: 10,
     },
     button: {
-        backgroundColor: "#6200ea",
-        paddingVertical: 12,
-        paddingHorizontal: 20,
+        paddingVertical: 40,
+        paddingHorizontal: 40,
         borderRadius: 25,
-        elevation: 3,
+        elevation: 3, // Adds a shadow effect on Android
     },
     buttonText: {
         color: "white",
