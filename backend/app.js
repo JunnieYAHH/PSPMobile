@@ -31,6 +31,7 @@ mongoose.connect("mongodb+srv://gerelitopuyos:gerelitopuyos@atlascluster.7cyczkf
 });
 
 // Routes
+// app.use('/api/v1/users', userRoutes);
 
 // Start server
 app.listen(port, () => {
