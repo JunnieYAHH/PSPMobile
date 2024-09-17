@@ -11,10 +11,22 @@ const userSchema = new mongoose.Schema(
             required: [true, "email is required"],
             unique: true,
         },
+        role: {
+            type: String,
+            required: [true, "role is required"],
+            defaultValue: 'client',
+            enum: ["admin", "client", "coach"],
+        },
         phone: {
             type: String,
             required: [true, "Phone is requied"],
         },
+        // userBranch: {
+        //     type: String,
+        //     required: [true, "role is required"],
+        //     defaultValue: 'client',
+        //     enum: ["admin", "client", "coach"],
+        // },
         password: {
             type: String,
             // required: [true, "password is requied"],
