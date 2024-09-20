@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const userRoutes = require('./routes/userRoutes');
+
 
 // Specify the correct path to the config.env file
 const envPath = path.resolve(__dirname, 'config', 'config.env');
@@ -21,7 +23,7 @@ app.use(bodyParser.json());
 
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://gerelitopuyos:gerelitopuyos@atlascluster.7cyczkf.mongodb.net/PSPMobile?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://gerelitopuyos:gerelitopuyos@atlascluster.7cyczkf.mongodb.net/PSPData?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
@@ -31,7 +33,7 @@ mongoose.connect("mongodb+srv://gerelitopuyos:gerelitopuyos@atlascluster.7cyczkf
 });
 
 // Routes
-// app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/users', userRoutes);
 
 // Start server
 app.listen(port, () => {

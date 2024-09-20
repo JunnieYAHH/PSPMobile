@@ -1,35 +1,36 @@
-import {
-    View,
-    StyleSheet,
-    TextInput,
-    Text,
-    TouchableOpacity,
-} from "react-native";
-import React from 'react'
+import React from 'react';
+import { View, StyleSheet, TextInput, Text, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useRouter } from "expo-router";
+import { useRouter } from 'expo-router';
+import { loginUser } from '../(services)/api/loginUserAPI';
 
-//Schema
+// Schema
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Email is Required"),
     password: Yup.string().min(6, "Too Short!").required("Required"),
 });
 
-
 const Login = () => {
-    //Router
     const router = useRouter();
-    
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title} >Login</Text>
-            {/*Formik Configuration*/}
+            <Text style={styles.title}>Login</Text>
+            {/* Formik Configuration */}
             <Formik
-                initialValues={{ email: "sample1@psp.com", password: "sample1" }}
-                onSubmit={(values) => {
-                    console.log(values)
-                    router.push('/(tabs)')
+                initialValues={{ email: "", password: "" }}
+                onSubmit={async (values) => {
+                    try {
+                        const response = await loginUser(values);
+                        console.log('Login successful:', response);
+
+                        await AsyncStorage.setItem('token', response.token);
+
+                        router.push('/(tabs)');
+                    } catch (error) {
+                        console.error('Login failed:', error);
+                    }
                 }}
                 validationSchema={LoginSchema}
             >
@@ -50,9 +51,9 @@ const Login = () => {
                             value={values.email}
                             keyboardType="email-address"
                         />
-                        {/*Error Email*/}
+                        {/* Error Email */}
                         {errors.email && touched.email && (
-                            <Text style={styles.errorText}> {errors.email} </Text>
+                            <Text style={styles.errorText}>{errors.email}</Text>
                         )}
                         <TextInput
                             style={styles.input}
@@ -62,9 +63,9 @@ const Login = () => {
                             value={values.password}
                             secureTextEntry
                         />
-                        {/*Error Password*/}
+                        {/* Error Password */}
                         {errors.password && touched.password && (
-                            <Text style={styles.errorText}> {errors.password} </Text>
+                            <Text style={styles.errorText}>{errors.password}</Text>
                         )}
                         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                             <Text style={styles.buttonText}>Login</Text>
@@ -72,12 +73,11 @@ const Login = () => {
                     </View>
                 )}
             </Formik>
-
         </View>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;
 
 const styles = StyleSheet.create({
     container: {

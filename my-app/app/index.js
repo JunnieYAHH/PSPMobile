@@ -10,7 +10,7 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            {/* <Video
+            <Video
                 ref={video}
                 style={styles.video}
                 source={require('../assets/PSPBackgroundVideo.mp4')}
@@ -20,7 +20,7 @@ const Home = () => {
                 isMuted
                 onError={(error) => console.error("Video error:", error)}
                 onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-            /> */}
+            />
             <View style={styles.buttons}>
                 <TouchableOpacity
                     style={styles.button}
