@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity, Image, Button } from 'react-native';
+import { View, StyleSheet, TextInput, Text, TouchableOpacity, Image, Alert, ImageBackground, StatusBar } from 'react-native';
 import { Formik } from 'formik';
+import { useRouter } from 'expo-router';
 import * as Yup from 'yup';
 import * as ImagePicker from 'expo-image-picker';
 import { registerUser } from '../(services)/api/registerUserAPI';
+import Constants from 'expo-constants';
 
 // Schema
 const RegisterSchema = Yup.object().shape({
@@ -16,9 +18,9 @@ const RegisterSchema = Yup.object().shape({
 
 const Register = () => {
   const [image, setImage] = useState(null);
+  const router = useRouter();
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -26,104 +28,130 @@ const Register = () => {
       quality: 1,
     });
 
-    
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
-  
-  console.log(image);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
-      {/* Formik Configuration */}
-      <Formik
-        initialValues={{ email: "", password: "", confirmPassword: "", phone: "", userBranch: "", name: "" }}
-        onSubmit={async (values) => {
-          try {
-            const response = await registerUser({
-              ...values,
-              image,
-            });
-            console.log('Registration successful:', response);
-          } catch (error) {
-            console.error('Registration failed:', error);
-          }
-        }}
-        validationSchema={RegisterSchema}
-      >
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          values,
-          errors,
-          touched,
-        }) => (
-          <View style={styles.form}>
-            <TextInput
-              style={styles.input}
-              placeholder="Name"
-              onChangeText={handleChange("name")}
-              onBlur={handleBlur("name")}
-              value={values.name}
-            />
-            {/* Error Name */}
-            {errors.name && touched.name && (
-              <Text style={styles.errorText}>{errors.name}</Text>
-            )}
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-              value={values.email}
-              keyboardType="email-address"
-            />
-            {/* Error Email */}
-            {errors.email && touched.email && (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            )}
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              onChangeText={handleChange("password")}
-              onBlur={handleBlur("password")}
-              value={values.password}
-              secureTextEntry
-            />
-            {/* Error Password */}
-            {errors.password && touched.password && (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            )}
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm Password"
-              onChangeText={handleChange("confirmPassword")}
-              onBlur={handleBlur("confirmPassword")}
-              value={values.confirmPassword}
-              secureTextEntry
-            />
-            {/* Error Confirm Password */}
-            {errors.confirmPassword && touched.confirmPassword && (
-              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-            )}
-            {/* Image Picker */}
-            {/* <View style={styles.imageContainer}>
-              {image && <Image source={{ uri: image }} style={styles.image} />}
-              <Button title="Pick an image" onPress={pickImage} />
-            </View> */}
-            <View style={styles.imageContainer}>
-              <Button title="Pick an image from camera roll" onPress={pickImage} />
-              {image && <Image source={{ uri: image }} style={styles.image} />}
-            </View>
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Register</Text>
-            </TouchableOpacity>
+    <>
+      <StatusBar translucent backgroundColor="transparent" />
+      <View style={styles.container}>
+        <ImageBackground
+          source={require('../../assets/letsStart.png')}
+          style={styles.backgroundImage}
+          imageStyle={{ opacity: 1.5 }}
+        >
+          <View style={styles.overlay}>
+            <Formik
+              initialValues={{ email: "", password: "", confirmPassword: "", phone: "", userBranch: "", name: "" }}
+              onSubmit={async (values) => {
+                try {
+                  const response = await registerUser({
+                    ...values,
+                    image,
+                  });
+                  Alert.alert(
+                    "Registered Successfully",
+                    "You have been registered.",
+                    [
+                      {
+                        text: "OK",
+                        onPress: () => {
+                          router.push('/auth/login');
+                        },
+                      },
+                    ]
+                  );
+                } catch (error) {
+                  console.error('Registration failed:', error.response?.data?.message || error.message);
+                  Alert.alert(
+                    "Registration Failed",
+                    error.response?.data?.message || "An error occurred during registration. Please try again.",
+                    [
+                      {
+                        text: "OK",
+                      },
+                    ]
+                  );
+                }
+              }}
+              validationSchema={RegisterSchema}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+              }) => (
+                <View style={styles.form}>
+                  <View style={styles.imageContainer}>
+                    <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+                      {image ? (
+                        <Image source={{ uri: image }} style={styles.roundImage} />
+                      ) : (
+                        <>
+                          <Text style={styles.placeholderText}>No File Upload</Text>
+                          <Text style={styles.placeholderBellowText}>Select Image</Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Name"
+                    onChangeText={handleChange("name")}
+                    onBlur={handleBlur("name")}
+                    value={values.name}
+                  />
+                  {errors.name && touched.name && (
+                    <Text style={styles.errorText}>{errors.name}</Text>
+                  )}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                    value={values.email}
+                    keyboardType="email-address"
+                  />
+                  {errors.email && touched.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
+                    value={values.password}
+                    secureTextEntry
+                  />
+                  {errors.password && touched.password && (
+                    <Text style={styles.errorText}>{errors.password}</Text>
+                  )}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    onChangeText={handleChange("confirmPassword")}
+                    onBlur={handleBlur("confirmPassword")}
+                    value={values.confirmPassword}
+                    secureTextEntry
+                  />
+                  {errors.confirmPassword && touched.confirmPassword && (
+                    <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                  )}
+                  <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>Register</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </Formik>
           </View>
-        )}
-      </Formik>
-    </View>
+        </ImageBackground>
+      </View>
+    </>
   );
 };
 
@@ -132,18 +160,28 @@ export default Register;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Constants.statusBarHeight, // Push the content down by the status bar height
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  overlay: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#f5f5f5",
   },
   title: {
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 24,
+    color: '#fff',
   },
   form: {
     width: "100%",
+    borderRadius: 10,
+    padding: 20,
   },
   input: {
     height: 50,
@@ -175,10 +213,29 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: "center",
   },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-    marginBottom: 8,
+  imagePicker: {
+    width: 150,
+    height: 150,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 75,
+    backgroundColor: "#e9e9e9",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  roundImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 75,
+  },
+  placeholderText: {
+    color: "#888",
+    textAlign: "center",
+  },
+  placeholderBellowText: {
+    color: "#888",
+    textAlign: "center",
+    fontSize: 12,
   },
 });

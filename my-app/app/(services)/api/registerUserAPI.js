@@ -1,4 +1,5 @@
 import axios from 'axios';
+import baseURL from '../../../assets/common/baseUrl'
 
 const registerUser = async ({ email, password, name, phone, userBranch, isAdmin = false, image }) => {
     try {
@@ -19,9 +20,9 @@ const registerUser = async ({ email, password, name, phone, userBranch, isAdmin 
             });
         }
 
-        const response = await axios.post(
-            "http://192.168.100.89:8080/api/v1/users/register",
-            formData,
+        console.log(baseURL)
+
+        const response = await axios.post(`${baseURL}/users/register`,formData,
             {
                 headers: {
                     'Content-Type': 'multipart/form-data',

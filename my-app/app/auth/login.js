@@ -1,96 +1,131 @@
-import React from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity, AsyncStorage } from 'react-native';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import { useRouter } from 'expo-router';
-import { loginUser } from '../(services)/api/loginUserAPI';
+import React, { useEffect } from "react";
+import {
+    View,
+    StyleSheet,
+    TextInput,
+    Text,
+    TouchableOpacity,
+    StatusBar,
+    ImageBackground,
+} from "react-native";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { useRouter } from "expo-router";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "../(services)/api/loginUserAPI";
+import { useDispatch, useSelector } from "react-redux";
+import { loginAction } from "../(redux)/authSlice";
+import Constants from 'expo-constants';
 
-// Schema
 const LoginSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid email").required("Email is Required"),
+    email: Yup.string().email("Invalid email").required("Required"),
     password: Yup.string().min(6, "Too Short!").required("Required"),
 });
 
-const Login = () => {
+export default function Login() {
     const router = useRouter();
+    const dispatch = useDispatch();
+    const mutation = useMutation({
+        mutationFn: loginUser,
+        mutationKey: ["login"],
+    });
+    const user = useSelector((state) => state.auth.user);
+
+    useEffect(() => {
+        if (user) {
+            router.push("/(tabs)"); 
+        }
+    }, [user, router]);
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Login</Text>
-            {/* Formik Configuration */}
-            <Formik
-                initialValues={{ email: "", password: "" }}
-                onSubmit={async (values) => {
-                    try {
-                        const response = await loginUser(values);
-                        console.log('Login successful:', response);
-
-                        await AsyncStorage.setItem('token', response.token);
-
-                        router.push('/(tabs)');
-                    } catch (error) {
-                        console.error('Login failed:', error);
-                    }
-                }}
-                validationSchema={LoginSchema}
-            >
-                {({
-                    handleChange,
-                    handleBlur,
-                    handleSubmit,
-                    values,
-                    errors,
-                    touched,
-                }) => (
-                    <View style={styles.form}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Email"
-                            onChangeText={handleChange("email")}
-                            onBlur={handleBlur("email")}
-                            value={values.email}
-                            keyboardType="email-address"
-                        />
-                        {/* Error Email */}
-                        {errors.email && touched.email && (
-                            <Text style={styles.errorText}>{errors.email}</Text>
-                        )}
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Password"
-                            onChangeText={handleChange("password")}
-                            onBlur={handleBlur("password")}
-                            value={values.password}
-                            secureTextEntry
-                        />
-                        {/* Error Password */}
-                        {errors.password && touched.password && (
-                            <Text style={styles.errorText}>{errors.password}</Text>
-                        )}
-                        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                            <Text style={styles.buttonText}>Login</Text>
-                        </TouchableOpacity>
+        <>
+            <StatusBar translucent backgroundColor="transparent" />
+            <View style={styles.container}>
+                <ImageBackground
+                    source={require('../../assets/loginBG.png')}
+                    style={styles.backgroundImage}
+                    imageStyle={{ opacity: 1.5 }}
+                    resizeMode="stretch" 
+                >
+                    <View style={styles.overlay}>
+                        <Text style={styles.title}>Login</Text>
+                        <Formik
+                            initialValues={{ email: "", password: "" }}
+                            validationSchema={LoginSchema}
+                            onSubmit={(values) => {
+                                mutation.mutateAsync(values)
+                                    .then((data) => {
+                                        dispatch(loginAction(data));
+                                    })
+                                    .catch((err) => {
+                                        console.log(err);
+                                    });
+                            }}
+                        >
+                            {({
+                                handleChange,
+                                handleBlur,
+                                handleSubmit,
+                                values,
+                                errors,
+                                touched,
+                            }) => (
+                                <View style={styles.form}>
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="Email"
+                                        onChangeText={handleChange("email")}
+                                        onBlur={handleBlur("email")}
+                                        value={values.email}
+                                        keyboardType="email-address"
+                                    />
+                                    {errors.email && touched.email ? (
+                                        <Text style={styles.errorText}>{errors.email}</Text>
+                                    ) : null}
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="Password"
+                                        onChangeText={handleChange("password")}
+                                        onBlur={handleBlur("password")}
+                                        value={values.password}
+                                        secureTextEntry
+                                    />
+                                    {errors.password && touched.password ? (
+                                        <Text style={styles.errorText}>{errors.password}</Text>
+                                    ) : null}
+                                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                                        <Text style={styles.buttonText}>Login</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </Formik>
                     </View>
-                )}
-            </Formik>
-        </View>
+                </ImageBackground>
+            </View>
+        </>
     );
-};
-
-export default Login;
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingTop: Constants.statusBarHeight,
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
+    overlay: {
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
         padding: 16,
-        backgroundColor: "#f5f5f5",
     },
     title: {
         fontSize: 32,
         fontWeight: "bold",
         marginBottom: 24,
+        color: '#FFAC1C'
     },
     form: {
         width: "100%",
@@ -110,7 +145,7 @@ const styles = StyleSheet.create({
     },
     button: {
         height: 50,
-        backgroundColor: "#6200ea",
+        backgroundColor: "#FFAC1C",
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 8,

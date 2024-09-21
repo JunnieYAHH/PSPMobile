@@ -1,17 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
+const connectDB = require('./config/dbConfig');
 const userRoutes = require('./routes/userRoutes');
-
-
-// Specify the correct path to the config.env file
-const envPath = path.resolve(__dirname, 'config', 'config.env');
-// console.log(envPath)
-dotenv.config({ path: envPath });
-// console.log(process.env.JWT_SECRET);
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -23,14 +14,8 @@ app.use(bodyParser.json());
 
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://gerelitopuyos:gerelitopuyos@atlascluster.7cyczkf.mongodb.net/PSPData?retryWrites=true&w=majority", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(() => {
-    console.log("Connected to MongoDB");
-}).catch((err) => {
-    console.log("Error connecting to MongoDB", err);
-});
+connectDB();
+
 
 // Routes
 app.use('/api/v1/users', userRoutes);

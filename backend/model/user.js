@@ -15,15 +15,14 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: [true, "role is required"],
             default: 'user',
-            // enum: ["admin", "client", "coach",'user'],
+            enum: ["admin", "client", "coach", 'user'],
         },
         phone: {
             type: String,
-            required: [true, "Phone is requied"],
+            // required: [true, "Phone is requied"],
         },
         userBranch: {
             type: String,
-            required: [true, "This User Branch is required"],
         },
         password: {
             type: String,

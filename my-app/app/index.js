@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
 import React from 'react';
 import { Video, ResizeMode } from 'expo-av';
 import { useRouter } from "expo-router";
+import Constants from 'expo-constants';
 
 const Home = () => {
     const video = React.useRef(null);
@@ -9,33 +10,38 @@ const Home = () => {
     const router = useRouter();
 
     return (
-        <View style={styles.container}>
-            <Video
-                ref={video}
-                style={styles.video}
-                source={require('../assets/PSPBackgroundVideo.mp4')}
-                resizeMode={ResizeMode.COVER}
-                shouldPlay
-                isLooping
-                isMuted
-                onError={(error) => console.error("Video error:", error)}
-                onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-            />
-            <View style={styles.buttons}>
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => router.push("/auth/login")}
-                >
-                    <Text style={styles.buttonText}>Login</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => router.push("/auth/register")}
-                >
-                    <Text style={styles.buttonText}>Register</Text>
-                </TouchableOpacity>
+        <>
+            <StatusBar translucent backgroundColor="transparent" />
+            <View style={styles.container}>
+                <View style={styles.videoContainer}>
+                    <Video
+                        ref={video}
+                        style={styles.video}
+                        source={require('../assets/PSPBackgroundVideo.mp4')}
+                        resizeMode={ResizeMode.COVER}
+                        shouldPlay
+                        isLooping
+                        isMuted
+                        onError={(error) => console.error("Video error:", error)}
+                        onPlaybackStatusUpdate={(status) => setStatus(() => status)}
+                    />
+                </View>
+                <View style={styles.buttons}>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => router.push("/auth/login")}
+                    >
+                        <Text style={styles.buttonText}>Login</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => router.push("/auth/register")}
+                    >
+                        <Text style={styles.buttonText}>Register</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </>
     );
 };
 
@@ -44,35 +50,14 @@ export default Home;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
+        paddingTop: Constants.statusBarHeight,
+    },
+    videoContainer: {
+        flex: 1,
+        overflow: 'hidden',
     },
     video: {
         ...StyleSheet.absoluteFillObject,
-    },
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-    },
-    mainText: {
-        color: "white",
-        fontSize: 68,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-    subText: {
-        color: "white",
-        fontSize: 24,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-    tagline: {
-        color: "white",
-        fontSize: 18,
-        fontStyle: "italic",
-        textAlign: "center",
-        marginTop: 10,
     },
     buttons: {
         flexDirection: "row",

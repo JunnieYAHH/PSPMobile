@@ -1,23 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const cloudinary = require('cloudinary');
-const crypto = require('crypto');
+const {cloudinary, secretKey} = require('../config/cloudinaryConfig')
 const asyncHandler = require("express-async-handler");
 const User = require("../model/user");
-
-// Controller methods for user operations
-//endpoint to login in the app
-const generateSecretKey = () => {
-  const secretKey = crypto.randomBytes(32).toString("hex");
-  return secretKey
-}
-const secretKey = generateSecretKey()
-
-cloudinary.config({
-  cloud_name: 'ds7jufrxl',
-  api_key: '827497948387292',
-  api_secret: 'qZygsilGaETbzQ5rnN8v-k8Ai4g',
-})
 
 const userController = {
   //!Register
@@ -65,10 +50,10 @@ const userController = {
         image: { public_id: result.public_id, url: result.secure_url }
       });
 
-      console.log(user)
+      // console.log(user)
 
       // Save user to the database
-      // user = await user.save();
+      user = await user.save();
 
       return res.status(201).json({
         success: true,
@@ -90,6 +75,7 @@ const userController = {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
+      console.log(user)
 
       if (!user) {
         return res.status(401).json({ message: 'Invalid Email or Password' });

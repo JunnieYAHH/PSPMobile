@@ -1,38 +1,28 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Image, StatusBar } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "expo-router";
-import { logoutAction } from "../(redux)/authSlice";
-import ProtectedRoute from "../../components/ProtectedRoute";
-import Constants from 'expo-constants';
 
+import { useRouter } from "expo-router";
+import { logoutAction } from "./(redux)/authSlice";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 export default function Profile() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
 
   const handleLogout = () => {
     dispatch(logoutAction());
-    router.push("/auth/login");
+    router.push("/");
   };
-
-  // console.log("User state:", useSelector((state) => state.auth));
 
   return (
     <ProtectedRoute>
-      <StatusBar translucent backgroundColor="transparent" />
       <View style={styles.container}>
         <Text style={styles.title}>User Profile</Text>
         {user ? (
           <>
-            {user.user.image && user.user.image[0] && user.user.image[0].url && (
-              <Image
-                source={{ uri: user.user.image[0].url }}
-                style={{ width: 100, height: 100, borderRadius: 50 }}
-              />
-            )}
-            <Text style={styles.text}>Email: {user.user.email}</Text>
+            <Text style={styles.text}>Email: {user.email}</Text>
             <TouchableOpacity style={styles.button} onPress={handleLogout}>
               <Text style={styles.buttonText}>Logout</Text>
             </TouchableOpacity>
@@ -52,7 +42,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     backgroundColor: "#f5f5f5",
-    paddingTop: Constants.statusBarHeight,
   },
   title: {
     fontSize: 32,

@@ -1,64 +1,68 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Constants from 'expo-constants';
 
 const Settings = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Settings</Text>
-      <View style={styles.section}>
-        <TouchableOpacity style={styles.option}>
-          <Icon name="user" size={24} color="#4caf50" />
-          <Text style={styles.optionText}>Account</Text>
-          <Icon
-            name="angle-right"
-            size={24}
-            color="#999"
-            style={styles.optionIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Icon name="bell" size={24} color="#ff9800" />
-          <Text style={styles.optionText}>Notifications</Text>
-          <Icon
-            name="angle-right"
-            size={24}
-            color="#999"
-            style={styles.optionIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Icon name="lock" size={24} color="#f44336" />
-          <Text style={styles.optionText}>Privacy</Text>
-          <Icon
-            name="angle-right"
-            size={24}
-            color="#999"
-            style={styles.optionIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Icon name="info-circle" size={24} color="#3f51b5" />
-          <Text style={styles.optionText}>About</Text>
-          <Icon
-            name="angle-right"
-            size={24}
-            color="#999"
-            style={styles.optionIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Icon name="sign-out" size={24} color="#e91e63" />
-          <Text style={styles.optionText}>Logout</Text>
-          <Icon
-            name="angle-right"
-            size={24}
-            color="#999"
-            style={styles.optionIcon}
-          />
-        </TouchableOpacity>
+    <>
+      <StatusBar translucent backgroundColor="transparent" />
+      <View style={styles.container}>
+        <Text style={styles.header}>Settings</Text>
+        <View style={styles.section}>
+          <TouchableOpacity style={styles.option}>
+            <Icon name="user" size={24} color="#4caf50" />
+            <Text style={styles.optionText}>Account</Text>
+            <Icon
+              name="angle-right"
+              size={24}
+              color="#999"
+              style={styles.optionIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option}>
+            <Icon name="bell" size={24} color="#ff9800" />
+            <Text style={styles.optionText}>Notifications</Text>
+            <Icon
+              name="angle-right"
+              size={24}
+              color="#999"
+              style={styles.optionIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option}>
+            <Icon name="lock" size={24} color="#f44336" />
+            <Text style={styles.optionText}>Privacy</Text>
+            <Icon
+              name="angle-right"
+              size={24}
+              color="#999"
+              style={styles.optionIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option}>
+            <Icon name="info-circle" size={24} color="#3f51b5" />
+            <Text style={styles.optionText}>About</Text>
+            <Icon
+              name="angle-right"
+              size={24}
+              color="#999"
+              style={styles.optionIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option}>
+            <Icon name="sign-out" size={24} color="#e91e63" />
+            <Text style={styles.optionText}>Logout</Text>
+            <Icon
+              name="angle-right"
+              size={24}
+              color="#999"
+              style={styles.optionIcon}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 
@@ -69,6 +73,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f5",
+    paddingTop: Constants.statusBarHeight,
   },
   header: {
     fontSize: 32,
