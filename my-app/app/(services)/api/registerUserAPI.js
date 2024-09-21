@@ -20,8 +20,6 @@ const registerUser = async ({ email, password, name, phone, userBranch, isAdmin 
             });
         }
 
-        console.log(baseURL)
-
         const response = await axios.post(`${baseURL}/users/register`,formData,
             {
                 headers: {
