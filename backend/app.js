@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const connectDB = require('./config/dbConfig');
 const userRoutes = require('./routes/userRoutes');
+const exerciseRoutes = require('./routes/exerciseRoutes');
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -19,6 +20,7 @@ connectDB();
 
 // Routes
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/exercises', exerciseRoutes);
 
 // Start server
 app.listen(port, () => {
