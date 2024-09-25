@@ -67,12 +67,9 @@ const styles = StyleSheet.create({
         bottom: 30,
         left: 0,
         right: 0,
-        padding: 10,
         borderRadius: 10,
     },
     button: {
-        paddingVertical: 40,
-        paddingHorizontal: 40,
         borderRadius: 25,
         elevation: 3,
     },

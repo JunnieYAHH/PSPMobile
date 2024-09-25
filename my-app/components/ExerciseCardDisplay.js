@@ -1,9 +1,11 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as Animatable from 'react-native-animatable';
+import { useNavigation } from '@react-navigation/native';
 
 const ExerciseCardDisplay = ({ exercise, index }) => {
+  const navigation = useNavigation();
   const imageUrl = exercise.image[0]?.url;
   const exerciseDifficulty = exercise.difficulty;
 
@@ -48,6 +50,11 @@ const ExerciseCardDisplay = ({ exercise, index }) => {
               {renderStars(exerciseDifficulty)}
             </View>
           </View>
+          <View style={styles.container}>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Information</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Animatable.View>
@@ -60,7 +67,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     width: 224,
-    height: 310,
+    height: 450,
     borderRadius: 15,
     padding: 10,
     margin: 10,
@@ -71,8 +78,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     borderRadius: 5,
   },
   text: {
@@ -81,9 +88,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   animatableView: {
-    width: 224,  
-    height: 280, 
-    marginRight: 24, 
-    borderRadius: 24, 
-  }
+    width: 224,
+    height: 280,
+    marginRight: 24,
+    borderRadius: 24,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    backgroundColor: '#6200ea',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
