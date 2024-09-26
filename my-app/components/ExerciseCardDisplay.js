@@ -51,8 +51,13 @@ const ExerciseCardDisplay = ({ exercise, index }) => {
             </View>
           </View>
           <View style={styles.container}>
-            <TouchableOpacity style={styles.button}>
+            {/* <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Information</Text>
+            </TouchableOpacity> */}
+            <TouchableOpacity
+              onPress={()=> navigation.navigate('ExerciseDetailsScreens')}
+              style={{backgroundColor: 'white', padding: 20, borderRadius: '100%'}}>
+                <Text size="25" color="black"/>
             </TouchableOpacity>
           </View>
         </View>
