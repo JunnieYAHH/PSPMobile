@@ -171,7 +171,7 @@ const TabHome = () => {
                       </TouchableOpacity>
                     </View>
                   </View>
-
+                    
                   {/* About Application Section */}
                   <View style={styles.aboutContainer}>
                     <Text style={styles.aboutTitle}>About This Application</Text>

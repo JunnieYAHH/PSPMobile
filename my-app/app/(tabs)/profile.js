@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity, Image, StatusBar } from "reac
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "expo-router";
 import { logoutAction } from "../(redux)/authSlice";
-import ProtectedRoute from "../../components/ProtectedRoute";
+import ProtectedRoute from "../components/ProtectedRoute";
 import Constants from 'expo-constants';
 
 
@@ -48,8 +48,6 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 16,
     backgroundColor: "#f5f5f5",
     paddingTop: Constants.statusBarHeight,
@@ -58,6 +56,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 24,
+    textAlign:'center'
   },
   text: {
     fontSize: 18,

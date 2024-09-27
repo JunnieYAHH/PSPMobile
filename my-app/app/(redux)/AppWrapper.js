@@ -17,7 +17,7 @@ function AppWrapper() {
         name="index"
         options={{ title: "Home", headerShown: false }}
       />
-      <Stack.Screen name="profile" options={{ title: "Profile" }} />
+      {/* <Stack.Screen name="profile" options={{ title: "Profile" }} /> */}
       <Stack.Screen name="auth/login" options={{ title: "Login", headerShown: false }} />
       <Stack.Screen name="auth/register" options={{ title: "Register", headerShown: false }} />
       <Stack.Screen name="components/Exercise/ExerciseDetails" options={{ title: "ExerciseDetails", headerShown: false }} />
