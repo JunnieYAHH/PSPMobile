@@ -51,8 +51,11 @@ const ExerciseCardDisplay = ({ exercise, index }) => {
             </View>
           </View>
           <View style={styles.container}>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Information</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('components/Exercise/ExerciseDetails', { exercise })}
+            >
+              <Text style={{ color: 'white' }}>Information</Text>
             </TouchableOpacity>
           </View>
         </View>

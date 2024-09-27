@@ -10,7 +10,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (!user) {
-      router.replace("/"); // Redirect to the home screen if user is not authenticated
+      router.replace("/");
     }
   }, [user, router]);
 

@@ -1,21 +1,23 @@
 import { Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Constants from 'expo-constants';
 import { useSelector } from "react-redux";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getAllExercise } from '../(services)/api/getAllExercise';
-import ExerciseCardDisplay from '../../components/ExerciseCardDisplay';
+import ExerciseCardDisplay from '../components/Exercise/ExerciseCardDisplay';
 import { useNavigation } from '@react-navigation/native';
 
 const TabHome = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('Exercise');
+  const scrollViewRef = useRef(null);
+
 
   const tabs = [
-    { name: 'Exercise', screen: 'ExerciseDetails' },
-    { name: 'About PSP', screen: 'AboutScreen' },
-    { name: 'This App', screen: 'AppInfoScreen' },
+    { name: 'About PSP', screen: 'AboutScreen', scrollTo: 200 },
+    { name: 'This App', screen: 'AppInfoScreen', scrollTo: 600 },
+    { name: 'Exercise', screen: 'ExerciseDetails', scrollTo: 1000 },
     { name: 'Branches', screen: 'BranchesScreen' }
   ];
 
@@ -62,6 +64,16 @@ const TabHome = () => {
     In addition, it incorporates health assessment tools and meal planning features to support users in achieving their fitness goals. One of the standout functionalities is the real-time tracking of gym occupancy, which helps members stay informed about the gym's current capacity and optimize their workout times. Overall, the app aims to enhance the user experience at PSPG by integrating essential services into a single, user-friendly platform.
   `;
 
+  const handleTabPress = (tab) => {
+    setActiveTab(tab.name);
+    if (tab.scrollTo) {
+      scrollViewRef.current.scrollTo({ x: 0, y: tab.scrollTo, animated: true });
+    } else {
+      navigation.navigate(tab.screen);
+    }
+  };
+
+
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
@@ -75,7 +87,7 @@ const TabHome = () => {
             >
               <SafeAreaView style={styles.safeAreaView}>
                 {/* Content Header */}
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
                   <View style={styles.contentContainer}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                       <Text style={{ color: 'white', marginRight: 10, fontWeight: 'bold', fontSize: 25 }}>
@@ -128,10 +140,7 @@ const TabHome = () => {
                         <TouchableOpacity
                           key={index}
                           style={styles.tabCard}
-                          onPress={() => {
-                            setActiveTab(tab.name);
-                            navigation.navigate(tab.screen);
-                          }}
+                          onPress={() => handleTabPress(tab)}
                         >
                           <Text style={[styles.tabText, isActive && styles.activeText]}>
                             {tab.name}
@@ -142,11 +151,10 @@ const TabHome = () => {
                     })}
                   </ScrollView>
 
-                   {/*About PSP Section */}
-                   <View style={styles.aboutContainer}>
+                  {/* About PSP Section */}
+                  <View style={styles.aboutContainer}>
                     <Text style={styles.aboutTitle}>About Philippine Sports Performance Gym (PSP)</Text>
                     <View style={styles.aboutCard}>
-                      {/* Image Component */}
                       <Image
                         source={require('../../assets/PSPAboutTabHome.jpg')}
                         style={styles.aboutImage}
@@ -164,8 +172,8 @@ const TabHome = () => {
                     </View>
                   </View>
 
-                   {/* About Application Section */}
-                   <View style={styles.aboutContainer}>
+                  {/* About Application Section */}
+                  <View style={styles.aboutContainer}>
                     <Text style={styles.aboutTitle}>About This Application</Text>
                     <View style={styles.aboutCard}>
                       <Text style={styles.aboutText}>
