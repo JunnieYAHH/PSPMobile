@@ -15,8 +15,8 @@ const TabHome = () => {
 
 
   const tabs = [
-    { name: 'About PSP', screen: 'AboutScreen', scrollTo: 200 },
-    { name: 'This App', screen: 'AppInfoScreen', scrollTo: 600 },
+    { name: 'About PSP', screen: 'AboutScreen', scrollTo: 250 },
+    { name: 'This App', screen: 'AppInfoScreen', scrollTo: 680 },
     { name: 'Exercise', screen: 'ExerciseDetails', scrollTo: 1000 },
     { name: 'Branches', screen: 'BranchesScreen' }
   ];
@@ -117,8 +117,49 @@ const TabHome = () => {
                     </Text>
                   </View>
 
+                  {/*ARNOLD */}
+                  <View style={{ flexDirection: 'row', marginTop: 20, marginLeft:20, marginBottom:10 }}>
+                    <View style={{
+                      flex: 1,
+                      padding: 10,
+                      borderRadius: 10,
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 4,
+                      elevation: 5,
+                      marginLeft: 15,
+                    }}>
+                      <View>
+                        <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20, marginBottom:5 }}>
+                          Arnold Schwarzenegger
+                        </Text>
+                        <Text style={{ color: 'black', width: '100%' }}>
+                          Strength does not come from winning. Your struggles develop your strengths.
+                          When you go through hardships and decide not to surrender, that is strength.
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={{
+                      width: 100,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                      <Image
+                        source={require('../../assets/Arnold.jpg')}
+                        style={{
+                          width: '100%',
+                          height: 100,
+                          borderRadius: 10,
+                        }}
+                        resizeMode="contain"
+                      />
+                    </View>
+                  </View>
+
                   {/* Search */}
-                  <View style={styles.searchContainer}>
+                  {/* <View style={styles.searchContainer}>
                     <View style={styles.searchBox}>
                       <FontAwesome6 name="magnifying-glass" size={16} color="gray" style={{ marginTop: 6 }} />
                       <TextInput
@@ -129,7 +170,7 @@ const TabHome = () => {
                         <MaterialIcons name="filter-list" size={24} color="black" style={{ marginLeft: 10 }} />
                       </View>
                     </View>
-                  </View>
+                  </View> */}
 
                   {/* ScrollView of Tabs */}
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollViewContent}>
@@ -171,7 +212,7 @@ const TabHome = () => {
                       </TouchableOpacity>
                     </View>
                   </View>
-                    
+
                   {/* About Application Section */}
                   <View style={styles.aboutContainer}>
                     <Text style={styles.aboutTitle}>About This Application</Text>
@@ -190,7 +231,7 @@ const TabHome = () => {
 
                   {/* Exercises Section */}
                   <View style={styles.exerciseSection}>
-                    <Text style={styles.exerciseHeader}>Exercises</Text>
+                    <Text style={styles.exerciseHeader}>Exercises:</Text>
                     <ScrollView horizontal
                       showsHorizontalScrollIndicator={false}
                       contentContainerStyle={{ paddingHorizontal: 20, height: 450 }}
@@ -325,6 +366,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     fontSize: 24,
     fontWeight: 'bold',
+    marginLeft:40
   },
   aboutContainer: {
     padding: 20,
