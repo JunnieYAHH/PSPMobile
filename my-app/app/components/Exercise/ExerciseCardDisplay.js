@@ -25,7 +25,7 @@ const ExerciseCardDisplay = ({ exercise, index }) => {
   };
 
   return (
-    <Animatable.View delay={index * 120} animation="slideInRight" style={styles.animatableView}>
+    <Animatable.View delay={index * 150} animation="slideInRight" style={styles.animatableView}>
       <View style={styles.card}>
         <View style={styles.content}>
           {imageUrl && (

@@ -7,23 +7,26 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getAllExercise } from '../(services)/api/getAllExercise';
 import ExerciseCardDisplay from '../components/Exercise/ExerciseCardDisplay';
 import { useNavigation } from '@react-navigation/native';
+import styles from '../components/styles/TabHomeStyles';
 
 const TabHome = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('Exercise');
   const scrollViewRef = useRef(null);
 
-
+  //Tabs
   const tabs = [
-    { name: 'About PSP', screen: 'AboutScreen', scrollTo: 250 },
-    { name: 'This App', screen: 'AppInfoScreen', scrollTo: 680 },
-    { name: 'Exercise', screen: 'ExerciseDetails', scrollTo: 1000 },
-    { name: 'Branches', screen: 'BranchesScreen' }
+    { name: 'Exercise', screen: 'ExerciseDetails', scrollTo: 1000, color: 'white' },
+    { name: 'About PSP', screen: 'AboutScreen', scrollTo: 250, color: 'white' },
+    { name: 'This App', screen: 'AppInfoScreen', scrollTo: 680, color: 'white' },
+    { name: 'Branches', screen: 'BranchesScreen', scrollTo: 1200, color: 'white' },
+    { name: 'BMI', screen: 'BMI', scrollTo: 1400, color: 'white' },
+    { name: 'Membership', screen: 'Membership', scrollTo: 1600, color: 'white' }
   ];
 
+  //Get API USER AND EXERCISE
   const { user } = useSelector((state) => state.auth);
   const [exercises, setExercises] = useState([]);
-
   useEffect(() => {
     let isMounted = true;
 
@@ -46,7 +49,6 @@ const TabHome = () => {
       isMounted = false;
     };
   }, []);
-  // console.log(exercises)
 
   // About text content
   const [showFullTextAboutPSP, setShowFullTextAboutPSP] = useState(false);
@@ -73,7 +75,6 @@ const TabHome = () => {
     }
   };
 
-
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
@@ -86,26 +87,21 @@ const TabHome = () => {
               resizeMode='stretch'
             >
               <SafeAreaView style={styles.safeAreaView}>
+
                 {/* Content Header */}
                 <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
-                  <View style={styles.contentContainer}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                      <Text style={{ color: 'white', marginRight: 10, fontWeight: 'bold', fontSize: 25 }}>
-                        Welcome:
-                      </Text>
-                      <Text style={{ color: '#FFAC1C', fontSize: 20 }}>
-                        {user.user.name}
-                      </Text>
-                    </View>
-                    <View style={styles.imageContainer}>
-                      {user && user.user && user.user.image && user.user.image.length > 0 ? (
-                        <Image
-                          style={styles.userImage}
-                          source={{ uri: user.user.image[0].url }}
-                        />
-                      ) : (
-                        <Text style={styles.text}>No image available</Text>
-                      )}
+
+                  {/* Search */}
+                  <View style={styles.searchContainer}>
+                    <View style={styles.searchBox}>
+                      <FontAwesome6 name="magnifying-glass" size={16} color="gray" style={{ marginTop: 6 }} />
+                      <TextInput
+                        placeholder='Search'
+                        style={styles.searchInput}
+                      />
+                      <View style={styles.searchFilter}>
+                        <MaterialIcons name="filter-list" size={24} color="black" style={{ marginLeft: 10 }} />
+                      </View>
                     </View>
                   </View>
 
@@ -118,7 +114,7 @@ const TabHome = () => {
                   </View>
 
                   {/*ARNOLD */}
-                  <View style={{ flexDirection: 'row', marginTop: 20, marginLeft:20, marginBottom:10 }}>
+                  <View style={{ flexDirection: 'row', marginTop: 20, marginLeft: 20, marginBottom: 10 }}>
                     <View style={{
                       flex: 1,
                       padding: 10,
@@ -132,7 +128,7 @@ const TabHome = () => {
                       marginLeft: 15,
                     }}>
                       <View>
-                        <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20, marginBottom:5 }}>
+                        <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>
                           Arnold Schwarzenegger
                         </Text>
                         <Text style={{ color: 'black', width: '100%' }}>
@@ -158,29 +154,18 @@ const TabHome = () => {
                     </View>
                   </View>
 
-                  {/* Search */}
-                  {/* <View style={styles.searchContainer}>
-                    <View style={styles.searchBox}>
-                      <FontAwesome6 name="magnifying-glass" size={16} color="gray" style={{ marginTop: 6 }} />
-                      <TextInput
-                        placeholder='Search'
-                        style={styles.searchInput}
-                      />
-                      <View style={styles.searchFilter}>
-                        <MaterialIcons name="filter-list" size={24} color="black" style={{ marginLeft: 10 }} />
-                      </View>
-                    </View>
-                  </View> */}
-
                   {/* ScrollView of Tabs */}
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollViewContent}>
+                  <View style={styles.tabContainer}>
                     {tabs.map((tab, index) => {
                       const isActive = activeTab === tab.name;
-
                       return (
                         <TouchableOpacity
                           key={index}
-                          style={styles.tabCard}
+                          style={[
+                            styles.tabCard,
+                            { backgroundColor: tab.color },
+                            isActive && styles.activeTabCard
+                          ]}
                           onPress={() => handleTabPress(tab)}
                         >
                           <Text style={[styles.tabText, isActive && styles.activeText]}>
@@ -190,58 +175,65 @@ const TabHome = () => {
                         </TouchableOpacity>
                       );
                     })}
-                  </ScrollView>
+                  </View>
 
-                  {/* About PSP Section */}
-                  <View style={styles.aboutContainer}>
-                    <Text style={styles.aboutTitle}>About Philippine Sports Performance Gym (PSP)</Text>
-                    <View style={styles.aboutCard}>
-                      <Image
-                        source={require('../../assets/PSPAboutTabHome.jpg')}
-                        style={styles.aboutImage}
-                        resizeMode='cover'
-                      />
-                      <Text style={styles.aboutText}>
-                        {showFullTextAboutPSP ? aboutTextPSPG : aboutTextPSPG.substring(0, 200) + '...'}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => setShowFullTextAboutPSP(!showFullTextAboutPSP)}
-                        style={styles.seeMoreButton}
-                      >
-                        <Text style={styles.seeMoreText}>{showFullTextAboutPSP ? 'See Less' : 'See More'}</Text>
-                      </TouchableOpacity>
+                  {/* Conditionally Render Sections */}
+                  {activeTab === 'About PSP' && (
+                    <View style={styles.aboutContainer}>
+                      <Text style={styles.aboutTitle}>About Philippine Sports Performance Gym (PSP)</Text>
+                      <View style={styles.aboutCard}>
+                        <Image
+                          source={require('../../assets/PSPAboutTabHome.jpg')}
+                          style={styles.aboutImage}
+                          resizeMode='cover'
+                        />
+                        <Text style={styles.aboutText}>
+                          {showFullTextAboutPSP ? aboutTextPSPG : aboutTextPSPG.substring(0, 200) + '...'}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => setShowFullTextAboutPSP(!showFullTextAboutPSP)}
+                          style={styles.seeMoreButton}
+                        >
+                          <Text style={styles.seeMoreText}>{showFullTextAboutPSP ? 'See Less' : 'See More'}</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
+                  )}
 
-                  {/* About Application Section */}
-                  <View style={styles.aboutContainer}>
-                    <Text style={styles.aboutTitle}>About This Application</Text>
-                    <View style={styles.aboutCard}>
-                      <Text style={styles.aboutText}>
-                        {showFullTextAboutAPP ? aboutTextApp : aboutTextApp.substring(0, 200) + '...'}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => setShowFullTextAboutAPP(!showFullTextAboutAPP)}
-                        style={styles.seeMoreButton}
-                      >
-                        <Text style={styles.seeMoreText}>{showFullTextAboutAPP ? 'See Less' : 'See More'}</Text>
-                      </TouchableOpacity>
+                  {activeTab === 'This App' && (
+                    <View style={styles.aboutContainer}>
+                      <Text style={styles.aboutTitle}>About This Application</Text>
+                      <View style={styles.aboutCard}>
+                        <Text style={styles.aboutText}>
+                          {showFullTextAboutAPP ? aboutTextApp : aboutTextApp.substring(0, 200) + '...'}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => setShowFullTextAboutAPP(!showFullTextAboutAPP)}
+                          style={styles.seeMoreButton}
+                        >
+                          <Text style={styles.seeMoreText}>{showFullTextAboutAPP ? 'See Less' : 'See More'}</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
+                  )}
 
-                  {/* Exercises Section */}
-                  <View style={styles.exerciseSection}>
-                    <Text style={styles.exerciseHeader}>Exercises:</Text>
-                    <ScrollView horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={{ paddingHorizontal: 20, height: 450 }}
-                    >
-                      {
-                        exercises.map((exercise, index) => <ExerciseCardDisplay exercise={exercise} index={index} key={index} />)
-                      }
-                    </ScrollView>
-                  </View>
+                  {activeTab === 'Exercise' && (
+                    <View style={styles.exerciseSection}>
+                      <Text style={styles.exerciseHeader}>Exercises:</Text>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingHorizontal: 20, height: 450 }}
+                      >
 
+                        {
+                          exercises.map((exercise, index) => (
+                            <ExerciseCardDisplay exercise={exercise} index={index} key={index} />
+                          ))
+                        }
+                      </ScrollView>
+                    </View>
+                  )}
+
+                  {/* You can add more conditional sections for 'Branches', 'BMI' */}
                 </ScrollView>
               </SafeAreaView>
             </ImageBackground>
@@ -255,163 +247,3 @@ const TabHome = () => {
 };
 
 export default TabHome;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: Constants.statusBarHeight,
-  },
-  safeAreaView: {
-    flex: 1,
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-  },
-  contentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  imageContainer: {
-    marginTop: 12,
-    padding: 3,
-    backgroundColor: 'white',
-    borderRadius: 10,
-  },
-  userImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-  },
-  text: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  headerContainer: {
-    marginHorizontal: 16,
-    marginTop: 30,
-  },
-  headerText: {
-    fontSize: 40,
-    fontWeight: '500',
-    color: '#ffffff',
-    marginLeft: 10,
-  },
-  searchContainer: {
-    padding: 10,
-    marginHorizontal: 16,
-    marginTop: 12,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  searchBox: {
-    flexDirection: 'row',
-    flex: 1,
-    padding: 10,
-    backgroundColor: 'white',
-    borderRadius: 15,
-  },
-  searchInput: {
-    marginLeft: 10,
-    color: 'gray',
-    fontSize: 16,
-    flex: 1,
-  },
-  searchFilter: {
-    backgroundColor: 'white',
-    borderRadius: 15,
-  },
-  scrollView: {
-    marginVertical: 6,
-    paddingVertical: 6,
-    maxHeight: 80,
-  },
-  scrollViewContent: {
-    paddingHorizontal: 20,
-  },
-  tabCard: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginHorizontal: 5,
-    justifyContent: 'center',
-  },
-  tabText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  activeText: {
-    fontWeight: 'bold',
-    color: '#FFAC1C',
-  },
-  customUnderline: {
-    height: 4,
-    backgroundColor: '#FFAC1C',
-    marginTop: 2,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  activeTabCard: {
-    backgroundColor: '#FFAC1C',
-  },
-  exerciseSection: {
-    marginVertical: 20,
-  },
-  exerciseHeader: {
-    color: 'white',
-    marginLeft: 20,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft:40
-  },
-  aboutContainer: {
-    padding: 20,
-    borderRadius: 10,
-    marginHorizontal: 20,
-    marginTop: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  aboutTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: 'white',
-  },
-  aboutCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  aboutImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  aboutText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#666',
-  },
-  seeMoreButton: {
-    marginTop: 10,
-    alignSelf: 'flex-end',
-  },
-  seeMoreText: {
-    color: '#FFAC1C',
-    fontWeight: 'bold',
-  },
-});
