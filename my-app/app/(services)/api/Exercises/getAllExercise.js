@@ -1,5 +1,5 @@
 import axios from 'axios';
-import baseURL from '../../../assets/common/baseUrl';
+import baseURL from '../../../../assets/common/baseUrl';
 
 // Get All Exercises
 const getAllExercise = async () => {

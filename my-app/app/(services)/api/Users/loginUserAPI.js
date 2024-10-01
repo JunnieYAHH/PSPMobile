@@ -1,5 +1,5 @@
 import axios from 'axios';
-import baseURL from '../../../assets/common/baseUrl'
+import baseURL from '../../../../assets/common/baseUrl'
 // Login
 const loginUser = async ({ email, password }) => {
     const response = await axios.post(`${baseURL}/users/login`,

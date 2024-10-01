@@ -38,15 +38,18 @@ const authSlice = createSlice({
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
+    updateUserAction: (state, action) => {
+      // console.log("Updating user with:", action.payload); // Log the payload
+      state.user = action.payload;
+    },
   },
 });
 
-export const { loginAction, logoutAction, setUser, setLoading } =
+export const { loginAction, logoutAction, setUser, setLoading, updateUserAction } =
   authSlice.actions;
 
 export default authSlice.reducer;
 
-// Thunk to load user from AsyncStorage when the app starts
 export const loadUser = () => async (dispatch) => {
   const user = await loadUserFromStorage();
   if (user) {

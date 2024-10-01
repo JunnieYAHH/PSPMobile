@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { useSelector } from "react-redux";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { getAllExercise } from '../(services)/api/getAllExercise';
+import { getAllExercise } from '../(services)/api/Exercises/getAllExercise';
 import ExerciseCardDisplay from '../components/Exercise/ExerciseCardDisplay';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../components/styles/TabHomeStyles';
@@ -21,7 +21,7 @@ const TabHome = () => {
     { name: 'This App', screen: 'AppInfoScreen', scrollTo: 680, color: 'white' },
     { name: 'Branches', screen: 'BranchesScreen', scrollTo: 1200, color: 'white' },
     { name: 'BMI', screen: 'BMI', scrollTo: 1400, color: 'white' },
-    { name: 'Membership', screen: 'Membership', scrollTo: 1600, color: 'white' }
+    { name: 'Membership', screen: 'Membership', scrollTo: 1600, color: '#FFAC1C' }
   ];
 
   //Get API USER AND EXERCISE

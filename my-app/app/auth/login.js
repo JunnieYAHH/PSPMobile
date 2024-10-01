@@ -12,7 +12,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
-import { loginUser } from "../(services)/api/loginUserAPI";
+import { loginUser } from "../(services)/api/Users/loginUserAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { loginAction } from "../(redux)/authSlice";
 import Constants from 'expo-constants';
@@ -45,7 +45,7 @@ export default function Login() {
                     source={require('../../assets/loginBG.png')}
                     style={styles.backgroundImage}
                     imageStyle={{ opacity: 1.5 }}
-                    resizeMode="stretch" 
+                    resizeMode="stretch"
                 >
                     <View style={styles.overlay}>
                         <Text style={styles.title}>Login</Text>

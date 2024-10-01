@@ -1,7 +1,7 @@
 import { Image, ImageBackground, StatusBar, StyleSheet, Text, View, TouchableOpacity, Animated, FlatList, ScrollView, TextInput } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
-import { getAllExercise } from '../(services)/api/getAllExercise';
+import { getAllExercise } from '../(services)/api/Exercises/getAllExercise';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import styles from '../components/styles/TabProgramStyles';
 

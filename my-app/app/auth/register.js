@@ -4,7 +4,7 @@ import { Formik } from 'formik';
 import { useRouter } from 'expo-router';
 import * as Yup from 'yup';
 import * as ImagePicker from 'expo-image-picker';
-import { registerUser } from '../(services)/api/registerUserAPI';
+import { registerUser } from '../(services)/api/Users/registerUserAPI';
 import Constants from 'expo-constants';
 
 // Schema
@@ -160,7 +160,7 @@ export default Register;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Constants.statusBarHeight, // Push the content down by the status bar height
+    paddingTop: Constants.statusBarHeight,
   },
   backgroundImage: {
     flex: 1,

@@ -9,5 +9,6 @@ const router = express.Router();
 router.post('/register', upload.single('image'), userController.register);
 router.post("/login", userController.login);
 router.get("/get-profile", isAuthenticated, userController.profile);
+router.put('/update', upload.single('image'), userController.updateUser);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const {cloudinary, secretKey} = require('../config/cloudinaryConfig')
+const { cloudinary, secretKey } = require('../config/cloudinaryConfig')
 const asyncHandler = require("express-async-handler");
 const User = require("../model/user");
 
@@ -11,7 +11,7 @@ const userController = {
       const { email, password, name, role, phone, userBranch } = req.body;
       // console.log('Request body:', req.body); 
       // console.log('Request file:', req.file); 
-            
+
       // Validation
       if (!email || !password) {
         throw new Error("Please all fields are required");
@@ -113,5 +113,46 @@ const userController = {
       res.status(500).json({ message: 'Internal server error' });
     }
   }),
+
+  updateUser: asyncHandler(async (req, res) => {
+    try {
+      const { _id, name, email } = req.body
+      let user = await User.findById({ "_id": _id });
+
+      const imageUrl = req.file.path;
+
+      const resultDelete = await cloudinary.v2.uploader.destroy(user.image[0].public_id);
+
+      const result = await cloudinary.uploader.upload(imageUrl, {
+        folder: 'PSPCloudinaryData/users',
+        width: 150,
+        crop: "scale"
+      });
+
+      user.name = name;
+      user.email = email;
+      user.image = { public_id: result.public_id, url: result.secure_url };
+
+      console.log(user)
+
+      user = await User.findByIdAndUpdate(_id, user, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false
+      });
+
+      return res.status(200).json({
+        success: true,
+        user
+      });
+    } catch (error) {
+      console.error(error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Update User Server Error'
+      });
+    }
+  })
+  ,
 };
 module.exports = userController;
