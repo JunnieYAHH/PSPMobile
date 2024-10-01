@@ -85,7 +85,7 @@ const userController = {
         return res.status(401).json({ message: 'Invalid Password' });
       }
 
-      const token = jwt.sign({ userId: user._id }, secretKey);
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.status(200).json({ token, user });
     } catch (error) {
       console.error("Login Error:", error);
@@ -152,7 +152,34 @@ const userController = {
         message: 'Update User Server Error'
       });
     }
-  })
-  ,
+  }),
+  updateUserPassword: asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully"
+    });
+  }),
 };
 module.exports = userController;

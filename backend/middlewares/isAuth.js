@@ -1,25 +1,36 @@
+const User = require("../model/user");
+const mongoose = require('mongoose');
 const jwt = require("jsonwebtoken");
-const isAuthenticated = async (req, res, next) => {
-  //! Get the token from the header
-  const headerObj = req.headers;
-  const token = headerObj.authorization.split(" ")[1];
+const ErrorHandler = require("../utils/errorHandler");
+const catchAsyncErrors = require("./catchAsyncError");
 
-  //Verify token
-  const verifyToken = jwt.verify(token, "anyKey", (err, decoded) => {
-    if (err) {
-      return false;
-    } else {
-      return decoded;
-    }
-  });
-  if (verifyToken) {
-    //save the user into req.obj
-    req.user = verifyToken.id;
-    next();
-  } else {
-    const err = new Error("Token expired please login again");
-    next(err);
+// Checks if user is authenticated or not
+exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
+  const authorizationHeader = req.header('Authorization');
+  console.log('authorizationHeader', authorizationHeader);
+
+  if (!authorizationHeader) {
+    return next(new ErrorHandler('Login first to access this resource', 401));
   }
-};
 
-module.exports = isAuthenticated;
+  const token = authorizationHeader.split(' ')[1];
+  console.log('Token:', token);
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Decoded Token:', decoded.userId);
+    
+    const userId = new mongoose.Types.ObjectId(decoded.userId); 
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return next(new ErrorHandler('User not found', 404));
+    }
+    req.user = user; 
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return next(new ErrorHandler('Invalid token', 401));
+  }
+
+  next();
+});
