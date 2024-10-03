@@ -113,7 +113,7 @@ const userController = {
       res.status(500).json({ message: 'Internal server error' });
     }
   }),
-
+  //!UpdateUser
   updateUser: asyncHandler(async (req, res) => {
     try {
       const { _id, name, email } = req.body
@@ -121,7 +121,7 @@ const userController = {
 
       const imageUrl = req.file.path;
 
-      const resultDelete = await cloudinary.v2.uploader.destroy(user.image[0].public_id);
+      // const resultDelete = await cloudinary.v2.uploader.destroy(user.image[0].public_id);
 
       const result = await cloudinary.uploader.upload(imageUrl, {
         folder: 'PSPCloudinaryData/users',
@@ -153,33 +153,45 @@ const userController = {
       });
     }
   }),
+  //!ResetPassword
   updateUserPassword: asyncHandler(async (req, res) => {
-    const { currentPassword, newPassword } = req.body;
+    try {
 
-    const user = await User.findById(req.user.id);
+      const { currentPassword, newPassword } = req.body;
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      const user = await User.findById(req.user.id);
+      console.log('The Body:',req.body)
+      // console.log('The newPassword',newPassword)
+      console.log('The User ID:',user)
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+      // Update user's password
+      user.password = hashedPassword;
+      await user.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully"
+      });
+    } catch (error) {
+      console.error(error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Password Reset Server Error'
+      });
     }
-
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ message: "Current password is incorrect" });
-    }
-
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-    // Update user's password
-    user.password = hashedPassword;
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Password updated successfully"
-    });
   }),
 };
 module.exports = userController;

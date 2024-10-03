@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     StatusBar,
     ImageBackground,
+    Alert,
 } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -57,8 +58,11 @@ export default function Login() {
                                     .then((data) => {
                                         dispatch(loginAction(data));
                                     })
-                                    .catch((err) => {
-                                        console.log(err);
+                                    .catch((error) => {
+                                        Alert.alert(
+                                            "Login Failed", "Your Email or Password is Incorrent. Try Again",
+                                            [{ text: "OK" }]
+                                        );
                                     });
                             }}
                         >

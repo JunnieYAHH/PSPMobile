@@ -20,7 +20,7 @@ export default function Profile() {
     router.push("/auth/login");
   };
 
-  console.log(user);
+  // console.log(user);
 
   return (
     <ProtectedRoute>
@@ -84,7 +84,9 @@ export default function Profile() {
                     style={styles.optionIcon}
                   />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity style={styles.option}
+                  onPress={() => navigation.navigate('components/User/ResetUserPassword', { user })}
+                >
                   <Icon name="lock" size={24} color="#f44336" />
                   <Text style={styles.optionText}>Privacy</Text>
                   <Icon

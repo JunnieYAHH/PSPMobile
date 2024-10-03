@@ -21,6 +21,7 @@ function AppWrapper() {
       <Stack.Screen name="(tabs)" options={{ title: "Tabs", headerShown: false }} />
       <Stack.Screen name="components/Exercise/ExerciseDetails" options={{ title: "ExerciseDetails", headerShown: false }} />
       <Stack.Screen name="components/User/EditUserProfile" options={{ title: "EditUserProfile", headerShown: false }} />
+      <Stack.Screen name="components/User/ResetUserPassword" options={{ title: "ResetUserPassword", headerShown: false }} />
     </Stack>
   );
 }

@@ -40,7 +40,7 @@ const EditUserProfile = () => {
             setImage(result.assets[0].uri);
         }
     };
-    // console.log("Current User:", user);
+
     useEffect(() => {
         // console.log("Updated User in Redux Store:", updatedUser);
     }, [user]);
