@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         paddingTop: Constants.statusBarHeight,
+        resizeMode:'cover'
     },
     image: {
         width: 192,
@@ -34,8 +35,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: 10,
     },
+    exerciseInfoText:{
+        color:'white'
+    },
     instructionsText: {
-        fontSize: 16,
+        fontSize: 15,
         color: 'white',
         textAlign: 'center',
     },
@@ -59,7 +63,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        height: 100,
+        height: 400,
     },
 });
 

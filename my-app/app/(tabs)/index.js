@@ -1,5 +1,5 @@
 import { Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Constants from 'expo-constants';
 import { useSelector } from "react-redux";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -8,6 +8,11 @@ import { getAllExercise } from '../(services)/api/Exercises/getAllExercise';
 import ExerciseCardDisplay from '../components/Exercise/ExerciseCardDisplay';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../components/styles/TabHomeStyles';
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
 
 const TabHome = () => {
   const navigation = useNavigation();
@@ -74,7 +79,6 @@ const TabHome = () => {
       navigation.navigate(tab.screen);
     }
   };
-
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
@@ -230,6 +234,22 @@ const TabHome = () => {
                           ))
                         }
                       </ScrollView>
+                    </View>
+                  )}
+
+                  {activeTab === 'Branches' && (
+                    <View style={styles.branchContainer}>
+                      <View style={styles.branchCard}>
+                        <Image
+                          source={require('../../assets/PSPBranches.jpg')}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: 10,
+                          }}
+                          resizeMode='cover'
+                        />
+                      </View>
                     </View>
                   )}
 

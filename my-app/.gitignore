@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+#BaseURL
+assets/common/baseUrl.js
+
 # Expo
 .expo/
 dist/

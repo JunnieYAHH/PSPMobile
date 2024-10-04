@@ -1,9 +1,11 @@
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import { Button, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/CompExerciseDisplay'
+import ExerciseDetails from './ExerciseDetails';
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 
 const ExerciseCardDisplay = ({ exercise, index }) => {
   const navigation = useNavigation();
@@ -24,6 +26,19 @@ const ExerciseCardDisplay = ({ exercise, index }) => {
     }
     return stars;
   };
+
+  const bottomSheetModalRef = useRef(null);
+
+  const snapPoints = useMemo(() => ['25%', '50%', '75'], []);
+
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    bottomSheetModalRef.current?.close();
+  }, []);
+
 
   return (
     <Animatable.View delay={index * 150} animation="slideInRight" style={styles.animatableView}>
@@ -54,14 +69,33 @@ const ExerciseCardDisplay = ({ exercise, index }) => {
           <View style={styles.container}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('components/Exercise/ExerciseDetails', { exercise })}
+              // onPress={() => navigation.navigate('components/Exercise/ExerciseDetails', { exercise })}
+              onPress={handlePresentModalPress}
             >
               <Text style={{ color: 'white' }}>Information</Text>
             </TouchableOpacity>
           </View>
+
+          {/* About Modal */}
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={1}
+            snapPoints={snapPoints}
+          // onChange={handleSheetChanges}
+          >
+            <ImageBackground
+              style={{ flex: 1, borderBottomLeftRadius: 50, borderBottomRightRadius: 50, height: '100%', width: '100%', position: 'absolute' }}
+              blurRadius={2}
+              source={require('../../../assets/ProgramBG.png')}
+            >
+              <BottomSheetView>
+                <ExerciseDetails exercise={exercise} onClose={handleCloseModal} />
+              </BottomSheetView>
+            </ImageBackground>
+          </BottomSheetModal>
         </View>
       </View>
-    </Animatable.View>
+    </Animatable.View >
   );
 };
 

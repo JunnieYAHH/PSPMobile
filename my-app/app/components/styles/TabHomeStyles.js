@@ -114,6 +114,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 40
   },
+  branchContainer: {
+    padding: 20,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginTop: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  branchTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: 'white',
+  },
+  branchCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
+    width: 350,
+    height: 500,
+    alignSelf:'center'
+  },
   aboutContainer: {
     padding: 20,
     borderRadius: 10,
