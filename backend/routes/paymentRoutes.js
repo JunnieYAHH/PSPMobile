@@ -3,7 +3,7 @@ const paymentController = require('../controller/paymentController');
 
 
 const router = express.Router();
-router.post("/intent", paymentController.paymentIntent);
+router.post("/create-subscription", paymentController.createSubscription);
 
 
 module.exports = router;

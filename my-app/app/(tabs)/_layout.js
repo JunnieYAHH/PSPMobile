@@ -12,6 +12,9 @@ export default function RootLayout() {
   useEffect(() => {
     if (!user) {
       router.replace("/");
+    } else if (user.user.role === 'client') {
+      // console.log("Redirecting to client index..."); // Debugging line
+      router.replace("/components/Client/(tabs)");
     }
   }, [user, router]);
 

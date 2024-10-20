@@ -3,14 +3,13 @@ const jwt = require('jsonwebtoken');
 const { cloudinary, secretKey } = require('../config/cloudinaryConfig')
 const asyncHandler = require("express-async-handler");
 const User = require("../model/user");
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const userController = {
   //!Register
   register: asyncHandler(async (req, res) => {
     try {
       const { email, password, name, role, phone, userBranch } = req.body;
-      // console.log('Request body:', req.body); 
-      // console.log('Request file:', req.file); 
 
       // Validation
       if (!email || !password) {
@@ -39,7 +38,13 @@ const userController = {
         crop: "scale"
       });
 
-      // Create new user with the Cloudinary URL
+      // Create a Stripe customer
+      const stripeCustomer = await stripe.customers.create({
+        name: name,
+        email: email,
+      });
+
+      // Create new user with the Cloudinary URL and Stripe customer ID
       let user = new User({
         name,
         email,
@@ -47,10 +52,9 @@ const userController = {
         phone,
         userBranch,
         password: hashedPassword,
-        image: { public_id: result.public_id, url: result.secure_url }
+        image: { public_id: result.public_id, url: result.secure_url },
+        stripeCustomerId: stripeCustomer.id,  // Save the Stripe customer ID
       });
-
-      // console.log(user)
 
       // Save user to the database
       user = await user.save();
@@ -160,9 +164,9 @@ const userController = {
       const { currentPassword, newPassword } = req.body;
 
       const user = await User.findById(req.user.id);
-      console.log('The Body:',req.body)
+      console.log('The Body:', req.body)
       // console.log('The newPassword',newPassword)
-      console.log('The User ID:',user)
+      console.log('The User ID:', user)
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });

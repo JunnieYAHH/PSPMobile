@@ -19,14 +19,12 @@ const userSchema = new mongoose.Schema(
         },
         phone: {
             type: String,
-            // required: [true, "Phone is requied"],
         },
         userBranch: {
             type: String,
         },
         password: {
             type: String,
-            // required: [true, "password is requied"],
         },
         isAdmin: {
             type: Boolean,
@@ -43,8 +41,10 @@ const userSchema = new mongoose.Schema(
                     required: true
                 },
             }
-        ]
-
+        ],
+        stripeCustomerId: {
+            type: String,
+        },
     },
     { timestamps: true }
 );

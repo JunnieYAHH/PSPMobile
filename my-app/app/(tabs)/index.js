@@ -1,16 +1,18 @@
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from '@react-navigation/native';
 import styles from '../components/styles/TabHomeStyles';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getAllExercise } from '../(services)/api/Exercises/getAllExercise';
 import ExerciseCardDisplay from '../components/Exercise/ExerciseCardDisplay';
-import { createPaymentIntent, loadClientSecret } from '../(redux)/paymentSlice';
+import { createSubscription, loadClientSecret } from '../(redux)/paymentSlice';
 import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
-import { Alert, Button, Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const TabHome = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
@@ -85,21 +87,23 @@ const TabHome = () => {
   // console.log(user.user.name)
 
   const handlePayment = async () => {
-    const total = 10000;
-    const amount = total * 100;
-
     const billingDetails = {
       name: user.user.name,
       email: user.user.email,
     };
+    // console.log(user.user._id)
 
     try {
-      const response = await dispatch(createPaymentIntent({ amount, billingDetails })).unwrap();
-      console.log('Payment Intent created:', response);
+
+      const response = await dispatch(
+        createSubscription({ userId: user.user._id })
+      ).unwrap();
+
+      // console.log('Subscription created:', response);
 
       const { error: paymentSheetError } = await initPaymentSheet({
         merchantDisplayName: 'Philippines Sports Performance Fitness Gym',
-        paymentIntentClientSecret: response.paymentIntent,
+        paymentIntentClientSecret: response.clientSecret,
         defaultBillingDetails: billingDetails,
       });
 
@@ -113,21 +117,28 @@ const TabHome = () => {
       const { error: paymentError } = await presentPaymentSheet();
 
       if (paymentError) {
-        // Check if the payment was canceled
         if (paymentError.code === 'Canceled') {
           return;
         }
 
         Alert.alert('Error', `Error code: ${paymentError.code}`, paymentError.message);
         console.error('Error presenting payment sheet:', paymentError);
+
       } else {
-        Alert.alert('Success', 'Payment completed successfully!');
+        Alert.alert('Success', 'Subscription completed successfully!');
+      }
+
+      if (!paymentError) {
+        router.replace("/components/Client/(tabs)");
+      } else {
+        console.log("Payment error:", paymentError);
       }
     } catch (err) {
       Alert.alert('Error', err.message);
-      console.error('Error creating payment intent:', err);
+      console.error('Error creating subscription:', err);
     }
   };
+
 
 
   return (
@@ -307,14 +318,14 @@ const TabHome = () => {
                   {activeTab === 'Membership' && (
                     <View style={styles.membershipContainer}>
                       <Text style={{ color: 'white' }}>Hello</Text>
-                      {/* <Button style={{ color: 'white' }} title="Make Payment" onPress={handlePayment} disabled={isLoading} /> */}
                       <TouchableOpacity
                         style={styles.button}
                         onPress={handlePayment}
                         disabled={isLoading}
                       >
-                        <Text style={{ color: 'white' }}>Make Payment</Text>
+                        <Text style={{ color: 'white' }}>Subscribe</Text>
                       </TouchableOpacity>
+
                       {isLoading && <Text style={{ color: 'white' }}>Processing...</Text>}
                       {/* {clientSecret && <Text style={{ color: 'green' }}>Payment ready! Client Secret: {clientSecret}</Text>} */}
                       {error && <Text style={{ color: 'red' }}>Error: {error}</Text>}

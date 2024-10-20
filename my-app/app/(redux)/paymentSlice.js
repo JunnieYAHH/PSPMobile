@@ -40,26 +40,28 @@ export const {
   setClientSecret,
 } = paymentSlice.actions;
 
-// Async action for creating a payment intent
-export const createPaymentIntent = createAsyncThunk(
-  "payment/createPaymentIntent",
-  async ({ amount, billingDetails }, { rejectWithValue }) => {
+// Async action for creating a subscription
+export const createSubscription = createAsyncThunk(
+  "payment/createSubscription",
+  async ({ userId }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${baseURL}/payments/intent`, {
-        amount,
-        billing_details: billingDetails, 
+      // console.log(userId)
+
+      const response = await axios.post(`${baseURL}/payments/create-subscription`, {
+        userId,
       });
-      const clientSecret = response.data.paymentIntent;
+      const clientSecret = response.data.clientSecret;
 
       // Store client secret in AsyncStorage
       await AsyncStorage.setItem("clientSecret", clientSecret);
       
-      return { paymentIntent: clientSecret };
+      return { clientSecret };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Error creating payment intent");
+      return rejectWithValue(error.response?.data?.message || "Error creating subscription");
     }
   }
 );
+
 
 // Async action to retrieve client secret from AsyncStorage
 export const loadClientSecret = () => async (dispatch) => {
