@@ -53,7 +53,7 @@ const ExerciseCardDisplay = ({ exercise, index }) => {
         </View>
         <View style={{ flex: 1, paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8, marginTop: 8 }}>
           <Text style={{ textAlign: 'left', color: '#FFAC1C', fontWeight: 'bold', fontFamily: 'Roboto', fontSize: 17 }}>
-            {exercise.name}
+            {exercise.name} 
           </Text>
           <Text style={{ color: 'white', marginTop: 5, marginLeft: 10 }}>
             {exercise.instructions}

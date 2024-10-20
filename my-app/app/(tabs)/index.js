@@ -1,23 +1,21 @@
-import { Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Constants from 'expo-constants';
-import { useSelector } from "react-redux";
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from "react-redux";
+import styles from '../components/styles/TabHomeStyles';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getAllExercise } from '../(services)/api/Exercises/getAllExercise';
 import ExerciseCardDisplay from '../components/Exercise/ExerciseCardDisplay';
-import { useNavigation } from '@react-navigation/native';
-import styles from '../components/styles/TabHomeStyles';
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
+import { createPaymentIntent, loadClientSecret } from '../(redux)/paymentSlice';
+import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
+import { Alert, Button, Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const TabHome = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState('Exercise');
   const scrollViewRef = useRef(null);
+  const [activeTab, setActiveTab] = useState('Exercise');
+  const { clientSecret, isLoading, error } = useSelector((state) => state.payment);
 
   //Tabs
   const tabs = [
@@ -79,6 +77,59 @@ const TabHome = () => {
       navigation.navigate(tab.screen);
     }
   };
+
+  //Payment Intent
+  useEffect(() => {
+    dispatch(loadClientSecret());
+  }, [dispatch]);
+  // console.log(user.user.name)
+
+  const handlePayment = async () => {
+    const total = 10000;
+    const amount = total * 100;
+
+    const billingDetails = {
+      name: user.user.name,
+      email: user.user.email,
+    };
+
+    try {
+      const response = await dispatch(createPaymentIntent({ amount, billingDetails })).unwrap();
+      console.log('Payment Intent created:', response);
+
+      const { error: paymentSheetError } = await initPaymentSheet({
+        merchantDisplayName: 'Philippines Sports Performance Fitness Gym',
+        paymentIntentClientSecret: response.paymentIntent,
+        defaultBillingDetails: billingDetails,
+      });
+
+      if (paymentSheetError) {
+        Alert.alert('Error', paymentSheetError.message);
+        console.error('Error initializing payment sheet:', paymentSheetError);
+        return;
+      }
+
+      // Present Payment Sheet
+      const { error: paymentError } = await presentPaymentSheet();
+
+      if (paymentError) {
+        // Check if the payment was canceled
+        if (paymentError.code === 'Canceled') {
+          return;
+        }
+
+        Alert.alert('Error', `Error code: ${paymentError.code}`, paymentError.message);
+        console.error('Error presenting payment sheet:', paymentError);
+      } else {
+        Alert.alert('Success', 'Payment completed successfully!');
+      }
+    } catch (err) {
+      Alert.alert('Error', err.message);
+      console.error('Error creating payment intent:', err);
+    }
+  };
+
+
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
@@ -250,6 +301,23 @@ const TabHome = () => {
                           resizeMode='cover'
                         />
                       </View>
+                    </View>
+                  )}
+
+                  {activeTab === 'Membership' && (
+                    <View style={styles.membershipContainer}>
+                      <Text style={{ color: 'white' }}>Hello</Text>
+                      {/* <Button style={{ color: 'white' }} title="Make Payment" onPress={handlePayment} disabled={isLoading} /> */}
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={handlePayment}
+                        disabled={isLoading}
+                      >
+                        <Text style={{ color: 'white' }}>Make Payment</Text>
+                      </TouchableOpacity>
+                      {isLoading && <Text style={{ color: 'white' }}>Processing...</Text>}
+                      {/* {clientSecret && <Text style={{ color: 'green' }}>Payment ready! Client Secret: {clientSecret}</Text>} */}
+                      {error && <Text style={{ color: 'red' }}>Error: {error}</Text>}
                     </View>
                   )}
 

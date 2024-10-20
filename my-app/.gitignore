@@ -5,6 +5,7 @@ node_modules/
 
 #BaseURL
 assets/common/baseUrl.js
+assets/common/stripePublishableKey.js
 
 # Expo
 .expo/

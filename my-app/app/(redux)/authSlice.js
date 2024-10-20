@@ -39,7 +39,7 @@ const authSlice = createSlice({
       state.loading = action.payload;
     },
     updateUserAction: (state, action) => {
-      // console.log("Updating user with:", action.payload); // Log the payload
+      // console.log("Updating user with:", action.payload);
       state.user = action.payload;
     },
   },
