@@ -5,19 +5,31 @@ import { useRouter } from 'expo-router';
 import * as Yup from 'yup';
 import * as ImagePicker from 'expo-image-picker';
 import { registerUser } from '../(services)/api/Users/registerUserAPI';
+import { FontAwesome } from "@expo/vector-icons";
 import Constants from 'expo-constants';
+import LoadingScreen from '../components/LodingScreen';
 
 // Schema
 const RegisterSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Email is Required"),
-  password: Yup.string().min(6, "Too Short!").required("Required"),
+  email: Yup.string()
+    .email("Invalid email")
+    .required("Email is Required"),
+  password: Yup.string()
+    .matches(/[A-Z]/, "Password must contain an uppercase letter")
+    .min(6, "Password must be at least 6 characters")
+    .matches(/[0-9]/, "Password must contain a number")
+    .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain a special character")
+    .required("Password is Required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("Required"),
+    .required("Confirm Password is Required"),
 });
 
 const Register = () => {
   const [image, setImage] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const pickImage = async () => {
@@ -35,122 +47,150 @@ const Register = () => {
 
   return (
     <>
-      <StatusBar translucent backgroundColor="transparent" />
-      <View style={styles.container}>
-        <ImageBackground
-          source={require('../../assets/letsStart.png')}
-          style={styles.backgroundImage}
-          imageStyle={{ opacity: 1.5 }}
-        >
-          <View style={styles.overlay}>
-            <Formik
-              initialValues={{ email: "", password: "", confirmPassword: "", phone: "", userBranch: "", name: "" }}
-              onSubmit={async (values) => {
-                try {
-                  const response = await registerUser({
-                    ...values,
-                    image,
-                  });
-                  Alert.alert(
-                    "Registered Successfully",
-                    "You have been registered.",
-                    [
-                      {
-                        text: "OK",
-                        onPress: () => {
-                          router.push('/auth/login');
-                        },
-                      },
-                    ]
-                  );
-                } catch (error) {
-                  console.error('Registration failed:', error.response?.data?.message || error.message);
-                  Alert.alert(
-                    "Registration Failed",
-                    error.response?.data?.message || "An error occurred during registration. Please try again.",
-                    [
-                      {
-                        text: "OK",
-                      },
-                    ]
-                  );
-                }
-              }}
-              validationSchema={RegisterSchema}
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <StatusBar translucent backgroundColor="transparent" />
+          <View style={styles.container}>
+            <ImageBackground
+              source={require('../../assets/letsStart.png')}
+              style={styles.backgroundImage}
+              imageStyle={{ opacity: 1.5 }}
             >
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                touched,
-              }) => (
-                <View style={styles.form}>
-                  <View style={styles.imageContainer}>
-                    <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-                      {image ? (
-                        <Image source={{ uri: image }} style={styles.roundImage} />
-                      ) : (
-                        <>
-                          <Text style={styles.placeholderText}>No File Upload</Text>
-                          <Text style={styles.placeholderBellowText}>Select Image</Text>
-                        </>
+              <View style={styles.overlay}>
+                <Formik
+                  initialValues={{ email: "", password: "", confirmPassword: "", phone: "", userBranch: "", name: "" }}
+                  onSubmit={async (values) => {
+                    setIsLoading(true);
+                    try {
+                      const response = await registerUser({
+                        ...values,
+                        image,
+                      });
+                      Alert.alert(
+                        "Registered Successfully",
+                        "You have been registered.",
+                        [
+                          {
+                            text: "OK",
+                            onPress: () => {
+                              setIsLoading(false);
+                              router.push('/auth/login');
+                            },
+                          },
+                        ]
+                      );
+                    } catch (error) {
+                      console.error('Registration failed:', error.response?.data?.message || error.message);
+                      setIsLoading(false);
+                      Alert.alert(
+                        "Registration Failed",
+                        error.response?.data?.message || "An error occurred during registration. Please try again.",
+                        [
+                          {
+                            text: "OK",
+                          },
+                        ]
+                      );
+                    }
+                  }}
+                  validationSchema={RegisterSchema}
+                >
+                  {({
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    values,
+                    errors,
+                    touched,
+                  }) => (
+                    <View style={styles.form}>
+                      <View style={styles.imageContainer}>
+                        <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+                          {image ? (
+                            <Image source={{ uri: image }} style={styles.roundImage} />
+                          ) : (
+                            <>
+                              <Text style={styles.placeholderText}>No File Upload</Text>
+                              <Text style={styles.placeholderBellowText}>Select Image</Text>
+                            </>
+                          )}
+                        </TouchableOpacity>
+                      </View>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Name"
+                        onChangeText={handleChange("name")}
+                        onBlur={handleBlur("name")}
+                        value={values.name}
+                      />
+                      {errors.name && touched.name && (
+                        <Text style={styles.errorText}>{errors.name}</Text>
                       )}
-                    </TouchableOpacity>
-                  </View>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Name"
-                    onChangeText={handleChange("name")}
-                    onBlur={handleBlur("name")}
-                    value={values.name}
-                  />
-                  {errors.name && touched.name && (
-                    <Text style={styles.errorText}>{errors.name}</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        onChangeText={handleChange("email")}
+                        onBlur={handleBlur("email")}
+                        value={values.email}
+                        keyboardType="email-address"
+                      />
+                      {errors.email && touched.email && (
+                        <Text style={styles.errorText}>{errors.email}</Text>
+                      )}
+                      <View style={styles.passwordContainer}>
+                        <TextInput
+                          style={styles.passwordInput}
+                          placeholder="Password"
+                          onChangeText={handleChange("password")}
+                          onBlur={handleBlur("password")}
+                          value={values.password}
+                          secureTextEntry={!showPassword}
+                        />
+                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                          <FontAwesome
+                            name={showPassword ? "eye-slash" : "eye"}
+                            size={19}
+                            color="grey"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      {errors.password && touched.password && (
+                        <Text style={styles.errorText}>{errors.password}</Text>
+                      )}
+
+                      <View style={styles.passwordContainer}>
+                        <TextInput
+                          style={styles.passwordInput}
+                          placeholder="Confirm Password"
+                          onChangeText={handleChange("confirmPassword")}
+                          onBlur={handleBlur("confirmPassword")}
+                          value={values.confirmPassword}
+                          secureTextEntry={!showConfirmPassword}
+                        />
+                        <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                          <FontAwesome
+                            name={showConfirmPassword ? "eye-slash" : "eye"}
+                            size={19}
+                            color="grey"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      {errors.confirmPassword && touched.confirmPassword && (
+                        <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                      )}
+                      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                        <Text style={styles.buttonText}>Register</Text>
+                      </TouchableOpacity>
+                    </View>
                   )}
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    onChangeText={handleChange("email")}
-                    onBlur={handleBlur("email")}
-                    value={values.email}
-                    keyboardType="email-address"
-                  />
-                  {errors.email && touched.email && (
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                  )}
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    onChangeText={handleChange("password")}
-                    onBlur={handleBlur("password")}
-                    value={values.password}
-                    secureTextEntry
-                  />
-                  {errors.password && touched.password && (
-                    <Text style={styles.errorText}>{errors.password}</Text>
-                  )}
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Confirm Password"
-                    onChangeText={handleChange("confirmPassword")}
-                    onBlur={handleBlur("confirmPassword")}
-                    value={values.confirmPassword}
-                    secureTextEntry
-                  />
-                  {errors.confirmPassword && touched.confirmPassword && (
-                    <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                  )}
-                  <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>Register</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </Formik>
+                </Formik>
+              </View>
+            </ImageBackground>
           </View>
-        </ImageBackground>
-      </View>
+        </>
+      )}
     </>
   );
 };
@@ -191,6 +231,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 16,
     backgroundColor: "#fff",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF",
+    borderRadius: 5,
+    marginVertical: 10,
+    paddingRight: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 10,
   },
   errorText: {
     color: "red",

@@ -1,23 +1,9 @@
 import { Tabs } from "expo-router";
 import { useSelector } from "react-redux";
 import { FontAwesome } from '@expo/vector-icons';
-import { useEffect } from "react";
-import { useRouter } from "expo-router";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function RootLayout() {
-  const { user } = useSelector((state) => state.auth);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!user) {
-      router.replace("/");
-    } else if (user.user.role === 'client') {
-      // console.log("Client index");
-      router.replace("/components/Client/(tabs)");
-    }
-  }, [user, router]);
-
   return (
     <Tabs>
       <Tabs.Screen name="index" options={{
@@ -25,9 +11,9 @@ export default function RootLayout() {
           <FontAwesome name='home' color={color} size={28} />
         )
       }} />
-      <Tabs.Screen name="programs" options={{
-        headerShown: false, title: 'Programs', tabBarIcon: ({ color }) => (
-          <Ionicons name="barbell" size={28} color="black" />)
+      <Tabs.Screen name="training" options={{
+        headerShown: false, title: 'Training', tabBarIcon: ({ color }) => (
+          <Ionicons name="barbell-sharp" size={24} color="black" />)
       }} />
       <Tabs.Screen name="profile" options={{
         headerShown: false, title: 'Profile', tabBarIcon: ({ color }) => (
