@@ -9,7 +9,9 @@ const userController = {
   //!Register
   register: asyncHandler(async (req, res) => {
     try {
-      const { email, password, name, role, phone, userBranch } = req.body;
+      const { email, password, name, role, phone } = req.body;
+
+      const userBranch = req.body.userBranch ? req.body.userBranch : null;
 
       // Validation
       if (!email || !password) {

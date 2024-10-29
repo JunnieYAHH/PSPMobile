@@ -51,10 +51,11 @@ export const { loginAction, logoutAction, setUser, setLoading, updateUserAction 
 export default authSlice.reducer;
 
 export const loadUser = () => async (dispatch) => {
+  dispatch(setLoading(true)); 
   const user = await loadUserFromStorage();
   if (user) {
     dispatch(setUser(user));
   } else {
-    dispatch(setLoading(false));
+    dispatch(setLoading(false)); 
   }
 };

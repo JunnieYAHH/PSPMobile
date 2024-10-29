@@ -11,18 +11,80 @@ const userSchema = new mongoose.Schema(
             required: [true, "email is required"],
             unique: true,
         },
+        userBranch: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "branch",
+        },
+        birthDate: {
+            type: Date,
+        },
         role: {
             type: String,
             required: [true, "role is required"],
             default: 'user',
             enum: ["admin", "client", "coach", 'user'],
         },
+        generalAccess: {
+            type: String,
+        },
+        otherAccess:{
+            type: String,
+        },
+        address: {
+            type: String,
+        },
+        city: {
+            type: String,
+        },
         phone: {
             type: String,
         },
-        userBranch: {
+        emergencyContanctName: {
             type: String,
         },
+        emergencyContanctNumber: {
+            type: String,
+        },
+        letterofAcceptance: {
+            type: Boolean,
+            default: false,
+        },
+        par_Q: [
+            {
+                date: {
+                    type: Date,
+                    default: Date.now,
+                },
+                question1: {
+                    type: Boolean,
+                    default: false,
+                },
+                question2: {
+                    type: Boolean,
+                    default: false,
+                },
+                question3: {
+                    type: Boolean,
+                    default: false,
+                },
+                question4: {
+                    type: Boolean,
+                    default: false,
+                },
+                question5: {
+                    type: Boolean,
+                    default: false,
+                },
+                question6: {
+                    type: Boolean,
+                    default: false,
+                },
+                question7: {
+                    type: Boolean,
+                    default: false,
+                },
+            }
+        ],
         password: {
             type: String,
         },
