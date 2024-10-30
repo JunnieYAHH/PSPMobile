@@ -83,11 +83,17 @@ const UserMemberShipPayment = () => {
                             <View style={styles.headerContainer}>
                                 <Text style={styles.headerText}>Please Fill in the form in Block Lettters</Text>
                                 <Formik
-                                    initialValues={{ userBranch: '', birthDate: date }}
-                                    validationSchema={validationSchema}
+                                    initialValues={{ userBranch: "", birthDate: date }}
                                     onSubmit={async (values) => {
-                                        console.log('Formik Values:', values);
-                                        // additional code...
+                                        // setIsLoading(true);
+                                        console.log("Formik Values", userBranch)
+                                        try {
+                                            const response = await MembershipPayment({
+                                                ...values,
+                                            });
+                                        } catch (error) {
+                                            console.error('Formik clickable failed:', error.response?.data?.message || error.message);
+                                        }
                                     }}
                                 >
                                     {({
@@ -97,6 +103,7 @@ const UserMemberShipPayment = () => {
                                         values,
                                         errors,
                                         touched,
+                                        setFieldValue,
                                     }) => (
                                         <View style={styles.form}>
                                             <Text style={styles.text}>Branch Application</Text>
@@ -105,6 +112,7 @@ const UserMemberShipPayment = () => {
                                                     style={styles.picker}
                                                     selectedValue={values.userBranch}
                                                     onValueChange={(itemValue) => {
+                                                        console.log("Selected Branch ID:", itemValue);
                                                         handleChange("userBranch")(itemValue);
                                                         handleBlur("userBranch");
                                                     }}
@@ -130,21 +138,20 @@ const UserMemberShipPayment = () => {
                                                     color: '#000',
                                                     marginTop: 20,
                                                 }}>
-                                                    {date ? date.toLocaleDateString() : "Select a date"}
+                                                    {values.birthDate ? values.birthDate.toLocaleDateString() : "Select a date"}
                                                 </Text>
                                             </TouchableOpacity>
 
                                             {show && (
                                                 <DateTimePicker
-                                                    value={date}
+                                                    value={values.birthDate || new Date()}
                                                     mode="date"
                                                     display="default"
                                                     onChange={(event, selectedDate) => {
                                                         if (event.type === 'set') {
-                                                            const currentDate = selectedDate || date;
+                                                            console.log("Selected Date:", selectedDate);
                                                             setShow(false);
-                                                            setDate(currentDate);
-                                                            setFieldValue("birthDate", currentDate); 
+                                                            setFieldValue("birthDate", selectedDate);
                                                         } else {
                                                             setShow(false);
                                                         }
