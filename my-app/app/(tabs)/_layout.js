@@ -9,16 +9,27 @@ export default function RootLayout() {
   const { user } = useSelector((state) => state.auth);
   const router = useRouter();
 
+  // console.log('This is user', user.user?.role)
+
   useEffect(() => {
     if (!user) {
       router.replace("/");
+      return;
     }
-    else if (user.user.role === 'user') {
-      router.replace("/(tabs)");
-    } else if (user.user.role === 'client') {
-      router.replace("/components/Client/(tabs)");
-    } else if (user.user.role === 'coach') {
-      router.replace("/components/Coach/(tabs)");
+
+    const role = user.user?.role || user.role;
+    switch (role) {
+      case 'user':
+        router.replace("/(tabs)");
+        break;
+      case 'client':
+        router.replace("/components/Client/(tabs)");
+        break;
+      case 'coach':
+        router.replace("/components/Coach/(tabs)");
+        break;
+      default:
+        break;
     }
   }, [user, router]);
 

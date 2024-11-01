@@ -89,65 +89,6 @@ const TabHome = () => {
     }
   };
 
-  //Payment Intent
-  // useEffect(() => {
-  //   dispatch(loadClientSecret());
-  // }, [dispatch]);
-  // // console.log(user.user.name)
-
-  // const handlePayment = async () => {
-  //   const billingDetails = {
-  //     name: user.user.name,
-  //     email: user.user.email,
-  //   };
-  //   // console.log(user.user._id)
-
-  //   try {
-
-  //     const response = await dispatch(
-  //       createSubscription({ userId: user.user._id })
-  //     ).unwrap();
-
-  //     // console.log('Subscription created:', response);
-
-  //     const { error: paymentSheetError } = await initPaymentSheet({
-  //       merchantDisplayName: 'Philippines Sports Performance Fitness Gym',
-  //       paymentIntentClientSecret: response.clientSecret,
-  //       defaultBillingDetails: billingDetails,
-  //     });
-
-  //     if (paymentSheetError) {
-  //       Alert.alert('Error', paymentSheetError.message);
-  //       console.error('Error initializing payment sheet:', paymentSheetError);
-  //       return;
-  //     }
-
-  //     // Present Payment Sheet
-  //     const { error: paymentError } = await presentPaymentSheet();
-
-  //     if (paymentError) {
-  //       if (paymentError.code === 'Canceled') {
-  //         return;
-  //       }
-
-  //       Alert.alert('Error', `Error code: ${paymentError.code}`, paymentError.message);
-  //       console.error('Error presenting payment sheet:', paymentError);
-
-  //     } else {
-  //       Alert.alert('Success', 'Subscription completed successfully!');
-  //     }
-
-  //     if (!paymentError) {
-  //       router.replace("/components/Client/(tabs)");
-  //     } else {
-  //       console.log("Payment error:", paymentError);
-  //     }
-  //   } catch (err) {
-  //     Alert.alert('Error', err.message);
-  //     console.error('Error creating subscription:', err);
-  //   }
-  // };
-
   return (
     <>
       {screenLoading ? (
@@ -342,16 +283,6 @@ const TabHome = () => {
                               resizeMode="contain"
                             />
                           </View>
-                          {/* <TouchableOpacity
-                            style={styles.button}
-                            onPress={handlePayment}
-                            disabled={isLoading}
-                          >
-                            <Text style={{ color: 'white' }}>Subscribe</Text>
-                          </TouchableOpacity>
-
-                          {isLoading && <Text style={{ color: 'white' }}>Processing...</Text>}
-                          {error && <Text style={{ color: 'red' }}>Error: {error}</Text>} */}
                           <TouchableOpacity
                             style={styles.button}
                             onPress={() => navigation.navigate('components/User/UserMemberShipPayment', { user })}

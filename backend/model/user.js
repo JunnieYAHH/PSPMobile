@@ -20,15 +20,8 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            required: [true, "role is required"],
             default: 'user',
             enum: ["admin", "client", "coach", 'user'],
-        },
-        generalAccess: {
-            type: String,
-        },
-        otherAccess:{
-            type: String,
         },
         address: {
             type: String,
@@ -39,10 +32,16 @@ const userSchema = new mongoose.Schema(
         phone: {
             type: String,
         },
-        emergencyContanctName: {
+        generalAccess: {
             type: String,
         },
-        emergencyContanctNumber: {
+        otherAccess:{
+            type: String,
+        },
+        emergencyContactName: {
+            type: String,
+        },
+        emergencyContactNumber: {
             type: String,
         },
         letterofAcceptance: {

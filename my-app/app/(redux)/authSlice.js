@@ -25,6 +25,7 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.loading = false;
       AsyncStorage.setItem("userInfo", JSON.stringify(action.payload));
+      // console.log('LoginAction',action.payload)
     },
     logoutAction: (state) => {
       state.user = null;

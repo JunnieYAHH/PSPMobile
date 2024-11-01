@@ -22,6 +22,7 @@ const EditUserProfile = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { user } = route.params;
+    console.log('Edit User Profile',user)
 
     const [image, setImage] = useState(
         user.user && user.user.image && user.user.image[0] ? user.user.image[0].url :
@@ -64,12 +65,14 @@ const EditUserProfile = () => {
                         <Formik
                             initialValues={{
                                 _id: user.user ? user.user._id : user._id,
-                                name: user.user ? user.user.name || '' : user.name || '', 
+                                name: user.user ? user.user.name || '' : user.name || '',
                                 email: user.user ? user.user.email || '' : user.email || '',
+                                role: user.user?.role || user.role,
                             }}
                             validationSchema={UpdateUserSchema}
                             onSubmit={async (values) => {
                                 try {
+                                    console.log(values)
                                     const response = await updateUser({
                                         ...values,
                                         image,

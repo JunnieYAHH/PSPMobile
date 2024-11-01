@@ -60,7 +60,9 @@ const Register = () => {
             >
               <View style={styles.overlay}>
                 <Formik
-                  initialValues={{ email: "", password: "", confirmPassword: "", phone: "", userBranch: "", name: "" }}
+                  initialValues={{ email: "", password: "", confirmPassword: "", phone: "", userBranch: "", 
+                    name: "", birthDate: "", generalAccess: "", otherAccess: "", address: "", city: "", 
+                    emergencyContanctName: "", emergencyContanctNumber: "" }}
                   onSubmit={async (values) => {
                     setIsLoading(true);
                     try {

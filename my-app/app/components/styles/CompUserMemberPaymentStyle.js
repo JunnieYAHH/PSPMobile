@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
         marginTop: 30,
         // backgroundColor: 'white',
         borderRadius: 30,
-        height: 500
     },
     headerText: {
         fontSize: 12,
@@ -30,30 +29,49 @@ const styles = StyleSheet.create({
     form: {
         width: "100%",
         borderRadius: 10,
-        padding: 20,
+        // padding: 20,
     },
     pickerContainer: {
-        borderRadius: 10, // Add border radius here
-        overflow: 'hidden', // Ensures the rounded corners are applied
+        borderRadius: 10,
+        overflow: 'hidden',
         borderColor: '#ccc',
+        height: 40
     },
     picker: {
-        height: 30,
+        height: 40,
         width: "70%",
         borderColor: "#ccc",
         borderWidth: 1,
         borderRadius: 20,
         paddingHorizontal: 16,
-        marginBottom: 16,
         backgroundColor: "#fff",
+    },
+    pickerItem: {
+        fontSize: 16,
     },
     text: {
         color: 'white',
-        marginBottom: 5
+        marginBottom: 5,
+        marginTop: 15,
     },
     errorText: {
         color: "red",
         marginBottom: 16,
+    },
+    input: {
+        height: 20,
+        width: '75%',
+        borderColor: "#ccc",
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        backgroundColor: "#fff",
+    },
+    promo: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        marginBottom: 10, 
+        marginTop: 15
     },
     button: {
         height: 50,
@@ -62,6 +80,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderRadius: 8,
         marginTop: 16,
+        marginBottom: 40
     },
     buttonText: {
         color: "#fff",

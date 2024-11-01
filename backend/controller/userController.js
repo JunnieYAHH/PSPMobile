@@ -9,7 +9,9 @@ const userController = {
   //!Register
   register: asyncHandler(async (req, res) => {
     try {
-      const { email, password, name, role, phone } = req.body;
+      const { email, password, name, birthDate,
+        address, city, role, phone, generalAccess,
+        otherAccess, emergencyContanctName, emergencyContanctNumber } = req.body;
 
       const userBranch = req.body.userBranch ? req.body.userBranch : null;
 
@@ -50,9 +52,16 @@ const userController = {
       let user = new User({
         name,
         email,
-        role,
-        phone,
         userBranch,
+        birthDate,
+        role,
+        address,
+        city,
+        phone,
+        generalAccess,
+        otherAccess,
+        emergencyContanctName,
+        emergencyContanctNumber,
         password: hashedPassword,
         image: { public_id: result.public_id, url: result.secure_url },
         stripeCustomerId: stripeCustomer.id,  // Save the Stripe customer ID
@@ -122,7 +131,7 @@ const userController = {
   //!UpdateUser
   updateUser: asyncHandler(async (req, res) => {
     try {
-      const { _id, name, email } = req.body
+      const { _id, name, email, role } = req.body
       let user = await User.findById({ "_id": _id });
 
       const imageUrl = req.file.path;
@@ -137,6 +146,7 @@ const userController = {
 
       user.name = name;
       user.email = email;
+      user.role = role;
       user.image = { public_id: result.public_id, url: result.secure_url };
 
       console.log(user)
@@ -166,9 +176,9 @@ const userController = {
       const { currentPassword, newPassword } = req.body;
 
       const user = await User.findById(req.user.id);
-      console.log('The Body:', req.body)
+      // console.log('The Body:', req.body)
       // console.log('The newPassword',newPassword)
-      console.log('The User ID:', user)
+      // console.log('The User ID:', user)
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -196,6 +206,30 @@ const userController = {
       return res.status(500).json({
         success: false,
         message: 'Password Reset Server Error'
+      });
+    }
+  }),
+  getUser: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error fetching user data",
+        error: error.message,
       });
     }
   }),

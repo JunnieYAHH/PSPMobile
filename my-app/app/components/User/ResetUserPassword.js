@@ -15,11 +15,17 @@ const ResetUserPassword = () => {
     // Yup validation schema
     const validationSchema = Yup.object().shape({
         currentPassword: Yup.string()
-            .min(6, 'Password should be at least 6 characters')
-            .required('Current password is required'),
+            .matches(/[A-Z]/, "Password must contain an uppercase letter")
+            .min(6, "Password must be at least 6 characters")
+            .matches(/[0-9]/, "Password must contain a number")
+            .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain a special character")
+            .required("Password is Required"),
         newPassword: Yup.string()
-            .min(6, 'Password should be at least 6 characters')
-            .required('New password is required'),
+            .matches(/[A-Z]/, "Password must contain an uppercase letter")
+            .min(6, "Password must be at least 6 characters")
+            .matches(/[0-9]/, "Password must contain a number")
+            .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain a special character")
+            .required("Password is Required"),
         confirmPassword: Yup.string()
             .oneOf([Yup.ref('newPassword'), null], 'Passwords must match')
             .required('Confirm your new password'),

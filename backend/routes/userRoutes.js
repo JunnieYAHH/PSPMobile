@@ -10,5 +10,6 @@ router.post('/register', upload.single('image'), userController.register);
 router.post("/login", userController.login);
 router.put('/update', upload.single('image'), userController.updateUser);
 router.put('/update-password', isAuthenticatedUser, userController.updateUserPassword);
+router.get('/get-user/:id', userController.getUser);
 
 module.exports = router;

@@ -43,19 +43,20 @@ export const {
 // Async action for creating a subscription
 export const createSubscription = createAsyncThunk(
   "payment/createSubscription",
-  async ({ userId }, { rejectWithValue }) => {
+  async ({ userId, promo }, { rejectWithValue }) => {
     try {
       // console.log(userId)
 
-      const response = await axios.post(`${baseURL}/payments/create-subscription`, {
-        userId,
+      const response = await axios.post(`${baseURL}/payments/create-stripe-subscription-transaction`, {
+        userId, promo
       });
       const clientSecret = response.data.clientSecret;
-
+      const stripeSubscriptionId = response.data.stripeSubscriptionId;
+      // console.log(stripeSubscriptionId)
       // Store client secret in AsyncStorage
       await AsyncStorage.setItem("clientSecret", clientSecret);
-      
-      return { clientSecret };
+
+      return { clientSecret, stripeSubscriptionId };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Error creating subscription");
     }

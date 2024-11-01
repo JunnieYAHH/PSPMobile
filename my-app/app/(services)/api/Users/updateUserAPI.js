@@ -1,12 +1,13 @@
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl'
 
-const updateUser = async ({ _id, email, name, image }) => {
+const updateUser = async ({ _id, email, name, role, image }) => {
     try {
         const formData = new FormData();
         formData.append('_id', _id);
         formData.append('email', email);
         formData.append('name', name);
+        formData.append('role', role);
 
         // console.log("This is form data", formData)
         if (image) {
@@ -17,8 +18,8 @@ const updateUser = async ({ _id, email, name, image }) => {
                 name: fileName,
             });
         }
-
-        const response = await axios.put(`${baseURL}/users/update`,formData,
+        console.log('This form data', formData)
+        const response = await axios.put(`${baseURL}/users/update`, formData,
             {
                 headers: {
                     'Content-Type': 'multipart/form-data',
