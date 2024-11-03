@@ -64,7 +64,7 @@ const userController = {
         emergencyContanctNumber,
         password: hashedPassword,
         image: { public_id: result.public_id, url: result.secure_url },
-        stripeCustomerId: stripeCustomer.id,  // Save the Stripe customer ID
+        stripeCustomerId: stripeCustomer.id,
       });
 
       // Save user to the database
@@ -99,8 +99,26 @@ const userController = {
       if (!isPasswordValid) {
         return res.status(401).json({ message: 'Invalid Password' });
       }
+      if (user.role === 'client') {
+        const currentDate = new Date();
+        if (user.subscriptionExpiration && user.subscriptionExpiration < currentDate) {
+          user.role = 'user';
+          user.userBranch = null;
+          user.birthDate = null;
+          user.address = '';
+          user.city = '';
+          user.phone = '';
+          user.generalAccess = '';
+          user.otherAccess = '';
+          user.subscriptionExpiration = null;
+          user.subscribedDate = null;
+          user.emergencyContactName = '';
+          user.emergencyContactNumber = '';
+          await user.save();
+        }
+      }
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
       res.status(200).json({ token, user });
     } catch (error) {
       console.error("Login Error:", error);

@@ -32,10 +32,18 @@ const userSchema = new mongoose.Schema(
         phone: {
             type: String,
         },
+        subscribedDate: {
+            type: Date,
+            default: null,
+        },
+        subscriptionExpiration: {
+            type: Date,
+            default: null,
+        },
         generalAccess: {
             type: String,
         },
-        otherAccess:{
+        otherAccess: {
             type: String,
         },
         emergencyContactName: {

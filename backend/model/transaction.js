@@ -50,6 +50,18 @@ const transactionSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
+    amount: {
+        type: Number,
+        required: true
+    },
+    subscribedDate: {
+        type: Date,
+        default: null,
+    },
+    subscriptionExpiration: {
+        type: Date,
+        default: null,
+    },
     stripeSubscriptionId: {
         type: String,
         required: true,

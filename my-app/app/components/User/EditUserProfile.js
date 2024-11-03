@@ -22,7 +22,7 @@ const EditUserProfile = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { user } = route.params;
-    console.log('Edit User Profile',user)
+    // console.log('Edit User Profile',user)
 
     const [image, setImage] = useState(
         user.user && user.user.image && user.user.image[0] ? user.user.image[0].url :

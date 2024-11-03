@@ -8,27 +8,6 @@ export default function RootLayout() {
   const { user } = useSelector((state) => state.auth);
   const router = useRouter();
   
-  useEffect(() => {
-    if (!user) {
-      router.replace("/");
-      return;
-    }
-
-    const role = user.user?.role || user.role;
-    switch (role) {
-      case 'user':
-        router.replace("/(tabs)");
-        break;
-      case 'client':
-        router.replace("/components/Client/(tabs)");
-        break;
-      case 'coach':
-        router.replace("/components/Coach/(tabs)");
-        break;
-      default:
-        break;
-    }
-  }, [user, router]);
   return (
     <Tabs>
       <Tabs.Screen name="index" options={{
