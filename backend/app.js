@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const connectDB = require('./config/dbConfig');
 const userRoutes = require('./routes/userRoutes');
+const clientRoutes = require('./routes/clientRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const branchRoutes = require('./routes/branchRoutes')
@@ -24,6 +25,7 @@ connectDB();
 
 // Routes
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/clients', clientRoutes);
 app.use('/api/v1/branch', branchRoutes);
 app.use('/api/v1/exercises', exerciseRoutes);
 app.use('/api/v1/payments', paymentRoutes);

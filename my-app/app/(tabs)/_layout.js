@@ -18,12 +18,18 @@ export default function RootLayout() {
     }
 
     const role = user.user?.role || user.role;
+    const par_Q = user.user?.par_Q || []; 
+
     switch (role) {
       case 'user':
         router.replace("/(tabs)");
         break;
       case 'client':
-        router.replace("/components/Client/(tabs)");
+        if (par_Q.length === 0) {
+          router.replace("/components/Client/Form");
+        } else {
+          router.replace("/components/Client/(tabs)");
+        }
         break;
       case 'coach':
         router.replace("/components/Coach/(tabs)");
@@ -32,6 +38,7 @@ export default function RootLayout() {
         break;
     }
   }, [user, router]);
+
 
   return (
     <Tabs>
