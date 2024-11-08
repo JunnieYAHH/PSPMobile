@@ -34,6 +34,9 @@ export default function RootLayout() {
       case 'coach':
         router.replace("/components/Coach/(tabs)");
         break;
+      case 'admin':
+        router.replace("/components/Admin/(tabs)");
+        break;
       default:
         break;
     }

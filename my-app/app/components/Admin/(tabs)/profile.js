@@ -7,7 +7,7 @@ import { logoutAction } from '../../../(redux)/authSlice';
 import ProtectedRoute from '../../ProtectedRoute';
 import styles from '../../styles/Client/ClientProfileStyles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import QRCode from 'react-native-qrcode-svg';
+
 import {
     BottomSheetModal,
     BottomSheetView,
@@ -113,7 +113,7 @@ const Profile = () => {
                                         <Icon name="info-circle" size={24} color="#3f51b5" />
                                         <Text style={styles.optionText}
                                             onPress={handlePresentModalPress}
-                                        >My_QR</Text>
+                                        >About</Text>
                                         <Icon
                                             name="angle-right"
                                             size={24}
@@ -138,12 +138,10 @@ const Profile = () => {
                                         ref={bottomSheetModalRef}
                                         index={1}
                                         snapPoints={snapPoints}
+                                    // onChange={handleSheetChanges}
                                     >
                                         <BottomSheetView>
-                                            <View style={{ alignItems: 'center', marginTop: 40, flex: 1 }}>
-                                                <Text>Your QR Code</Text>
-                                                <QRCode value={user.user?._id || user._id} size={150} />
-                                            </View>
+                                            <Text>Awesome 🎉</Text>
                                         </BottomSheetView>
                                     </BottomSheetModal>
                                 </View>

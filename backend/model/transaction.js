@@ -4,7 +4,7 @@ const transactionSchema = new mongoose.Schema({
     transactionType: {
         type: String,
         required: [true, "Transaction Type is required"],
-        enum: ["Membership Subscription", "Training Subscription"],
+        enum: ["Membership Subscription", "Personal Training Subscription"],
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
