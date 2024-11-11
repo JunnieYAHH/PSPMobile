@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { cloudinary, secretKey } = require('../config/cloudinaryConfig')
 const asyncHandler = require("express-async-handler");
 const User = require("../model/user");
+const Log = require('../model/logs');
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const userController = {
@@ -249,6 +250,33 @@ const userController = {
         message: "Error fetching user data",
         error: error.message,
       });
+    }
+  }),
+  userLog: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const today = new Date().setHours(0, 0, 0, 0);
+
+      let activeLog = await Log.findOne({ userId: id, date: today, timeOut: null });
+      let user = await User.findById(id)
+
+      if (activeLog) {
+        activeLog.timeOut = new Date();
+        await activeLog.save();
+        return res.status(200).json({ message: "Timed out successfully", log: activeLog, user });
+      }
+
+      const newLog = await Log.create({
+        userId: id,
+        timeIn: new Date(),
+        date: today
+      });
+
+      res.status(201).json({ message: "Timed In Complete.", log: newLog, user });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "An error occurred while logging the user", error: error.message });
     }
   }),
 };
