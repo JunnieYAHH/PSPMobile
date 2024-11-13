@@ -36,7 +36,7 @@ export default function Scanner() {
   
       try {
         const response = await userLog(userId);
-        console.log(response.message)
+        // console.log(response.message)
         const { user } = response;
 
         setUserInfo({
@@ -78,7 +78,6 @@ export default function Scanner() {
               <Image source={{ uri: userInfo.imageUrl }} style={styles.userImage} />
             )}
             <Text style={styles.userName}>{userInfo?.name}</Text>
-            <Text style={styles.userId}>ID: {userInfo?.id}</Text>
             <Text style={styles.userMessage}>{message}</Text>  
             <TouchableOpacity
               style={styles.button}

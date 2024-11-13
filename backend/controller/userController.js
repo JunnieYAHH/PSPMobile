@@ -279,5 +279,26 @@ const userController = {
       res.status(500).json({ message: "An error occurred while logging the user", error: error.message });
     }
   }),
+  getTimeInLogs: async (req, res) => {
+    try {
+      const today = new Date().setHours(0, 0, 0, 0);
+      let activeLogs = await Log.findOne({ date: today, timeOut: null });
+
+      // console.log(activeLogs)
+      res.status(201).json({ message: "Logs fetch successfully", activeLogs });
+    } catch (error) {
+      console.error("Fetch All Logs Error:", error.message);
+      res.status(500).json({ message: "Create Logs Error" });
+    }
+  },
+  getAllUsers: async (req, res) => {
+    try {
+      const users = await User.find()
+      res.status(201).json({ message: "Users fetch successfully", users });
+    } catch (error) {
+      console.error("Fetch All Users Error:", error.message);
+      res.status(500).json({ message: "Create Users Error" });
+    }
+  },
 };
 module.exports = userController;
