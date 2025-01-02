@@ -13,13 +13,19 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.junnieyahh.frontend"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.junnieyahh.frontend"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,6 +38,14 @@
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "691186a6-0a88-420e-ae41-f9f06cc8bf41"
+      }
+    }
   }
 }

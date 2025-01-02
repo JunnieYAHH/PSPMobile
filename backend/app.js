@@ -23,6 +23,10 @@ app.use(bodyParser.json());
 // Connect to MongoDB
 connectDB();
 
+// Root route
+app.get('/', (req, res) => {
+    res.send('Welcome to the API! Access routes like /api/v1/users');
+});
 
 // Routes
 app.use('/api/v1/users', userRoutes);

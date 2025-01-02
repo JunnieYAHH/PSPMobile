@@ -67,7 +67,7 @@ export default function Scanner() {
             )}
             <Text style={styles.userName}>{userInfo?.name}</Text>
             <Text style={styles.userId}>ID: {userInfo?.id}</Text>
-            <Text style={styles.userMessage}>{message}</Text>
+            <Text style={styles.userMessage}>{message}</Text>  
             <TouchableOpacity
               style={styles.button}
               onPress={() => {

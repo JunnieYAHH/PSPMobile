@@ -205,7 +205,7 @@ const UserMemberShipPayment = () => {
                                                                 text: "OK",
                                                                 onPress: () => {
                                                                     setIsLoading(false);
-                                                                    router.replace("/components/Client/Form");
+                                                                    router.replace("/components/Client/Form/index");
                                                                 },
                                                             },
                                                         ]
