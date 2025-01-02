@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "PSP Mobile",
+    "slug": "test-app",
     "scheme": "your-app-scheme",
     "version": "1.0.0",
     "orientation": "portrait",
