@@ -2,7 +2,7 @@
 
 # dependencies
 node_modules/
-
+/assets/common/baseUrl.js
 # Expo
 .expo/
 dist/

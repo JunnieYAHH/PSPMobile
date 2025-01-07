@@ -3,3 +3,5 @@ node_modules/
 
 # Ignore configuration files
 config/config.env
+config/cloudinaryConfig.js
+config/dbConfig.js

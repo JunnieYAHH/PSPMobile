@@ -98,18 +98,6 @@ export default function Profile() {
                     />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.option}
-                    onPress={() => navigation.navigate('components/User/AvailTrainer', { user })}
-                  >
-                    <Icon name="lock" size={24} color="#f44336" />
-                    <Text style={styles.optionText}>Avail Trainer</Text>
-                    <Icon
-                      name="angle-right"
-                      size={24}
-                      color="#999"
-                      style={styles.optionIcon}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.option}
                     onPress={() => navigation.navigate('components/User/ResetUserPassword', { user })}
                   >
                     <Icon name="lock" size={24} color="#f44336" />
