@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, CameraType } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraType } from 'expo-camera/build/legacy/Camera.types';
 import { StyleSheet, Text, TouchableOpacity, View, Alert, Modal, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { userLog } from '../../../(services)/api/Users/userLog';
 
 export default function Scanner() {
   const [facing, setFacing] = useState(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [permission, requestPermission] = useCameraPermissions(false);
   const [scanning, setScanning] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
@@ -14,8 +15,14 @@ export default function Scanner() {
   const router = useRouter();
 
   useEffect(() => {
-    if (permission?.granted === false) requestPermission();
+    if (permission === null) return;
+    if (!permission.granted) requestPermission();
   }, [permission, requestPermission]);
+
+  useEffect(() => {
+    setScanning(true);  
+    return () => setScanning(false); 
+  }, []);
 
   const toggleCameraFacing = () => {
     setFacing((current) => (current === CameraType.back ? CameraType.front : CameraType.back));
@@ -24,9 +31,12 @@ export default function Scanner() {
   const handleBarcodeScanned = async (scannedData) => {
     if (scanning) {
       setScanning(false);
-      const userId = scannedData.data;
+  
+      const userId = scannedData.data;  
+  
       try {
         const response = await userLog(userId);
+        // console.log(response.message)
         const { user } = response;
 
         setUserInfo({
@@ -34,8 +44,9 @@ export default function Scanner() {
           name: user.name,
           imageUrl: user.image[0]?.url,
         });
-        setMessage(response.message);
+        setMessage(response.message)
         setModalVisible(true);
+
       } catch (error) {
         console.error("Error logging user:", error);
         Alert.alert("Error", "An error occurred while logging the user.");
@@ -45,13 +56,14 @@ export default function Scanner() {
 
   return (
     <View style={styles.container}>
-      <Camera
+      <CameraView
         style={styles.camera}
-        type={facing}
-        onBarCodeScanned={scanning ? handleBarcodeScanned : undefined}
-        barCodeScannerSettings={{
-          barCodeTypes: [Camera.Constants.BarCodeType.qr, Camera.Constants.BarCodeType.code128],
+        facing={facing}
+        mode="picture"
+        barcodeScannerSettings={{
+          barCodeTypes: ["qr", "code128"],
         }}
+        onBarcodeScanned={handleBarcodeScanned}
       />
 
       <Modal
@@ -66,7 +78,6 @@ export default function Scanner() {
               <Image source={{ uri: userInfo.imageUrl }} style={styles.userImage} />
             )}
             <Text style={styles.userName}>{userInfo?.name}</Text>
-            <Text style={styles.userId}>ID: {userInfo?.id}</Text>
             <Text style={styles.userMessage}>{message}</Text>  
             <TouchableOpacity
               style={styles.button}
@@ -78,11 +89,18 @@ export default function Scanner() {
                   [
                     {
                       text: "Yes",
-                      onPress: () => setScanning(true),
+                      onPress: () => {
+                        setScanning(true);
+                        setTimeout(() => {
+                          setScanning(true);
+                        }, 2000);
+                      },
                     },
                     {
                       text: "No",
-                      onPress: () => router.push("/components/Admin/(tabs)"),
+                      onPress: () => {
+                        router.push("/components/Admin/(tabs)");
+                      },
                     },
                   ]
                 );
