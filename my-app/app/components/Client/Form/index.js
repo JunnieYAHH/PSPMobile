@@ -16,9 +16,6 @@ const QuestionnaireForm = () => {
     const router = useRouter();
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
-
-    // console.log(user)
-
     useEffect(() => {
         // console.log("Updated User in Redux Store:", updatedUser);
     }, [user]);
@@ -54,7 +51,8 @@ const QuestionnaireForm = () => {
                             try {
                                 const response = await submitParQ({
                                     ...values,
-                                    userId: user.user?._id || user._id
+                                    userId: user.user._id
+
                                 });
                                 if (response && response.user) {
                                     dispatch(updateUserAction(response.user)); 

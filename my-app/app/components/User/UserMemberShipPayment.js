@@ -176,7 +176,7 @@ const UserMemberShipPayment = () => {
                                             onSubmit={async (values) => {
                                                 try {
                                                     const response = await dispatch(
-                                                        createSubscription({ userId: user.user._id, promo: values.promo })
+                                                        createSubscription({ userId: user.user._id || user._id, promo: values.promo })
                                                     ).unwrap();
 
                                                     setStripeSubscriptionId(response.stripeSubscriptionId);
@@ -192,7 +192,7 @@ const UserMemberShipPayment = () => {
                                                     setIsLoading(true);
                                                     const paymentResponse = await MembershipPayment({
                                                         ...values,
-                                                        userId: user.user._id,
+                                                        userId: user.user._id || user._id,
                                                         stripeSubscriptionId: response.stripeSubscriptionId,
                                                     });
 
@@ -205,7 +205,7 @@ const UserMemberShipPayment = () => {
                                                                 text: "OK",
                                                                 onPress: () => {
                                                                     setIsLoading(false);
-                                                                    router.replace("/components/Client/Form/index");
+                                                                    router.replace("/components/Client/Form");
                                                                 },
                                                             },
                                                         ]

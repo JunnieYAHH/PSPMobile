@@ -19,22 +19,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import baseUrl from '../../../../assets/common/baseUrl';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const Training = () => {
     const navigation = useNavigation();
-
     const [showBirthDate, setShowBirthDate] = useState(false);
     const [showEndDate, setShowEndDate] = useState(false);
+    const { user } = useSelector((state) => state.auth);
 
     // State for package selection
     const [selectedPackage, setSelectedPackage] = useState('');
     const [selectedPayment, setSelectedPayment] = useState('');
     const [selectedBilling, setSelectedBilling] = useState('');
-    const [name, setName] = useState('');
+    const [name, setName] = useState(user?.user?.name || user?.name || '');
     const [birthdate, setBirthdate] = useState('');
-    const [address, setAddress] = useState('');
-    const [number, setNumber] = useState('');
-    const [email, setEmail] = useState('');
+    const [address, setAddress] = useState(user?.user?.address || user?.address || '');
+    const [phone, setPhone] = useState(user?.user?.phone || user?.phone || '');
+    const [email, setEmail] = useState(user?.user?.email || user?.email || '');
     const [homePhone, setHomePhone] = useState('');
     const [workPhone, setWorkPhone] = useState('');
     const [sessions, setSessions] = useState('');
@@ -42,10 +43,11 @@ const Training = () => {
     const [endDate, setEndDate] = useState('');
     const submit = async () => {
         const data = {
+            userId: user?.user?._id || user?._id,
             name: name,
             birthdate: birthdate,
             address: address,
-            number: number,
+            phone: phone,
             email: email,
             homePhone: homePhone,
             workPhone: workPhone,
@@ -102,12 +104,13 @@ const Training = () => {
                         blurRadius={2}
                         resizeMode="cover"
                     >
+
                         <View style={styles.overlay}>
                             {/* Form Fields */}
                             <Text style={styles.text}>Name</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter your Name"
+                                placeholder={user?.user?.name || user?.name || 'Enter your name'}
                                 onChangeText={(value) => setName(value)}
                                 value={name}
                             />
@@ -142,21 +145,21 @@ const Training = () => {
                             <Text style={styles.text}>Address</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter your Address"
+                                placeholder={user?.user?.address || user?.address || 'Please enter your address'}
                                 onChangeText={(value) => setAddress(value)}
                                 value={address}
                             />
                             <Text style={styles.text}>Cellphone Number</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter Number #"
-                                onChangeText={(value) => setNumber(value)}
-                                value={number}
+                                placeholder={user?.user?.phone || user?.phone || "Enter Cellphone Num.."}
+                                onChangeText={(value) => setPhone(value)}
+                                value={phone}
                             />
                             <Text style={styles.text}>Email</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter your Email"
+                                placeholder={user?.user?.email || user?.email || "Enter your Email"}
                                 onChangeText={(value) => setEmail(value)}
                                 value={email}
                             />
@@ -222,12 +225,7 @@ const Training = () => {
                             <Text style={[styles.text,]}>Total</Text>
                             <TextInput
                                 style={styles.input}
-                                // placeholder={(sessions) * (sessionRate)}
-                                // readOnly={true}
                                 value={(sessions) * (sessionRate)}
-                            // onChangeText={handleChange('name')}
-                            // onBlur={handleBlur('name')}
-                            // value={values.name}
                             />
                             <Text style={styles.text}>Final Session Date</Text>
                             <TouchableOpacity
@@ -325,6 +323,7 @@ const Training = () => {
                                 </Text>
                             </TouchableOpacity>
                         </View>
+
                     </ImageBackground>
                 </ScrollView>
             </SafeAreaView>

@@ -1,54 +1,72 @@
 const mongoose = require('mongoose');
 
 const availTrainerSchema = new mongoose.Schema({
-    name: { 
-        type: String, 
-        required: true 
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
     },
-    birthdate: { 
-        type: Date, 
-        required: true 
+    name: {
+        type: String,
+        required: true
     },
-    address: { 
-        type: String, 
-        required: true 
+    birthdate: {
+        type: Date,
+        required: true
     },
-    number: { 
-        type: String, 
-        required: true 
+    address: {
+        type: String,
+        required: true
     },
-    email: { 
-        type: String, 
-        required: true, 
+    phone: {
+        type: String,
+        required: true
     },
-    homePhone: { 
-        type: String 
+    email: {
+        type: String,
+        required: true,
     },
-    workPhone: { 
-        type: String 
+    homePhone: {
+        type: String
     },
-    sessions: { 
-        type: Number, 
-        default: 0 
+    workPhone: {
+        type: String
     },
-    sessionRate: { 
-        type: Number, 
-        required: true 
+    sessions: {
+        type: Number,
+        default: 0
     },
-    endDate: { 
-        type: Date 
+    sessionRate: {
+        type: Number,
+        required: true
     },
-    package: { 
-        type: String, 
-        required: true 
+    coachID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: function () {
+            return this.status === 'active';
+        },
+        default: null,
     },
-    payment: { 
-        type: String, 
-        required: true 
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'inactive',
     },
-    billing: { 
-        type: String, 
-        required: true 
+    endDate: {
+        type: Date
+    },
+    package: {
+        type: String,
+        required: true
+    },
+    payment: {
+        type: String,
+        required: true
+    },
+    billing: {
+        type: String,
+        required: true
     }
 }, {
     timestamps: true // Adds createdAt and updatedAt fields
