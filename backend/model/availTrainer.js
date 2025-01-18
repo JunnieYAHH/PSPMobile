@@ -40,6 +40,10 @@ const availTrainerSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    total: {
+        type: Number,
+        required: true
+    },
     coachID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -60,14 +64,6 @@ const availTrainerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    payment: {
-        type: String,
-        required: true
-    },
-    billing: {
-        type: String,
-        required: true
-    }
 }, {
     timestamps: true // Adds createdAt and updatedAt fields
 });

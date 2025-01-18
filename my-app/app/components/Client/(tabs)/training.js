@@ -20,6 +20,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import baseUrl from '../../../../assets/common/baseUrl';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
+import baseURL from '../../../../assets/common/baseUrl';
 
 const Training = () => {
     const navigation = useNavigation();
@@ -42,6 +44,7 @@ const Training = () => {
     const [sessionRate, setSessionRate] = useState('');
     const [endDate, setEndDate] = useState('');
     const submit = async () => {
+        const total = sessions * sessionRate
         const data = {
             userId: user?.user?._id || user?._id,
             name: name,
@@ -53,12 +56,45 @@ const Training = () => {
             workPhone: workPhone,
             sessions: sessions,
             sessionRate: sessionRate,
+            total: total,
             endDate: endDate,
             package: selectedPackage,
             payment: selectedPayment,
             billing: selectedBilling,
         }
         console.log(data)
+
+        const response = await axios.post(`${baseURL}/avail-trainer-payment-intent`, {
+            amount: total,
+            currency: 'php',
+            userId: user?._id || user?.user?._id,
+        });
+        console.log(response.data)
+
+        const { clientSecret } = response.data;
+
+        const billingDetails = {
+            name: user?.name || user?.user?.name,
+            email: user?.email || user?.user?.email,
+        };
+
+        await initPaymentSheet({
+            paymentIntentClientSecret: clientSecret,
+            merchantDisplayName: 'Philippines Sports Performance Fitness Gym',
+            defaultBillingDetails: billingDetails,
+        });
+
+        const { error } = await presentPaymentSheet();
+
+        if (error) {
+            if (error.code === 'Canceled') {
+                return false;
+            }
+            Alert.alert('Error', `Error code: ${error.code}`, error.message);
+            console.error('Error presenting payment sheet:', error);
+            return false;
+        }
+
         try {
             const response = await axios.post(`${baseUrl}/availTrainer`, data);
             console.log('Trainer created successfully:', response.data);
