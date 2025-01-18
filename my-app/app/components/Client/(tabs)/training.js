@@ -15,69 +15,38 @@ import { useRouter } from 'expo-router';
 const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
 
 const Training = () => {
-    const navigation = useNavigation();
-    const [showBirthDate, setShowBirthDate] = useState(false);
-    const [showEndDate, setShowEndDate] = useState(false);
-    const { user } = useSelector((state) => state.auth);
+    const router = useRouter();
+    const [gymDays, setGymDays] = useState([2, 5, 9, 12, 16, 20, 23, 27]); // Days when user goes to the gym
+    const [weightData] = useState({
+        initialWeight: 62, // in kilos
+        currentWeight: 65, // in kilos
+    });
 
-    // State for package selection
-    const [selectedPackage, setSelectedPackage] = useState('');
-    const [selectedPayment, setSelectedPayment] = useState('');
-    const [selectedBilling, setSelectedBilling] = useState('');
-    const [name, setName] = useState(user?.user?.name || user?.name || '');
-    const [birthdate, setBirthdate] = useState('');
-    const [address, setAddress] = useState(user?.user?.address || user?.address || '');
-    const [phone, setPhone] = useState(user?.user?.phone || user?.phone || '');
-    const [email, setEmail] = useState(user?.user?.email || user?.email || '');
-    const [homePhone, setHomePhone] = useState('');
-    const [workPhone, setWorkPhone] = useState('');
-    const [sessions, setSessions] = useState('');
-    const [sessionRate, setSessionRate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const submit = async () => {
-        const data = {
-            userId: user?.user?._id || user?._id,
-            name: name,
-            birthdate: birthdate,
-            address: address,
-            phone: phone,
-            email: email,
-            homePhone: homePhone,
-            workPhone: workPhone,
-            sessions: sessions,
-            sessionRate: sessionRate,
-            endDate: endDate,
-            package: selectedPackage,
-            payment: selectedPayment,
-            billing: selectedBilling,
-        }
-        console.log(data)
-        try {
-            const response = await axios.post(`${baseUrl}/availTrainer`, data);
-            console.log('Trainer created successfully:', response.data);
-            Alert.alert("Succesfully Submitted", "Please Wait for the Confirmation")
-            navigation.goBack()
-        } catch (error) {
-            console.error('Error creating trainer:', error.response ? error.response.data : error.message);
-        }
-    }
-
-    // Package details
-    const packages = [
-        { name: 'Boot Camp', price: '₱5000', value: 'boot-camp' },
-        { name: 'Lifestyle Training', price: '₱4000', value: 'lifestyle-training' },
-        { name: 'Goal Based Training', price: '₱4500', value: 'goal-based-training' },
-        { name: 'Personal Training', price: '₱6000', value: 'personal-training' },
-    ];
-
-    const handlePackageSelection = (packageName) => {
-        setSelectedPackage(packageName === selectedPackage ? '' : packageName);
+    // Static Health Data
+    const healthData = {
+        activeMinutes: 124, // bpm
+        caloriesBurned: 350, // per workout
+        bmi: 24.3, // Body Mass Index
+        steps: 8000, // steps per day
     };
 
-    const payment = [
-        { name: 'Paid in Full', value: 'paid-in-full' },
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1; // Current month (1-based index)
+    const totalDays = daysInMonth(year, month);
 
-    ];
+    const renderDay = ({ item }) => (
+        <View
+            style={[
+                styles.dayContainer,
+                gymDays.includes(item) ? styles.gymDay : null,
+            ]}
+        >
+            <Text style={[styles.dayText, gymDays.includes(item) ? styles.highlightedText : null]}>
+                {item}
+            </Text>
+        </View>
+    );
 
     const weightGains = weightData.currentWeight - weightData.initialWeight;
 

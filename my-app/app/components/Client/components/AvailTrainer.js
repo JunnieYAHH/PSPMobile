@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -18,8 +18,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import baseUrl from '../../../../assets/common/baseUrl';
+import styles from '../../styles/Client/ClientTabsAvailTraining';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
+import baseURL from '../../../../assets/common/baseUrl';
 
 const Training = () => {
     const navigation = useNavigation();
@@ -29,8 +32,6 @@ const Training = () => {
 
     // State for package selection
     const [selectedPackage, setSelectedPackage] = useState('');
-    const [selectedPayment, setSelectedPayment] = useState('');
-    const [selectedBilling, setSelectedBilling] = useState('');
     const [name, setName] = useState(user?.user?.name || user?.name || '');
     const [birthdate, setBirthdate] = useState('');
     const [address, setAddress] = useState(user?.user?.address || user?.address || '');
@@ -40,8 +41,51 @@ const Training = () => {
     const [workPhone, setWorkPhone] = useState('');
     const [sessions, setSessions] = useState('');
     const [sessionRate, setSessionRate] = useState('');
+    const [total, setTotal] = useState(0);
     const [endDate, setEndDate] = useState('');
+
+    //Total Calculation
+    useEffect(() => {
+        const numSessions = parseFloat(sessions) || 0;
+        const numSessionRate = parseFloat(sessionRate) || 0; 
+        const calculatedTotal = numSessions * numSessionRate;
+        setTotal(calculatedTotal);
+    }, [sessions, sessionRate]);
+
+    //Avail Training
     const submit = async () => {
+
+        const response = await axios.post(`${baseURL}/availTrainer/avail-trainer-payment-intent`, {
+            amount: total,
+            currency: 'php',
+            userId: user?._id || user?.user?._id,
+        });
+        console.log(response.data)
+
+        const { clientSecret } = response.data;
+
+        const billingDetails = {
+            name: user?.name || user?.user?.name,
+            email: user?.email || user?.user?.email,
+        };
+
+        await initPaymentSheet({
+            paymentIntentClientSecret: clientSecret,
+            merchantDisplayName: 'Philippines Sports Performance Fitness Gym',
+            defaultBillingDetails: billingDetails,
+        });
+
+        const { error } = await presentPaymentSheet();
+
+        if (error) {
+            if (error.code === 'Canceled') {
+                return false;
+            }
+            Alert.alert('Error', `Error code: ${error.code}`, error.message);
+            console.error('Error presenting payment sheet:', error);
+            return false;
+        }
+
         const data = {
             userId: user?.user?._id || user?._id,
             name: name,
@@ -53,12 +97,12 @@ const Training = () => {
             workPhone: workPhone,
             sessions: sessions,
             sessionRate: sessionRate,
+            total: total,
             endDate: endDate,
             package: selectedPackage,
-            payment: selectedPayment,
-            billing: selectedBilling,
         }
         console.log(data)
+
         try {
             const response = await axios.post(`${baseUrl}/availTrainer`, data);
             console.log('Trainer created successfully:', response.data);
@@ -77,21 +121,11 @@ const Training = () => {
         { name: 'Personal Training', price: '₱6000', value: 'personal-training' },
     ];
 
+    //Package Handling
     const handlePackageSelection = (packageName) => {
         setSelectedPackage(packageName === selectedPackage ? '' : packageName);
     };
 
-    const payment = [
-        { name: 'Paid in Full', value: 'paid-in-full' },
-
-    ];
-
-    const billingMethods = [
-        { name: 'Paid in Full', value: 'paid-in-full' },
-        { name: 'Bank Account', value: 'bank-accont' },
-        { name: 'Cash', value: 'cash' },
-        { name: 'Check', value: 'check' },
-    ];
     return (
         <>
             <StatusBar translucent backgroundColor="transparent" />
@@ -214,18 +248,21 @@ const Training = () => {
                                 placeholder="Enter Number of Sessions"
                                 onChangeText={(value) => setSessions(value)}
                                 value={sessions}
+                                keyboardType="numeric"
                             />
-                            <Text style={[styles.text,]}>Per Session Rate</Text>
+                            <Text style={styles.text}>Per Session Rate</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter Number Per Session Rate"
+                                placeholder="Enter Per Session Rate"
                                 onChangeText={(value) => setSessionRate(value)}
                                 value={sessionRate}
+                                keyboardType="numeric"
                             />
-                            <Text style={[styles.text,]}>Total</Text>
+                            <Text style={styles.text}>Total</Text>
                             <TextInput
                                 style={styles.input}
-                                value={(sessions) * (sessionRate)}
+                                value={`₱ ${total.toFixed(2)}`}
+                                editable={false}
                             />
                             <Text style={styles.text}>Final Session Date</Text>
                             <TouchableOpacity
@@ -255,64 +292,6 @@ const Training = () => {
                                     }}
                                 />
                             )}
-
-                            <Text style={styles.text}>Terms-Payment Plan</Text>
-                            {payment.map((pay) => (
-                                <View
-                                    key={pay.name}
-                                    style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'flex-start',
-                                        width: "100%",
-                                        marginBottom: 10,
-                                        marginTop: 5
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        onPress={() => setSelectedPayment(pay.value)}
-                                    >
-                                        <FontAwesome
-                                            name={selectedPayment === pay.value ? "check-square" : "square-o"}
-                                            size={24}
-                                            color={selectedPayment === pay.value ? "#00FFFF" : "white"}
-                                        />
-                                    </TouchableOpacity>
-                                    <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>
-                                        {pay.name}
-                                    </Text>
-                                </View>
-                            ))}
-
-                            <Text style={[styles.text, { fontSize: 18 }]}>Billing Method</Text>
-                            {billingMethods.map((billing) => (
-                                <View
-                                    key={billing.name}
-                                    style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'flex-start',
-                                        width: "100%",
-                                        marginBottom: 10,
-                                        marginTop: 5
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        onPress={() => setSelectedBilling(billing.value)}
-                                    >
-                                        <FontAwesome
-                                            name={selectedBilling === billing.value ? "check-square" : "square-o"}
-                                            size={24}
-                                            color={selectedBilling === billing.value ? "#00FFFF" : "white"}
-                                        />
-                                    </TouchableOpacity>
-                                    <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>
-                                        {billing.name}
-                                    </Text>
-                                </View>
-                            ))}
-
-                            {/* Confirm Button */}
                             <TouchableOpacity
                                 style={[styles.button, { backgroundColor: selectedPackage ? "#FFAC1C" : "#ccc" }]}
                                 disabled={!selectedPackage}
@@ -332,52 +311,3 @@ const Training = () => {
 }
 
 export default Training
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingTop: Constants.statusBarHeight,
-    },
-    backgroundImage: {
-        flex: 1,
-        resizeMode: 'cover',
-    },
-    overlay: {
-        flex: 1,
-        marginTop: 20,
-        justifyContent: "space-around",
-        alignItems: "center",
-        padding: 16,
-    },
-    input: {
-        height: 50,
-        width: "100%",
-        borderColor: "#ccc",
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        marginBottom: 16,
-        backgroundColor: "#fff",
-    },
-    text: {
-        textAlign: "left",
-        width: "100%",
-        marginBottom: 5,
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    button: {
-        height: 50,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 8,
-        marginTop: 16,
-        width: '100%',
-    },
-    buttonText: {
-        color: "black",
-        fontSize: 18,
-        fontWeight: "bold",
-    },
-})
