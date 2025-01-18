@@ -6,11 +6,9 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 exports.createPaymentIntent = async (req, res) => {
     try {
         const { amount, userId } = req.body;
-        // Create the payment intent and associate it with the customer
+        // Create the payment intent 
         try {
-            // Retrieve user information (e.g., name, email) from your database
             const user = await User.findById(userId);
-
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
