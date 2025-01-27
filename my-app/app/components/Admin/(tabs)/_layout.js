@@ -18,6 +18,11 @@ export default function RootLayout() {
           <MaterialCommunityIcons name="camera-iris" size={30} color={color} />
         )
       }} />
+      <Tabs.Screen name="training-sessions" options={{
+        headerShown: false, title: 'Sessions', tabBarIcon: ({ color }) => (
+          <FontAwesome name='users' color={color} size={28} />
+        )
+      }} />
       <Tabs.Screen name="profile" options={{
         headerShown: false, title: 'Profile', tabBarIcon: ({ color }) => (
           <FontAwesome name='user' color={color} size={28} />

@@ -1,0 +1,374 @@
+import { Alert, Button, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import axios from 'axios';
+import baseURL from '../../../../assets/common/baseUrl';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+const ClientServiceDetail = () => {
+
+    const { id } = useLocalSearchParams();
+    const [serviceDetails, setServiceDetails] = useState({})
+
+    const getClientService = async () => {
+        try {
+
+            const { data } = await axios.get(`${baseURL}/availTrainer/${id}`)
+
+            setServiceDetails(data);
+
+        } catch (error) {
+            console.error("Error fetching training sessions:", error);
+        }
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            getClientService()
+        }, [])
+    )
+
+    return (
+        <SafeAreaView>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={{ padding: 10, }}>
+
+                    <View style={{ marginBottom: 10, }}>
+                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Client Info</Text>
+                        <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
+
+                            <View style={{ flexDirection: 'row', gap: 10, }}>
+                                <Image
+                                    height={130}
+                                    width={120}
+                                    borderRadius={5}
+                                    source={{ uri: serviceDetails?.userId?.image[0].url }}
+                                />
+                                <View style={{ gap: 3, }}>
+                                    <View>
+                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Name:</Text>
+                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.name}</Text>
+                                    </View>
+
+                                    <View>
+                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Email:</Text>
+                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.email}</Text>
+                                    </View>
+
+                                    <View>
+                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Contact No:</Text>
+                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.email}</Text>
+                                    </View>
+                                </View>
+                            </View>
+
+                        </View>
+                    </View>
+
+                    <View style={{ marginBottom: 10, }}>
+                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Service Info</Text>
+                        <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
+
+                            <View style={{ gap: 5, }}>
+                                <View style={{ flexDirection: 'row', }}>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Package:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.package}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', }}>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Session:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.sessions}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', }}>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Session Rate:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>P{serviceDetails?.sessionRate}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', }}>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Start Date:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.startDate || "Not specified"}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', }}>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>End Date:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{new Date(serviceDetails?.endDate).toLocaleDateString()}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', }}>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Total:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.total || "Not specified"}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', }}>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Status:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.status}</Text>
+                                </View>
+                            </View>
+
+                        </View>
+                    </View>
+
+                    <Schedules schedules={serviceDetails?.schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
+
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    )
+}
+
+const Schedules = ({ schedules, serviceDetails, getClientService }) => {
+
+    return (
+        <View style={{ marginBottom: 10 }}>
+            <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: '900' }}>Schedule a Session</Text>
+            {schedules?.map((schedule, index) => (
+                <Session key={schedule._id} index={index} item={schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
+            ))}
+        </View>
+    )
+}
+
+const Session = ({ item, index, serviceDetails, getClientService }) => {
+
+    const [date, setDate] = useState(null);
+    const [time, setTime] = useState(null);
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+    const [status, setStatus] = useState('pending');
+
+    const onChange = (event, selectedDate) => {
+        setShow(false);
+
+        if (event.type === "dismissed" && (!item.timeAssigned && !item.dateAssigned)) {
+            setDate(null);
+            setTime(null);
+            return;
+        }
+
+        if (mode === 'date') {
+            setDate(selectedDate);
+        } else {
+            setTime(selectedDate);
+        }
+    };
+
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    };
+
+    const showDatepicker = () => {
+        showMode('date');
+    };
+
+    const showTimepicker = () => {
+        showMode('time');
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            setDate(item?.dateAssigned ? new Date(item?.dateAssigned) : null)
+            setTime(item?.timeAssigned ? new Date(item?.timeAssigned) : null)
+            setStatus(item?.status)
+        }, [])
+    )
+
+    const saveDateTimeSession = async () => {
+        try {
+
+            const { data } = await axios.put(
+                `${baseURL}/availTrainer/update/session/${serviceDetails._id}?sessionId=${item._id}`,
+                { sessionId: item._id, date, time }
+            )
+
+            getClientService()
+            setStatus('waiting')
+
+            Alert.alert("", data.message);
+        } catch (err) {
+            console.log("Error updating schedule: ");
+            console.log(err);
+        }
+    }
+
+    const cancelAssignedSession = async () => {
+
+        if (!isSessionCancellable(item.dateAssigned)) {
+            Alert.alert("", "You can only cancel a scheduled session if it is more than 24 hours away from the current time.");
+            return;
+        }
+
+        try {
+
+            const { data } = await axios.put(
+                `${baseURL}/availTrainer/cancel/session/${serviceDetails._id}?sessionId=${item._id}`,)
+
+            await getClientService()
+
+            Alert.alert("", data.message);
+
+            setDate(null)
+            setTime(null)
+            setStatus('pending')
+
+        } catch (err) {
+            console.log("Error updating schedule: ");
+            console.log(err);
+        }
+    }
+
+    const completeAssignedSession = async () => {
+
+        if (!isPastDateTime(item.dateAssigned, item.timeAssigned)) {
+            Alert.alert("", "You cannot mark the status as complete if the date and time have not yet passed.");
+            return;
+        }
+
+        try {
+
+            const { data } = await axios.put(
+                `${baseURL}/availTrainer/complete/session/${serviceDetails._id}?sessionId=${item._id}`,)
+
+            await getClientService()
+
+            Alert.alert("", data.message);
+
+            setStatus('completed')
+
+        } catch (err) {
+            console.log("Error updating schedule: ");
+            console.log(err);
+        }
+    }
+
+    function isSessionCancellable(itemDate) {
+        // Get the current date
+        const currentDate = new Date();
+
+        // Add 2 days to the current date
+        const futureDate = new Date();
+        futureDate.setDate(currentDate.getDate() + 2);
+
+        // Convert itemDate to a Date object (if it's a string)
+        const itemDateObj = new Date(itemDate);
+
+        // Compare the item date with the future date (ignoring time part)
+        return itemDateObj >= futureDate;
+    }
+
+    function isPastDateTime(itemDate, itemTime) {
+        // Get the current date and time
+        const currentDateTime = new Date();
+
+        // Combine itemDate with itemTime (assuming itemTime is a string like "14:30")
+        const [hours, minutes] = itemTime.split(":").map(Number); // Extract hours and minutes
+
+        // Create a Date object for itemDate and set the extracted time
+        const itemDateTime = new Date(itemDate);
+        itemDateTime.setHours(hours, minutes, 0, 0);  // Set hours, minutes, and reset seconds/milliseconds
+
+        // Compare the item date and time with the current date and time
+        return itemDateTime < currentDateTime;
+    }
+
+    // const canInput = () => {
+    //     if (index <= 0) {
+    //         return true;
+    //     }
+    //     return serviceDetails.schedule[index - 1].status === "completed"
+    // }
+
+    return (
+        <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, marginBottom: 10, }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 16, fontWeight: 900, marginBottom: 10, }}>Session {index + 1}</Text>
+                <Text style={{ fontSize: 16, fontWeight: 900, marginBottom: 10, }}>{status?.toUpperCase()}</Text>
+            </View>
+            <View style={{ marginBottom: 10 }}>
+                <Pressable onPress={showDatepicker} >
+                    <View style={{ alignItems: 'center', borderRadius: 5, borderWidth: 1, padding: 10 }}>
+                        <Text>{formatDate(date)}</Text>
+                    </View>
+                </Pressable>
+            </View>
+            <Pressable onPress={showTimepicker}>
+                <View style={{ alignItems: 'center', borderRadius: 5, borderWidth: 1, padding: 10 }}>
+                    <Text>{formatTime(time)}</Text>
+                </View>
+            </Pressable>
+            {show && (
+                <DateTimePicker
+                    testID="dateTimePicker"
+                    value={mode === 'date' ? date || new Date() : time || new Date()}
+                    mode={mode}
+                    is24Hour={true}
+                    display="default"
+                    onChange={onChange}
+                />
+            )}
+            {(item.dateAssigned && item.timeAssigned && item.status !== 'completed') && (
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+                    <View style={{ flex: 1 }}>
+                        <Button
+                            onPress={cancelAssignedSession}
+                            title='Cancel'
+                        />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Button
+                            onPress={completeAssignedSession}
+                            title='Done'
+                        />
+                    </View>
+                </View>
+            )}
+
+            {item.status === "completed" && (
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+                    <View style={{ flex: 1 }}>
+                        <Button
+                            disabled={true}
+                            title='NO ACTION'
+                        />
+                    </View>
+                </View>
+            )}
+
+            {(!item.dateAssigned || !item.timeAssigned) && (
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+                    <View style={{ flex: 1 }}>
+                        <Button
+                            disabled={!date || !time}
+                            onPress={saveDateTimeSession}
+                            title='Confirm'
+                        />
+                    </View>
+                </View>
+            )}
+        </View>
+    )
+}
+
+const formatTime = (date) => {
+    if (!date) {
+        return "Assign Time"
+    }
+    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+};
+
+
+function formatDate(dateString) {
+
+    if (!dateString) {
+        return "Assigned Date"
+    }
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+        return "Not Specified";
+    }
+
+    const options = { month: "short", day: "numeric", year: "numeric" };
+    return date.toLocaleDateString("en-US", options).replace(",", "");
+}
+
+export default ClientServiceDetail
+
+const styles = StyleSheet.create({})

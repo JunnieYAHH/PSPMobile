@@ -20,8 +20,8 @@ export default function Scanner() {
   }, [permission, requestPermission]);
 
   useEffect(() => {
-    setScanning(true);  
-    return () => setScanning(false); 
+    setScanning(true);
+    return () => setScanning(false);
   }, []);
 
   const toggleCameraFacing = () => {
@@ -31,9 +31,9 @@ export default function Scanner() {
   const handleBarcodeScanned = async (scannedData) => {
     if (scanning) {
       setScanning(false);
-  
-      const userId = scannedData.data;  
-  
+
+      const userId = scannedData.data;
+
       try {
         const response = await userLog(userId);
         // console.log(response.message)
@@ -78,7 +78,7 @@ export default function Scanner() {
               <Image source={{ uri: userInfo.imageUrl }} style={styles.userImage} />
             )}
             <Text style={styles.userName}>{userInfo?.name}</Text>
-            <Text style={styles.userMessage}>{message}</Text>  
+            <Text style={styles.userMessage}>{message}</Text>
             <TouchableOpacity
               style={styles.button}
               onPress={() => {

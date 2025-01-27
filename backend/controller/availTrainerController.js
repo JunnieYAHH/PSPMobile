@@ -38,9 +38,25 @@ exports.createPaymentIntent = async (req, res) => {
 // Create a new trainer
 exports.createTrainer = async (req, res) => {
     try {
+
+        req.body.schedule = [];
+        for (let i = 0; i < req.body.sessions; i++) {
+
+            req.body.schedule.push({
+                index: i + 1,
+                dateAssigned: null, // Placeholder for date
+                timeAssigned: null, // Placeholder for time
+                status: 'waiting',
+            });
+
+        }
+
         const trainer = new AvailTrainer(req.body);
+
         await trainer.save();
+
         res.status(201).json({ message: 'Trainer created successfully', trainer });
+
     } catch (error) {
         res.status(400).json({ message: 'Error creating trainer', error: error.message });
     }
@@ -49,9 +65,16 @@ exports.createTrainer = async (req, res) => {
 // Get all trainers
 exports.getAllTrainers = async (req, res) => {
     try {
-        const trainers = await AvailTrainer.find();
+        const trainers = await AvailTrainer.find().populate({
+            path: 'userId',
+            model: 'users'
+        }).populate({
+            path: 'coachID',
+            model: 'users'
+        })
         res.status(200).json(trainers);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: 'Error fetching trainers', error: error.message });
     }
 };
@@ -59,7 +82,13 @@ exports.getAllTrainers = async (req, res) => {
 // Get a specific trainer by ID
 exports.getTrainerById = async (req, res) => {
     try {
-        const trainer = await AvailTrainer.findById(req.params.id);
+        const trainer = await AvailTrainer.findById(req.params.id).populate({
+            path: 'userId',
+            model: 'users'
+        }).populate({
+            path: 'coachID',
+            model: 'users'
+        })
         if (!trainer) {
             return res.status(404).json({ message: 'Trainer not found' });
         }
@@ -97,3 +126,136 @@ exports.deleteTrainer = async (req, res) => {
         res.status(500).json({ message: 'Error deleting trainer', error: error.message });
     }
 };
+
+exports.getByAssignedCoach = async (req, res,) => {
+
+    try {
+        const trainers = await AvailTrainer.find({ coachID: req.params.id }).populate({
+            path: 'userId',
+            model: 'users'
+        }).populate({
+            path: 'coachID',
+            model: 'users'
+        })
+
+        console.log(trainers)
+
+        res.status(200).json(trainers);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error fetching trainers', error: error.message });
+    }
+
+}
+
+exports.getClientsAvailedServices = async (req, res,) => {
+
+    try {
+        console.log(req.params)
+
+        const trainers = await AvailTrainer.find({ userId: req.params.id }).populate({
+            path: 'userId',
+            model: 'users'
+        }).populate({
+            path: 'coachID',
+            model: 'users'
+        })
+
+        console.log(trainers)
+
+        res.status(200).json(trainers);
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error fetching trainers', error: error.message });
+    }
+
+}
+
+exports.updateSessionSchedule = async (req, res,) => {
+
+    try {
+        const servicesAvailed = await AvailTrainer.findById(req.params.id);
+
+        servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
+            if (session._id.toString() === req.query.sessionId) {
+                return {
+                    ...session._doc,  // Ensures document properties are spread correctly
+                    dateAssigned: req.body.date,
+                    timeAssigned: req.body.time,
+                    status: 'waiting',
+                };
+            }
+            return session;
+        });
+
+        await servicesAvailed.save();
+
+        res.status(200).json({
+            message: "Session schedule updated",
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error fetching trainers', error: error.message });
+    }
+
+}
+
+exports.cancelSessionSchedule = async (req, res,) => {
+
+    try {
+        const servicesAvailed = await AvailTrainer.findById(req.params.id);
+
+        servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
+            if (session._id.toString() === req.query.sessionId) {
+                return {
+                    ...session._doc,  // Ensures document properties are spread correctly
+                    dateAssigned: null,
+                    timeAssigned: null,
+                    status: 'pending',
+                };
+            }
+            return session;
+        });
+
+        await servicesAvailed.save();
+
+        res.status(200).json({
+            message: "Session schedule cancelled",
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error fetching trainers', error: error.message });
+    }
+
+}
+
+exports.completeSessionSchedule = async (req, res,) => {
+
+    try {
+        const servicesAvailed = await AvailTrainer.findById(req.params.id);
+
+        servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
+            if (session._id.toString() === req.query.sessionId) {
+                return {
+                    ...session._doc,  // Ensures document properties are spread correctly
+                    status: 'completed',
+                };
+            }
+            return session;
+        });
+
+        await servicesAvailed.save();
+
+        res.status(200).json({
+            message: "Session completed",
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error fetching trainers', error: error.message });
+    }
+
+}

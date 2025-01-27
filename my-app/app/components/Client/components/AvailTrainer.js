@@ -47,7 +47,7 @@ const Training = () => {
     //Total Calculation
     useEffect(() => {
         const numSessions = parseFloat(sessions) || 0;
-        const numSessionRate = parseFloat(sessionRate) || 0; 
+        const numSessionRate = parseFloat(sessionRate) || 0;
         const calculatedTotal = numSessions * numSessionRate;
         setTotal(calculatedTotal);
     }, [sessions, sessionRate]);

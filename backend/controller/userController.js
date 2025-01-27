@@ -293,7 +293,17 @@ const userController = {
   },
   getAllUsers: async (req, res) => {
     try {
-      const users = await User.find()
+
+      let query = {};
+      if (req.query?.role === 'coach') {
+        console.log(req.query.role);
+        query.role = 'coach';
+        console.log(query)
+      }
+
+
+      const users = await User.find(query)
+      console.log(users)
       res.status(201).json({ message: "Users fetch successfully", users });
     } catch (error) {
       console.error("Fetch All Users Error:", error.message);

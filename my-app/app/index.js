@@ -14,7 +14,7 @@ const Home = () => {
             <StatusBar translucent backgroundColor="transparent" />
             <View style={styles.container}>
                 <View style={styles.videoContainer}>
-                    <Video
+                    {/* <Video
                         ref={video}
                         style={styles.video}
                         source={require('../assets/PSPBackgroundVideo.mp4')}
@@ -24,7 +24,7 @@ const Home = () => {
                         isMuted
                         onError={(error) => console.error("Video error:", error)}
                         onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-                    />
+                    /> */}
                 </View>
                 <View style={styles.buttons}>
                     <TouchableOpacity
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         borderRadius: 10,
-        marginLeft:15,
+        marginLeft: 15,
     },
     button: {
         borderRadius: 25,

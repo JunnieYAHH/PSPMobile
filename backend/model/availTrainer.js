@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const availTrainerSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Users',
         required: true,
     },
     name: {
@@ -46,7 +46,7 @@ const availTrainerSchema = new mongoose.Schema({
     },
     coachID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Users',
         required: function () {
             return this.status === 'active';
         },
@@ -55,7 +55,10 @@ const availTrainerSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['active', 'inactive'],
-        default: 'inactive',
+        default: 'active',
+    },
+    startDate: {
+        type: Date,
     },
     endDate: {
         type: Date
@@ -64,6 +67,14 @@ const availTrainerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    schedule: [
+        {
+            index: { type: Number, required: true, },
+            dateAssigned: { type: Date, },
+            timeAssigned: { type: Date, },
+            status: { type: String, default: 'pending', enum: ['pending', 'waiting', 'completed'] }
+        }
+    ]
 }, {
     timestamps: true // Adds createdAt and updatedAt fields
 });
