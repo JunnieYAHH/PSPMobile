@@ -36,25 +36,32 @@ const ClientServiceDetail = () => {
                 <View style={{ padding: 10, }}>
 
                     <View style={{ marginBottom: 10, }}>
-                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Client Info</Text>
+                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Coach Info</Text>
                         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
 
                             <View style={{ flexDirection: 'row', gap: 10, }}>
-                                <Image
+                                {/* <Image
                                     height={130}
                                     width={120}
                                     borderRadius={5}
                                     source={{ uri: serviceDetails?.coachID?.image[0].url }}
-                                />
+                                /> */}
+                                {serviceDetails?.coachID?.image[0]?.url ? (
+                                    <Image height={130} width={120} borderRadius={5} source={{ uri: serviceDetails?.coachID?.image[0]?.url }} />
+                                ) : (
+                                    <>
+                                        <Image height={130} width={120} borderRadius={5} source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541' }} />
+                                    </>
+                                )}
                                 <View style={{ gap: 3, }}>
                                     <View>
                                         <Text style={{ fontSize: 15, fontWeight: 900, }}>Coach:</Text>
-                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.coachID?.name}</Text>
+                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.coachID?.name || 'Not specified'}</Text>
                                     </View>
 
                                     <View>
                                         <Text style={{ fontSize: 15, fontWeight: 900, }}>Email:</Text>
-                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.coachID?.email}</Text>
+                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.coachID?.email || 'Not specified'}</Text>
                                     </View>
 
                                     <View>

@@ -25,6 +25,15 @@ const styles = StyleSheet.create({
     optionIcon: {
         marginLeft: "auto",
     },
+    placeholderText: {
+        color: "#888",
+        textAlign: "center",
+      },
+      placeholderBellowText: {
+        color: "#888",
+        textAlign: "center",
+        fontSize: 12,
+      },
 });
 
 export default styles;

@@ -13,19 +13,19 @@ function AppWrapper() {
     dispatch(loadUser());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.replace("/");
-      } else if (user.role === 'user') {
-        router.replace("/(tabs)");
-      } else if (user.role === 'client') {
-        router.replace("/components/Client/(tabs)");
-      } else if (user.role === 'coach') {
-        router.replace("/components/Coach/(tabs)");
-      }
-    }
-  }, [loading, user, router]);
+  // useEffect(() => {
+  //   if (!loading) {
+  //     if (!user) {
+  //       router.replace("/");
+  //     } else if (user.role === 'user') {
+  //       router.replace("/(tabs)");
+  //     } else if (user.role === 'client') {
+  //       router.replace("/components/Client/(tabs)");
+  //     } else if (user.role === 'coach') {
+  //       router.replace("/components/Coach/(tabs)");
+  //     }
+  //   }
+  // }, [loading, user, router]);
 
   if (loading) {
     return <LoadingScreen />;

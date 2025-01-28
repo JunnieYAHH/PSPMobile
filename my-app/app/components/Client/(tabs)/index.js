@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Icon from "react-native-vector-icons/FontAwesome";
 import { logoutAction } from '../../../(redux)/authSlice';
 import styles from '../../styles/Client/ClientHomeStyles';
-import { View, Text, StatusBar, TouchableOpacity, FlatList, Pressable, Image } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity, FlatList, Pressable, Image, StyleSheet } from 'react-native';
 import LoadingScreen from '../../LodingScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
@@ -104,11 +104,17 @@ const ServiceDetail = ({ item }) => {
     <Pressable onPress={goToDetail}>
       <View style={{ padding: 10, borderRadius: 10, borderWidth: 1, marginBottom: 10, }} >
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10, }}>
-          <Image height={65} width={65} borderRadius={5} source={{ uri: item.coachID.image[0].url }} />
+          {item?.coachID?.image[0]?.url ? (
+            <Image height={65} width={65} borderRadius={5} source={{ uri: item?.coachID?.image[0]?.url }} />
+          ) : (
+            <>
+              <Image height={65} width={65} borderRadius={5} source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541' }} />
+            </>
+          )}
           <View style={{ alignSelf: 'center' }}>
-            <Text>Coach: {item.coachID.name}</Text>
-            <Text>Email: {item.coachID.email}</Text>
-            <Text>Phone: {item.coachID.phone || "Not specified"}</Text>
+            <Text>Coach: {item?.coachID?.name || "Not specified"}</Text>
+            <Text>Email: {item?.coachID?.email || "Not specified"}</Text>
+            <Text>Phone: {item?.coachID?.phone || "Not specified"}</Text>
           </View>
         </View>
 

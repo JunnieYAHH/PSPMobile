@@ -87,16 +87,6 @@ const Profile = () => {
                                     )
                                 )}
                                 <View style={styles.section}>
-                                    <TouchableOpacity style={styles.option}>
-                                        <Icon name="user" size={24} color="#4caf50" />
-                                        <Text style={styles.optionText}>Membership</Text>
-                                        <Icon
-                                            name="angle-right"
-                                            size={24}
-                                            color="#999"
-                                            style={styles.optionIcon}
-                                        />
-                                    </TouchableOpacity>
                                     <TouchableOpacity style={styles.option}
                                         onPress={() => navigation.navigate('components/User/ResetUserPassword', { user })}
                                     >

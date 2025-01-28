@@ -37,8 +37,30 @@ export default function Login() {
     const user = useSelector((state) => state.auth.user);
 
     useEffect(() => {
-        if (user) {
-            router.push("/(tabs)");
+        if (!user) return;
+
+        const role = user.user?.role || user.role;
+        const par_Q = user.user?.par_Q || [];
+
+        switch (role) {
+            case "user":
+                router.push("/(tabs)");
+                break;
+            case "client":
+                if (par_Q.length === 0) {
+                    router.replace("/components/Client/Form");
+                } else {
+                    router.replace("/components/Client/(tabs)");
+                }
+                break;
+            case "coach":
+                router.replace("/components/Coach/(tabs)");
+                break;
+            case "admin":
+                router.replace("/components/Admin/(tabs)");
+                break;
+            default:
+                break;
         }
     }, [user, router]);
 
@@ -66,6 +88,31 @@ export default function Login() {
                                         mutation.mutateAsync(values)
                                             .then((data) => {
                                                 dispatch(loginAction(data));
+
+                                                // const role = data.user.role || data.role;
+                                                // const par_Q = data.user.par_Q || [];
+                                                // console.log(role)
+                                                // console.log(par_Q)
+                                                // switch (role) {
+                                                //     case "user":
+                                                //         router.replace("/(tabs)");
+                                                //         break;
+                                                // case "client":
+                                                //     if (par_Q.length === 0) {
+                                                //         router.replace("/components/Client/Form");
+                                                //     } else {
+                                                //         router.replace("/components/Client/(tabs)");
+                                                //     }
+                                                //     break;
+                                                //     case "coach":
+                                                //         router.replace("/components/Coach/(tabs)");
+                                                //         break;
+                                                //     case "admin":
+                                                //         router.replace("/components/Admin/(tabs)");
+                                                //         break;
+                                                //     default:
+                                                //         break;
+                                                // }
                                             })
                                             .catch((error) => {
                                                 setIsLoading(false);
