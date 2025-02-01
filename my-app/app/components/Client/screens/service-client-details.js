@@ -7,31 +7,47 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const ClientServiceDetail = () => {
+const ClientServiceDetail = ({ trainerIdProps = null }) => {
 
     const { id } = useLocalSearchParams();
     const [serviceDetails, setServiceDetails] = useState({})
 
     const getClientService = async () => {
+
+        let trainerId = id;
+        if (id) {
+            trainerId = id;
+        }
+
+        if (trainerIdProps) {
+            trainerId = trainerIdProps;
+        }
+
+        if (!trainerId) {
+            return;
+        }
+
         try {
 
-            const { data } = await axios.get(`${baseURL}/availTrainer/${id}`)
+            const { data } = await axios.get(`${baseURL}/availTrainer/${trainerId}`)
 
             setServiceDetails(data);
+            console.log(data)
 
         } catch (error) {
             console.error("Error fetching training sessions:", error);
         }
     }
 
-    useFocusEffect(
-        useCallback(() => {
-            getClientService()
-        }, [])
-    )
+    useEffect(() => {
+        getClientService()
+    }, [])
 
     return (
-        <SafeAreaView>
+        <>
+            {!trainerIdProps && (
+                <View style={{ marginTop: 30, }} />
+            )}
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ padding: 10, }}>
 
@@ -116,7 +132,7 @@ const ClientServiceDetail = () => {
 
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </>
     )
 }
 

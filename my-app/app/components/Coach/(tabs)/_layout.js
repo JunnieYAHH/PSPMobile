@@ -13,7 +13,7 @@ export default function RootLayout() {
         )
       }} />
       <Tabs.Screen name="schedule" options={{
-        headerShown: false, title: 'Schedule', tabBarIcon: ({ color }) => (
+        headerShown: false, title: 'Clients', tabBarIcon: ({ color }) => (
             <MaterialIcons name="list-alt" size={24} color="black" />)
       }} />
       <Tabs.Screen name="profile" options={{

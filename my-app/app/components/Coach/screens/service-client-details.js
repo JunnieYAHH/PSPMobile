@@ -6,13 +6,16 @@ import baseURL from '../../../../assets/common/baseUrl';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import LoadingScreen from '../../LodingScreen';
 
 const ClientServiceDetail = () => {
 
     const { id } = useLocalSearchParams();
     const [serviceDetails, setServiceDetails] = useState({})
+    const [screenLoading, setScreenLoading] = useState(false);
 
     const getClientService = async () => {
+        setScreenLoading(true)
         try {
 
             const { data } = await axios.get(`${baseURL}/availTrainer/${id}`)
@@ -22,6 +25,7 @@ const ClientServiceDetail = () => {
         } catch (error) {
             console.error("Error fetching training sessions:", error);
         }
+        setScreenLoading(false)
     }
 
     useFocusEffect(
@@ -31,85 +35,87 @@ const ClientServiceDetail = () => {
     )
 
     return (
-        <SafeAreaView>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ padding: 10, }}>
+        <>
+            <SafeAreaView>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <View style={{ padding: 10, }}>
 
-                    <View style={{ marginBottom: 10, }}>
-                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Client Info</Text>
-                        <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
+                        <View style={{ marginBottom: 10, }}>
+                            <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Client Info</Text>
+                            <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
 
-                            <View style={{ flexDirection: 'row', gap: 10, }}>
-                                <Image
-                                    height={130}
-                                    width={120}
-                                    borderRadius={5}
-                                    source={{ uri: serviceDetails?.userId?.image[0].url }}
-                                />
-                                <View style={{ gap: 3, }}>
-                                    <View>
-                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Name:</Text>
-                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.name}</Text>
-                                    </View>
+                                <View style={{ flexDirection: 'row', gap: 10, }}>
+                                    <Image
+                                        height={130}
+                                        width={120}
+                                        borderRadius={5}
+                                        source={{ uri: serviceDetails?.userId?.image[0].url }}
+                                    />
+                                    <View style={{ gap: 3, }}>
+                                        <View>
+                                            <Text style={{ fontSize: 15, fontWeight: 900, }}>Name:</Text>
+                                            <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.name}</Text>
+                                        </View>
 
-                                    <View>
-                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Email:</Text>
-                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.email}</Text>
-                                    </View>
+                                        <View>
+                                            <Text style={{ fontSize: 15, fontWeight: 900, }}>Email:</Text>
+                                            <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.email}</Text>
+                                        </View>
 
-                                    <View>
-                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Contact No:</Text>
-                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.email}</Text>
+                                        <View>
+                                            <Text style={{ fontSize: 15, fontWeight: 900, }}>Contact No:</Text>
+                                            <Text style={{ fontSize: 15, }}>{serviceDetails?.userId?.email}</Text>
+                                        </View>
                                     </View>
                                 </View>
+
                             </View>
-
                         </View>
-                    </View>
 
-                    <View style={{ marginBottom: 10, }}>
-                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Service Info</Text>
-                        <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
+                        <View style={{ marginBottom: 10, }}>
+                            <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Service Info</Text>
+                            <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
 
-                            <View style={{ gap: 5, }}>
-                                <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Package:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.package}</Text>
+                                <View style={{ gap: 5, }}>
+                                    <View style={{ flexDirection: 'row', }}>
+                                        <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Package:</Text>
+                                        <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.package}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', }}>
+                                        <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Session:</Text>
+                                        <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.sessions}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', }}>
+                                        <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Session Rate:</Text>
+                                        <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>P{serviceDetails?.sessionRate}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', }}>
+                                        <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Start Date:</Text>
+                                        <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.startDate || "Not specified"}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', }}>
+                                        <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>End Date:</Text>
+                                        <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{new Date(serviceDetails?.endDate).toLocaleDateString()}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', }}>
+                                        <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Total:</Text>
+                                        <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.total || "Not specified"}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', }}>
+                                        <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Status:</Text>
+                                        <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.status}</Text>
+                                    </View>
                                 </View>
-                                <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Session:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.sessions}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Session Rate:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>P{serviceDetails?.sessionRate}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Start Date:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.startDate || "Not specified"}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>End Date:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{new Date(serviceDetails?.endDate).toLocaleDateString()}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Total:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.total || "Not specified"}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Status:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.status}</Text>
-                                </View>
+
                             </View>
-
                         </View>
+
+                        <Schedules schedules={serviceDetails?.schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
+
                     </View>
-
-                    <Schedules schedules={serviceDetails?.schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
-
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                </ScrollView>
+            </SafeAreaView>
+        </>
     )
 }
 
@@ -239,41 +245,26 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
     }
 
     function isSessionCancellable(itemDate) {
-        // Get the current date
         const currentDate = new Date();
 
-        // Add 2 days to the current date
         const futureDate = new Date();
         futureDate.setDate(currentDate.getDate() + 2);
 
-        // Convert itemDate to a Date object (if it's a string)
         const itemDateObj = new Date(itemDate);
 
-        // Compare the item date with the future date (ignoring time part)
         return itemDateObj >= futureDate;
     }
 
     function isPastDateTime(itemDate, itemTime) {
-        // Get the current date and time
         const currentDateTime = new Date();
 
-        // Combine itemDate with itemTime (assuming itemTime is a string like "14:30")
-        const [hours, minutes] = itemTime.split(":").map(Number); // Extract hours and minutes
-
-        // Create a Date object for itemDate and set the extracted time
+        if (!itemTime) {
+            return false;
+        }
         const itemDateTime = new Date(itemDate);
-        itemDateTime.setHours(hours, minutes, 0, 0);  // Set hours, minutes, and reset seconds/milliseconds
 
-        // Compare the item date and time with the current date and time
         return itemDateTime < currentDateTime;
     }
-
-    // const canInput = () => {
-    //     if (index <= 0) {
-    //         return true;
-    //     }
-    //     return serviceDetails.schedule[index - 1].status === "completed"
-    // }
 
     return (
         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, marginBottom: 10, }}>
@@ -300,6 +291,7 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
                     mode={mode}
                     is24Hour={true}
                     display="default"
+                    minimumDate={new Date()}
                     onChange={onChange}
                 />
             )}

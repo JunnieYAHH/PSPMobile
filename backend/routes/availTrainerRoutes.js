@@ -13,5 +13,6 @@ router.get('/client/:id', availTrainerController.getClientsAvailedServices);
 router.put('/update/session/:id', availTrainerController.updateSessionSchedule);
 router.put('/cancel/session/:id', availTrainerController.cancelSessionSchedule);
 router.put('/complete/session/:id', availTrainerController.completeSessionSchedule);
+router.get('/has-active/:id', availTrainerController.hasActiveTraining);
 
 module.exports = router;
