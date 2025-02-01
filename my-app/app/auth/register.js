@@ -80,7 +80,7 @@ const Register = () => {
                             text: "OK",
                             onPress: () => {
                               setIsLoading(false);
-                              router.push('/auth/login');
+                              router.push('/');
                             },
                           },
                         ]

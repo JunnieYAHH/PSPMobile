@@ -8,13 +8,18 @@ import { getAllBranch } from '../../(services)/api/Branches/getAllBranch';
 import { getAllTransactions } from '../../(services)/api/Transactions/getAllTransactions';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import styles from '../styles/CompUserMemberPaymentStyle';
+// import styles from '../styles/CompUserMemberPaymentStyle';
 import { MembershipPayment } from '../../(services)/api/Users/membershipPayment';
 import { createSubscription, loadClientSecret } from '../../(redux)/paymentSlice';
 import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingScreen from '../LodingScreen';
+import Constants from 'expo-constants';
+import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Feather from '@expo/vector-icons/Feather';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const UserMemberShipPayment = () => {
     const navigation = useNavigation();
@@ -22,6 +27,7 @@ const UserMemberShipPayment = () => {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter()
     const dispatch = useDispatch();
+    const animation = useRef(null)
     const { user } = useSelector((state) => state.auth);
     const userId = user.user._id;
     const [promo, setPromo] = useState('');
@@ -228,6 +234,7 @@ const UserMemberShipPayment = () => {
                                                 <View style={styles.form}>
                                                     <Text style={styles.text}>Branch Application</Text>
                                                     <View style={styles.pickerContainer}>
+                                                        <FontAwesome name="building" size={24} color="black" style={{ alignItems: 'center', marginRight: 5, marginLeft: 5 }} />
                                                         <Picker
                                                             style={styles.picker}
                                                             selectedValue={values.userBranch}
@@ -248,21 +255,27 @@ const UserMemberShipPayment = () => {
                                                     </View>
 
                                                     <Text style={styles.text}>Birth Date</Text>
-                                                    <TouchableOpacity onPress={() => setShow(true)} style={{
-                                                        backgroundColor: '#fff',
-                                                        borderRadius: 10,
-                                                        width: '50%',
-                                                        height: 18,
-                                                    }}>
-                                                        <Text style={{
-                                                            fontSize: 12,
-                                                            color: '#000',
-                                                            marginTop: 3,
-                                                            textAlign: 'center'
+                                                    <View style={{ backgroundColor: '#f9f1f1', height: 50, borderRadius: 10, alignItems: 'center', flexDirection: 'row', width: '75%' }}>
+                                                        <FontAwesome name="birthday-cake" size={24} color="black" style={{ alignItems: 'center', marginRight: 5, marginLeft: 5 }} />
+                                                        <TouchableOpacity onPress={() => setShow(true)} style={{
+                                                            backgroundColor: '#fff',
+                                                            borderRadius: 8,
+                                                            width: '50%',
+                                                            height: 40,
+                                                            width: 200,
+                                                            marginLeft: 10
                                                         }}>
-                                                            {values.birthDate ? values.birthDate.toLocaleDateString() : "Select a date"}
-                                                        </Text>
-                                                    </TouchableOpacity>
+                                                            <Text style={{
+                                                                fontSize: 14,
+                                                                color: '#000',
+                                                                marginTop: 8,
+                                                                padding: 5,
+                                                                textAlign: 'center',
+                                                            }}>
+                                                                {values.birthDate ? values.birthDate.toLocaleDateString() : "Select a date"}
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    </View>
 
                                                     {show && (
                                                         <DateTimePicker
@@ -281,61 +294,76 @@ const UserMemberShipPayment = () => {
                                                     )}
 
                                                     <Text style={styles.text}>Address</Text>
-                                                    <TextInput
-                                                        style={styles.input}
-                                                        placeholder="Address"
-                                                        onChangeText={handleChange("address")}
-                                                        onBlur={handleBlur("address")}
-                                                        value={values.address}
-                                                    />
+                                                    <View style={styles.inputContainer}>
+                                                        <Entypo name="address" size={24} color="black" style={{ alignItems: 'center', marginRight: 5, marginLeft: 5 }} />
+                                                        <TextInput
+                                                            style={styles.input}
+                                                            placeholder="Address"
+                                                            onChangeText={handleChange("address")}
+                                                            onBlur={handleBlur("address")}
+                                                            value={values.address}
+                                                        />
+                                                    </View>
                                                     {errors.address && touched.address && (
                                                         <Text style={styles.errorText}>{errors.address}</Text>
                                                     )}
 
                                                     <Text style={styles.text}>City</Text>
-                                                    <TextInput
-                                                        style={styles.input}
-                                                        placeholder="City"
-                                                        onChangeText={handleChange("city")}
-                                                        onBlur={handleBlur("city")}
-                                                        value={values.city}
-                                                    />
+                                                    <View style={styles.inputContainer}>
+                                                        <FontAwesome5 name="city" size={24} color="black" style={{ alignItems: 'center', marginRight: 5, marginLeft: 5 }} />
+                                                        <TextInput
+                                                            style={styles.input}
+                                                            placeholder="City"
+                                                            onChangeText={handleChange("city")}
+                                                            onBlur={handleBlur("city")}
+                                                            value={values.city}
+                                                        />
+                                                    </View>
                                                     {errors.city && touched.city && (
                                                         <Text style={styles.errorText}>{errors.city}</Text>
                                                     )}
 
                                                     <Text style={styles.text}>Phone</Text>
-                                                    <TextInput
-                                                        style={styles.input}
-                                                        placeholder="Phone"
-                                                        onChangeText={handleChange("phone")}
-                                                        onBlur={handleBlur("phone")}
-                                                        value={values.phone}
-                                                    />
+                                                    <View style={styles.inputContainer}>
+                                                        <Feather name="phone-call" size={24} color="black" style={{ alignItems: 'center', marginRight: 5, marginLeft: 5 }} />
+                                                        <TextInput
+                                                            style={styles.input}
+                                                            placeholder="Phone"
+                                                            onChangeText={handleChange("phone")}
+                                                            onBlur={handleBlur("phone")}
+                                                            value={values.phone}
+                                                        />
+                                                    </View>
                                                     {errors.phone && touched.phone && (
                                                         <Text style={styles.errorText}>{errors.phone}</Text>
                                                     )}
 
                                                     <Text style={styles.text}>Emergency Contact Name</Text>
-                                                    <TextInput
-                                                        style={styles.input}
-                                                        placeholder="Emergency Contact Name"
-                                                        onChangeText={handleChange("emergencyContactName")}
-                                                        onBlur={handleBlur("emergencyContactName")}
-                                                        value={values.emergencyContactName}
-                                                    />
+                                                    <View style={styles.inputContainer}>
+                                                        <MaterialIcons name="person-pin" size={27} color="black" style={{ alignItems: 'center', marginRight: 5, marginLeft: 5 }} />
+                                                        <TextInput
+                                                            style={styles.input}
+                                                            placeholder="Emergency Contact Name"
+                                                            onChangeText={handleChange("emergencyContactName")}
+                                                            onBlur={handleBlur("emergencyContactName")}
+                                                            value={values.emergencyContactName}
+                                                        />
+                                                    </View>
                                                     {errors.emergencyContactName && touched.emergencyContactName && (
                                                         <Text style={styles.errorText}>{errors.emergencyContactName}</Text>
                                                     )}
 
                                                     <Text style={styles.text}>Emergency Contact Phone</Text>
-                                                    <TextInput
-                                                        style={styles.input}
-                                                        placeholder="Emergency Contact Number"
-                                                        onChangeText={handleChange("emergencyContactNumber")}
-                                                        onBlur={handleBlur("emergencyContactNumber")}
-                                                        value={values.emergencyContactNumber}
-                                                    />
+                                                    <View style={styles.inputContainer}>
+                                                        <Feather name="phone-call" size={24} color="black" style={{ alignItems: 'center', marginRight: 5, marginLeft: 5 }} />
+                                                        <TextInput
+                                                            style={styles.input}
+                                                            placeholder="Emergency Contact Number"
+                                                            onChangeText={handleChange("emergencyContactNumber")}
+                                                            onBlur={handleBlur("emergencyContactNumber")}
+                                                            value={values.emergencyContactNumber}
+                                                        />
+                                                    </View>
                                                     {errors.emergencyContactNumber && touched.emergencyContactNumber && (
                                                         <Text style={styles.errorText}>{errors.emergencyContactNumber}</Text>
                                                     )}
@@ -352,7 +380,7 @@ const UserMemberShipPayment = () => {
                                                             <Text style={{ marginLeft: 10, color: 'white' }}>December Promo</Text>
                                                         </View>
                                                     ) : (
-                                                        <Text style={styles.noPromoText}>December Promo is not available at this time</Text>
+                                                        <Text style={styles.noPromoText}></Text>
                                                     )}
 
                                                     {/* New Year's Promo (only in January) */}
@@ -368,7 +396,7 @@ const UserMemberShipPayment = () => {
                                                             <Text style={{ marginLeft: 10, color: 'white' }}>New Year's Promo</Text>
                                                         </View>
                                                     ) : (
-                                                        <Text style={styles.noPromoText}>New Year's Promo is not available at this time</Text>
+                                                        <Text style={styles.noPromoText}></Text>
                                                     )}
 
                                                     {/* Summer Promo (only in June to August) */}
@@ -384,7 +412,7 @@ const UserMemberShipPayment = () => {
                                                             <Text style={{ marginLeft: 10, color: 'white' }}>Summer Promo</Text>
                                                         </View>
                                                     ) : (
-                                                        <Text style={styles.noPromoText}>Summer Promo is not available at this time</Text>
+                                                        <Text style={styles.noPromoText}></Text>
                                                     )}
 
                                                     <View style={{
@@ -420,5 +448,107 @@ const UserMemberShipPayment = () => {
 
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingTop: Constants.statusBarHeight,
+    },
+    backgroundImage: {
+        flex: 1,
+    },
+    safeAreaView: {
+        flex: 1,
+    },
+    headerContainer: {
+        marginHorizontal: 16,
+        marginTop: 30,
+        // backgroundColor: 'white',
+        borderRadius: 30,
+        marginTop: 20,
+    },
+    headerText: {
+        fontSize: 12,
+        fontWeight: '100',
+        color: 'white',
+        marginLeft: 2,
+        padding: 10,
+        marginTop: 8,
+    },
+    form: {
+        width: "100%",
+        borderRadius: 10,
+        // padding: 20,
+    },
+    pickerContainer: {
+        borderRadius: 10,
+        overflow: 'hidden',
+        borderColor: '#ccc',
+        backgroundColor: '#f9f1f1',
+        height: 60,
+        width: 450,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    picker: {
+        height: 40,
+        width: 450,
+        width: "70%",
+        borderColor: "#ccc",
+        borderWidth: 1,
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        backgroundColor: "#fff",
+    },
+    pickerItem: {
+        fontSize: 12,
+    },
+    text: {
+        color: 'white',
+        marginBottom: 5,
+        marginTop: 15,
+    },
+    errorText: {
+        color: "red",
+        marginBottom: 16,
+    },
+    inputContainer: {
+        backgroundColor: '#f9f1f1',
+        height: 50,
+        borderRadius: 10,
+        alignItems: 'center',
+        flexDirection: 'row',
+        width: '80%'
+    },
+    input: {
+        height: 40,
+        width: '80%',
+        borderColor: "#ccc",
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        backgroundColor: "#fff",
+    },
+    promo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+        marginTop: 15
+    },
+    button: {
+        height: 50,
+        backgroundColor: "#6200ea",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 8,
+        marginTop: 16,
+        marginBottom: 40
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "bold",
+    },
+});
 
 export default UserMemberShipPayment

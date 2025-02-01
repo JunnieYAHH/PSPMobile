@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     View,
     StyleSheet,
@@ -19,15 +19,19 @@ import { loginAction } from "../(redux)/authSlice";
 import { FontAwesome } from "@expo/vector-icons";
 import Constants from 'expo-constants';
 import LoadingScreen from "../components/LodingScreen";
+import LottieView from 'lottie-react-native';
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Required"),
     password: Yup.string().min(6, "Too Short!").required("Required"),
 });
 
-export default function Login() {
+
+const Login = () => {
     const router = useRouter();
     const dispatch = useDispatch();
+    const animation = useRef(null)
+
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const mutation = useMutation({
@@ -72,118 +76,99 @@ export default function Login() {
                 <>
                     <StatusBar translucent backgroundColor="transparent" />
                     <View style={styles.container}>
-                        <ImageBackground
-                            source={require('../../assets/loginBG.png')}
-                            style={styles.backgroundImage}
-                            imageStyle={{ opacity: 1.5 }}
-                            resizeMode="stretch"
-                        >
-                            <View style={styles.overlay}>
-                                <Text style={styles.title}>Login</Text>
-                                <Formik
-                                    initialValues={{ email: "", password: "" }}
-                                    validationSchema={LoginSchema}
-                                    onSubmit={(values) => {
-                                        setIsLoading(true);
-                                        mutation.mutateAsync(values)
-                                            .then((data) => {
-                                                dispatch(loginAction(data));
-
-                                                // const role = data.user.role || data.role;
-                                                // const par_Q = data.user.par_Q || [];
-                                                // console.log(role)
-                                                // console.log(par_Q)
-                                                // switch (role) {
-                                                //     case "user":
-                                                //         router.replace("/(tabs)");
-                                                //         break;
-                                                // case "client":
-                                                //     if (par_Q.length === 0) {
-                                                //         router.replace("/components/Client/Form");
-                                                //     } else {
-                                                //         router.replace("/components/Client/(tabs)");
-                                                //     }
-                                                //     break;
-                                                //     case "coach":
-                                                //         router.replace("/components/Coach/(tabs)");
-                                                //         break;
-                                                //     case "admin":
-                                                //         router.replace("/components/Admin/(tabs)");
-                                                //         break;
-                                                //     default:
-                                                //         break;
-                                                // }
-                                            })
-                                            .catch((error) => {
-                                                setIsLoading(false);
-                                                Alert.alert(
-                                                    "Login Failed", "Your Email or Password is Incorrent. Try Again",
-                                                    [{ text: "OK" }]
-                                                );
-                                            });
-                                    }}
-                                >
-                                    {({
-                                        handleChange,
-                                        handleBlur,
-                                        handleSubmit,
-                                        values,
-                                        errors,
-                                        touched,
-                                    }) => (
-                                        <View style={styles.form}>
+                        <LottieView
+                            ref={animation}
+                            source={require('../../assets/LandingScreen.json')}
+                            autoPlay
+                            loop
+                            style={{ width: 400, height: 300, marginTop: 80, position: 'absolute' }}
+                        />
+                        <View style={styles.overlay}>
+                            <Text style={styles.title}>Login</Text>
+                            <Formik
+                                initialValues={{ email: "", password: "" }}
+                                validationSchema={LoginSchema}
+                                onSubmit={(values) => {
+                                    setIsLoading(true);
+                                    mutation.mutateAsync(values)
+                                        .then((data) => {
+                                            dispatch(loginAction(data));
+                                        })
+                                        .catch((error) => {
+                                            setIsLoading(false);
+                                            Alert.alert(
+                                                "Login Failed", "Your Email or Password is Incorrent. Try Again",
+                                                [{ text: "OK" }]
+                                            );
+                                        });
+                                }}
+                            >
+                                {({
+                                    handleChange,
+                                    handleBlur,
+                                    handleSubmit,
+                                    values,
+                                    errors,
+                                    touched,
+                                }) => (
+                                    <View style={styles.form}>
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="Email"
+                                            onChangeText={handleChange("email")}
+                                            onBlur={handleBlur("email")}
+                                            value={values.email}
+                                            keyboardType="email-address"
+                                        />
+                                        {errors.email && touched.email ? (
+                                            <Text style={styles.errorText}>{errors.email}</Text>
+                                        ) : null}
+                                        <View style={styles.passwordContainer}>
                                             <TextInput
-                                                style={styles.input}
-                                                placeholder="Email"
-                                                onChangeText={handleChange("email")}
-                                                onBlur={handleBlur("email")}
-                                                value={values.email}
-                                                keyboardType="email-address"
+                                                style={styles.passwordInput}
+                                                placeholder="Password"
+                                                onChangeText={handleChange("password")}
+                                                onBlur={handleBlur("password")}
+                                                value={values.password}
+                                                secureTextEntry={!showPassword}
                                             />
-                                            {errors.email && touched.email ? (
-                                                <Text style={styles.errorText}>{errors.email}</Text>
-                                            ) : null}
-                                            <View style={styles.passwordContainer}>
-                                                <TextInput
-                                                    style={styles.passwordInput}
-                                                    placeholder="Password"
-                                                    onChangeText={handleChange("password")}
-                                                    onBlur={handleBlur("password")}
-                                                    value={values.password}
-                                                    secureTextEntry={!showPassword}
+                                            <TouchableOpacity
+                                                onPress={() => setShowPassword(!showPassword)}
+                                            >
+                                                <FontAwesome
+                                                    name={showPassword ? "eye-slash" : "eye"}
+                                                    size={19}
+                                                    color="grey"
                                                 />
-                                                <TouchableOpacity
-                                                    onPress={() => setShowPassword(!showPassword)}
-                                                >
-                                                    <FontAwesome
-                                                        name={showPassword ? "eye-slash" : "eye"}
-                                                        size={19}
-                                                        color="grey"
-                                                    />
-                                                </TouchableOpacity>
-                                            </View>
-                                            {errors.password && touched.password ? (
-                                                <Text style={styles.errorText}>{errors.password}</Text>
-                                            ) : null}
-                                            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                                                <Text style={styles.buttonText}>Login</Text>
                                             </TouchableOpacity>
                                         </View>
-                                    )}
-                                </Formik>
-                            </View>
-                        </ImageBackground>
+                                        {errors.password && touched.password ? (
+                                            <Text style={styles.errorText}>{errors.password}</Text>
+                                        ) : null}
+                                        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                                            <Text style={styles.buttonText}>Login</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={{ alignSelf: 'flex-end', fontWeight: 'bold', marginTop: 20 }} onPress={() => router.push('/auth/register')}>
+                                            <Text style={styles.buttonText}>Register</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </Formik>
+                        </View>
                     </View>
                 </>
             )}
         </>
     );
-}
+};
+
+export default Login;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: Constants.statusBarHeight,
+        backgroundColor: '#353839',
     },
     backgroundImage: {
         flex: 1,
@@ -194,6 +179,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 16,
+        marginTop: 150
     },
     title: {
         fontSize: 32,

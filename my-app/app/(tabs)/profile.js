@@ -27,7 +27,7 @@ export default function Profile() {
 
   const bottomSheetModalRef = useRef(null);
 
-  const snapPoints = useMemo(() => ['25%', '50%','75'], []);
+  const snapPoints = useMemo(() => ['25%', '50%', '75'], []);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -87,7 +87,7 @@ export default function Profile() {
                   )
                 )}
                 <View style={styles.section}>
-                  <TouchableOpacity style={styles.option}>
+                  <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('components/User/UserMemberShipPayment', { user })}>
                     <Icon name="user" size={24} color="#4caf50" />
                     <Text style={styles.optionText}>Membership</Text>
                     <Icon
@@ -138,10 +138,12 @@ export default function Profile() {
                     ref={bottomSheetModalRef}
                     index={1}
                     snapPoints={snapPoints}
-                    // onChange={handleSheetChanges}
+                  // onChange={handleSheetChanges}
                   >
                     <BottomSheetView>
-                      <Text>Awesome 🎉</Text>
+                      <View>
+                        <Text>Awesome 🎉</Text>
+                      </View>
                     </BottomSheetView>
                   </BottomSheetModal>
                 </View>
@@ -153,6 +155,6 @@ export default function Profile() {
           </BottomSheetModalProvider>
         </View>
       </ImageBackground>
-    </ProtectedRoute>
+    </ProtectedRoute >
   );
 }

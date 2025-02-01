@@ -1,45 +1,38 @@
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Image } from 'react-native';
+import React, { useRef } from 'react';
 import { Video, ResizeMode } from 'expo-av';
 import { useRouter } from "expo-router";
 import Constants from 'expo-constants';
+import LottieView from 'lottie-react-native';
 
 const Home = () => {
     const video = React.useRef(null);
     const [status, setStatus] = React.useState({});
     const router = useRouter();
+    const animation = useRef(null)
 
     return (
         <>
             <StatusBar translucent backgroundColor="transparent" />
             <View style={styles.container}>
-                <View style={styles.videoContainer}>
-                    {/* <Video
-                        ref={video}
-                        style={styles.video}
-                        source={require('../assets/PSPBackgroundVideo.mp4')}
-                        resizeMode={ResizeMode.COVER}
-                        shouldPlay
-                        isLooping
-                        isMuted
-                        onError={(error) => console.error("Video error:", error)}
-                        onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-                    /> */}
+                <Image source={require('../assets/backroundMovable.png')} style={{ alignSelf: 'center', width: 390, height: 325, borderBottomRightRadius: 40, borderBottomLeftRadius: 40 }} />
+                <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                    <LottieView
+                        ref={animation}
+                        source={require('../assets/LandingPage.json')}
+                        autoPlay
+                        loop
+                        style={{ width: 400, height: 600, marginTop: 80,  marginBottom: 300 }}
+                    />
                 </View>
-                <View style={styles.buttons}>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => router.push("/auth/login")}
-                    >
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => router.push("/auth/register")}
-                    >
-                        <Text style={styles.buttonText}>Register</Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                    style={styles.buttons}
+                    onPress={() => router.push("/auth/login")}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>Proceed</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
         </>
     );
@@ -51,6 +44,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: Constants.statusBarHeight,
+        backgroundColor: '#353839',
     },
     videoContainer: {
         flex: 1,
@@ -60,19 +54,22 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
     },
     buttons: {
-        flexDirection: "row",
-        justifyContent: "space-around",
+        backgroundColor: '#FFA500',
         alignItems: "center",
         position: "absolute",
-        bottom: 30,
+        bottom: 180,
         left: 0,
         right: 0,
         borderRadius: 10,
         marginLeft: 15,
+        width: 300,
+        marginLeft: 50,
+        height: 50,
+        padding: 15,
+        borderRadius: 25,
     },
     button: {
         borderRadius: 25,
-        elevation: 3,
     },
     buttonText: {
         color: "white",

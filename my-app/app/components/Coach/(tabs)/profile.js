@@ -22,7 +22,7 @@ const Profile = () => {
 
     const handleLogout = () => {
         dispatch(logoutAction());
-        router.push("/auth/login");
+        router.push("/");
     };
 
     const bottomSheetModalRef = useRef(null);

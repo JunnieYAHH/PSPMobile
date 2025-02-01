@@ -8,18 +8,23 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { getTimedInLogs } from '../../../(services)/api/Users/getTimedInLogs';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Sales from '../components/sales';
+import Statistics from '../components/statistics';
+import Post from '../components/post';
+import Users from '../components/users';
 
 const AdminIndex = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [activeCount, setActiveCount] = useState(0);
+  const [activeComponent, setActiveComponent] = useState(null);
 
   const getActiveLogs = async () => {
     try {
       const data = await getTimedInLogs();
       if (data && data.activeLogs) {
         const logsArray = Array.isArray(data.activeLogs) ? data.activeLogs : [data.activeLogs];
-
-        // Count only logs that are still active (e.g., timeOut is null)
         const activeLogsCount = logsArray.filter(log => log.timeOut === null).length;
         setActiveCount(activeLogsCount);
       } else {
@@ -29,7 +34,6 @@ const AdminIndex = () => {
       console.error("Error fetching products:", error);
     }
   };
-  // console.log(activeCount)
 
   useFocusEffect(
     useCallback(() => {
@@ -82,17 +86,42 @@ const AdminIndex = () => {
               <View style={{ backgroundColor: 'black', height: 120, width: 140, alignSelf: 'center', marginTop: 5, borderRadius: 20 }}>
                 <View style={{ padding: 15 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                    <Text style={{ color: 'white' }}>Hello</Text>
-                    <Text style={{ color: 'white' }}>Hello</Text>
+                    <TouchableOpacity onPress={() => setActiveComponent('Users')}>
+                      <MaterialIcons name="create-new-folder" size={24} color="white" />
+                      <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Users</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setActiveComponent('Sales')}>
+                      <MaterialCommunityIcons name="sale" size={24} color="white" />
+                      <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Sales</Text>
+                    </TouchableOpacity>
                   </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 40 }}>
-                    <Text style={{ color: 'white' }}>Hello</Text>
-                    <Text style={{ color: 'white' }}>Hello</Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                    <TouchableOpacity onPress={() => setActiveComponent('Statistics')}>
+                      <AntDesign name="barschart" size={24} color="white" />
+                      <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Stats</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setActiveComponent('Post')}>
+                      <MaterialIcons name="post-add" size={24} color="white" />
+                      <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Post</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
             </View>
           </View>
+
+          {/* Conditional rendering */}
+          {activeComponent === 'Users' && <Users onBack={() => setActiveComponent(null)} />}
+          {activeComponent === 'Sales' && <Sales onBack={() => setActiveComponent(null)} />}
+          {activeComponent === 'Statistics' && <Statistics onBack={() => setActiveComponent(null)} />}
+          {activeComponent === 'Post' && <Post onBack={() => setActiveComponent(null)} />}
+
+          {/* Default text when nothing is selected */}
+          {!activeComponent && (
+            <View>
+              <Text style={{ color: 'white' }}>HELLO</Text>
+            </View>
+          )}
         </View>
       </ImageBackground>
     </View>

@@ -8,17 +8,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: Constants.statusBarHeight,
+        backgroundColor: '#353839',
     },
     card: {
         width: 400,
-        height: 200,
+        height: 250,
         borderRadius: 10,
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 4,
-        elevation: 5,
     },
     image: {
         width: '100%',
@@ -101,10 +101,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: 'black',
     },
+    row: {
+        justifyContent: 'space-between',
+        marginBottom: 5,
+    },
     exerciseCard: {
-        marginVertical: 10,
         padding: 15,
         backgroundColor: 'white',
+        margin: 5,
         borderRadius: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -149,24 +153,24 @@ const styles = StyleSheet.create({
     bmiContainer: {
         marginTop: 20,
         padding: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        backgroundColor: '#FFAC1C',
         borderRadius: 10,
         alignItems: 'center',
     },
     input: {
         height: 40,
-        borderColor: 'gray',
+        borderColor: 'white',
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
+        color: 'white',
         width: '80%',
         marginBottom: 15,
     },
     calculateButton: {
-        backgroundColor: 'gray',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        width: '42%',
     },
 });
 
