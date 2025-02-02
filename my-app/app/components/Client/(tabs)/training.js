@@ -72,10 +72,9 @@ const Training = () => {
         setTraining(null)
 
         const { user } = state;
-
         try {
 
-            const { data } = await axios.get(`${baseURL}/availTrainer/has-active/${user._id}`);
+            const { data } = await axios.get(`${baseURL}/availTrainer/has-active/${user?.user?._id}`);
             setHasActiveTraining(data.hasActive);
             setTraining(data.training);
 

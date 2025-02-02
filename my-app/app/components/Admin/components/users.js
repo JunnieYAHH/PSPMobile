@@ -1,13 +1,17 @@
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useFocusEffect } from 'expo-router';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
+import { useSelector } from 'react-redux';
+import LottieView from 'lottie-react-native';
 
 const Create = ({ onBack }) => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const { user } = useSelector((state) => state.auth);
+    const animation = useRef(null)
 
     useFocusEffect(
         useCallback(() => {
@@ -17,10 +21,14 @@ const Create = ({ onBack }) => {
                 try {
                     const response = await axios.get(`${baseURL}/users/get-all-users`);
                     if (isMounted) {
-                        // Filter out users with the 'admin' role
-                        const nonAdminUsers = response.data.users.filter(user => user.role !== 'admin');
-                        setUsers(nonAdminUsers);
-                        setFilteredUsers(nonAdminUsers); // Show all non-admin users initially
+                        const adminBranchId = user?.userBranch?._id;
+
+                        const filteredUsers = response.data.users.filter(
+                            (user) => user.role !== "admin" && user.role !== "user" && user.userBranch?._id === adminBranchId
+                        );
+
+                        setUsers(filteredUsers);
+                        setFilteredUsers(filteredUsers);
                     }
                 } catch (error) {
                     if (isMounted) {
@@ -37,7 +45,6 @@ const Create = ({ onBack }) => {
         }, [])
     );
 
-    // Function to filter users by role
     const filterUsersByRole = (role) => {
         const filtered = users.filter(user => user.role === role);
         setFilteredUsers(filtered);
@@ -45,25 +52,25 @@ const Create = ({ onBack }) => {
 
     return (
         <View style={styles.container}>
-            {/* Back Button */}
             <TouchableOpacity onPress={onBack} style={styles.backButton}>
                 <AntDesign name="back" size={25} color='#FFAC1C' />
             </TouchableOpacity>
-
-            {/* Side Navigation */}
             <View style={styles.sideNav}>
-                <TouchableOpacity style={styles.button} onPress={() => filterUsersByRole('user')}>
-                    <Text style={styles.buttonText}>Users</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={() => filterUsersByRole('client')}>
                     <Text style={styles.buttonText}>Clients</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={() => filterUsersByRole('coach')}>
                     <Text style={styles.buttonText}>Coaches</Text>
                 </TouchableOpacity>
+                <LottieView
+                    ref={animation}
+                    source={require('../../../../assets/DumbellPress.json')}
+                    autoPlay
+                    loop
+                    style={{ width: 170, height: 200, position: 'absolute', marginTop:100 }}
+                />
             </View>
 
-            {/* Display Filtered Users */}
             <View style={styles.userListContainer}>
                 <FlatList
                     data={filteredUsers}
@@ -74,7 +81,7 @@ const Create = ({ onBack }) => {
                                 <Text style={styles.userName}>{item.name}</Text>
                                 <Text style={styles.userRole}>{item.role}</Text>
                             </View>
-                            <Text style={{ color: 'white', fontSize:13 }}>Hello</Text>
+                            <Text style={{ color: 'white', fontSize: 13 }}>Hello</Text>
                         </View>
                     )}
                 />
@@ -116,7 +123,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#DD571C',
         borderRadius: 30,
         marginLeft: 20,
-        height:'70%'
+        height: '80%'
     },
     userItem: {
         backgroundColor: '#2C2C2C',

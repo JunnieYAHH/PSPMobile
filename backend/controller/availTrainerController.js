@@ -264,18 +264,23 @@ exports.hasActiveTraining = async (req, res) => {
     try {
 
         const trainer = await AvailTrainer.findOne({ userId: req.params.id, status: 'active' });
+        console.log("Trainer found:", trainer);
 
         if (trainer) {
-            return res.status(200).json({ message: 'User has active training', training: trainer, hasActive: true, });
+            return res.status(200).json({
+                message: 'User has active training',
+                training: trainer,
+                hasActive: true,
+            });
         }
 
-        return res.status(404).json({ message: 'User does not have active training', hasActive: false, });
+        return res.status(404).json({ message: 'User does not have active training', hasActive: false });
 
     } catch (err) {
-        console.log(err)
+        console.error(err);
         res.status(500).json({
             message: 'System failure, please try again later',
-            error: error.message
-        })
+            error: err.message
+        });
     }
 }

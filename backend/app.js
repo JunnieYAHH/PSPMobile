@@ -9,6 +9,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const branchRoutes = require('./routes/branchRoutes')
 const transactionRoutes = require('./routes/transactionRoutes')
 const availTrainerRoutes = require('./routes/availTrainerRoutes')
+const logRoutes = require('./routes/logRoutes')
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.use('/api/v1/exercises', exerciseRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/transaction', transactionRoutes);
 app.use('/api/v1/availTrainer', availTrainerRoutes);
+app.use('/api/v1/logs', logRoutes);
 
 // Start server
 app.listen(port, () => {
