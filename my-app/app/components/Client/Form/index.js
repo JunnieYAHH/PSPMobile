@@ -51,7 +51,7 @@ const QuestionnaireForm = () => {
                             try {
                                 const response = await submitParQ({
                                     ...values,
-                                    userId: user.user._id
+                                    userId: user?.user?._id
 
                                 });
                                 if (response && response.user) {

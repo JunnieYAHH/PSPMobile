@@ -52,7 +52,7 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                 <View style={{ padding: 10, }}>
 
                     <View style={{ marginBottom: 10, }}>
-                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Coach Info</Text>
+                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, color: 'white' }}>Coach Info</Text>
                         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
 
                             <View style={{ flexDirection: 'row', gap: 10, }}>
@@ -71,18 +71,18 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                                 )}
                                 <View style={{ gap: 3, }}>
                                     <View>
-                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Coach:</Text>
-                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.coachID?.name || 'Not specified'}</Text>
+                                        <Text style={{ fontSize: 15, fontWeight: 900, color: 'white' }}>Coach:</Text>
+                                        <Text style={{ fontSize: 15, color: 'white' }}>{serviceDetails?.coachID?.name || 'Not specified'}</Text>
                                     </View>
 
                                     <View>
-                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Email:</Text>
-                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.coachID?.email || 'Not specified'}</Text>
+                                        <Text style={{ fontSize: 15, fontWeight: 900, color: 'white' }}>Email:</Text>
+                                        <Text style={{ fontSize: 15, color: 'white' }}>{serviceDetails?.coachID?.email || 'Not specified'}</Text>
                                     </View>
 
                                     <View>
-                                        <Text style={{ fontSize: 15, fontWeight: 900, }}>Contact No:</Text>
-                                        <Text style={{ fontSize: 15, }}>{serviceDetails?.coachID?.phone || "Not specified"}</Text>
+                                        <Text style={{ fontSize: 15, fontWeight: 900, color: 'white' }}>Contact No:</Text>
+                                        <Text style={{ fontSize: 15, color: 'white' }}>{serviceDetails?.coachID?.phone || "Not specified"}</Text>
                                     </View>
                                 </View>
                             </View>
@@ -91,37 +91,37 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                     </View>
 
                     <View style={{ marginBottom: 10, }}>
-                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, }}>Service Info</Text>
+                        <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, color: 'white' }}>Service Info</Text>
                         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
 
                             <View style={{ gap: 5, }}>
                                 <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Package:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.package}</Text>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Package:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.package}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Session:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.sessions}</Text>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Session:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.sessions}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Session Rate:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>P{serviceDetails?.sessionRate}</Text>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Session Rate:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>P{serviceDetails?.sessionRate}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Start Date:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.startDate || "Not specified"}</Text>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Start Date:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.startDate || "Not specified"}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>End Date:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{new Date(serviceDetails?.endDate).toLocaleDateString()}</Text>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>End Date:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{new Date(serviceDetails?.endDate).toLocaleDateString()}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Total:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.total || "Not specified"}</Text>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Total:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.total || "Not specified"}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Status:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.status}</Text>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Status:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.status}</Text>
                                 </View>
                             </View>
 
@@ -140,7 +140,7 @@ const Schedules = ({ schedules, serviceDetails, getClientService }) => {
 
     return (
         <View style={{ marginBottom: 10 }}>
-            <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: '900' }}>Schedule a Session</Text>
+            <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: '900', color: 'white' }}>Schedule a Session</Text>
             {schedules?.map((schedule, index) => (
                 <Session key={schedule._id} index={index} item={schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
             ))}
@@ -165,21 +165,21 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
     return (
         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, marginBottom: 10, }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontSize: 16, fontWeight: 900, marginBottom: 10, }}>Session {index + 1}</Text>
-                <Text style={{ fontSize: 16, fontWeight: 900, marginBottom: 10, }}>{status?.toUpperCase()}</Text>
+                <Text style={{ fontSize: 16, fontWeight: 900, marginBottom: 10, color: 'white' }}>Session {index + 1}</Text>
+                <Text style={{ fontSize: 16, fontWeight: 900, marginBottom: 10, color: 'white' }}>{status?.toUpperCase()}</Text>
             </View>
             <View style={{ marginBottom: 10 }}>
-                <Text>Date</Text>
+                <Text style={{ color: 'white' }}>Date</Text>
                 <Pressable >
                     <View style={{ alignItems: 'center', borderRadius: 5, borderWidth: 1, padding: 10 }}>
-                        <Text>{formatDate(date)}</Text>
+                        <Text style={{ color: 'white' }}>{formatDate(date)}</Text>
                     </View>
                 </Pressable>
             </View>
             <Pressable  >
-                <Text>Time</Text>
+                <Text style={{ color: 'white' }}>Time</Text>
                 <View style={{ alignItems: 'center', borderRadius: 5, borderWidth: 1, padding: 10 }}>
-                    <Text>{formatTime(time)}</Text>
+                    <Text style={{ color: 'white' }}>{formatTime(time)}</Text>
                 </View>
             </Pressable>
         </View>
