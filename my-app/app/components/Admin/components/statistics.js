@@ -36,13 +36,15 @@ const Statistics = ({ onBack }) => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
-                <AntDesign name="back" size={20} color='#FFAC1C' />
-            </TouchableOpacity>
-            <Text style={styles.title}>Statistics</Text>
-
-            {/* Pass logs data to the chart component */}
-            {logs.length > 0 ? <LogCharts logs={logs} /> : <Text>Loading data...</Text>}
+            <View style={{ flexDirection: 'row', marginTop: 40, width: '100%', marginBottom: 10 }}>
+                <TouchableOpacity onPress={onBack} style={{ justifyContent: 'space-between' }}>
+                    <AntDesign name="back" size={20} color='#FFAC1C' />
+                </TouchableOpacity>
+                <Text style={styles.title}>Statistics</Text>
+            </View>
+            <View style={{ flex: 1, width: '100%', }}>
+                {logs.length > 0 ? <LogCharts logs={logs} /> : <Text>Loading data...</Text>}
+            </View>
         </View>
     );
 };
@@ -51,6 +53,8 @@ export default Statistics;
 
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    backButton: { position: 'absolute', top: 40, left: 20, padding: 10, borderRadius: 5 },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+    // backButton: {
+    //     position: 'absolute', top: 40, left: 20, padding: 10, borderRadius: 5,
+    // },
+    title: { fontSize: 24, fontWeight: 'bold', color: 'white', marginLeft: 115 },
 });

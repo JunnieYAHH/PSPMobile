@@ -60,7 +60,7 @@ const Training = () => {
             currency: 'php',
             userId: user?._id || user?.user?._id,
         });
-        console.log(response.data)
+        // console.log(response.data)
 
         const { clientSecret } = response.data;
 
@@ -101,11 +101,11 @@ const Training = () => {
             endDate: endDate,
             package: selectedPackage,
         }
-        console.log(data)
+        // console.log(data)
 
         try {
             const response = await axios.post(`${baseUrl}/availTrainer`, data);
-            console.log('Trainer created successfully:', response.data);
+            // console.log('Trainer created successfully:', response.data);
             Alert.alert("Succesfully Submitted", "Please Wait for the Confirmation")
             navigation.goBack()
         } catch (error) {

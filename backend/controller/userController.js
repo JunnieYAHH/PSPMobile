@@ -168,7 +168,7 @@ const userController = {
       user.role = role;
       user.image = { public_id: result.public_id, url: result.secure_url };
 
-      console.log(user)
+      // console.log(user)
 
       user = await User.findByIdAndUpdate(_id, user, {
         new: true,
@@ -254,6 +254,7 @@ const userController = {
   }),
   userLog: asyncHandler(async (req, res) => {
     const { id } = req.params;
+    const { adminBranchId } = req.body;
 
     try {
       const today = new Date().setHours(0, 0, 0, 0);
@@ -269,6 +270,7 @@ const userController = {
 
       const newLog = await Log.create({
         userId: id,
+        adminBranchId: adminBranchId,
         timeIn: new Date(),
         date: today
       });
@@ -296,14 +298,14 @@ const userController = {
 
       let query = {};
       if (req.query?.role === 'coach') {
-        console.log(req.query.role);
+        // console.log(req.query.role);
         query.role = 'coach';
-        console.log(query)
+        // console.log(query)
       }
 
 
       const users = await User.find(query)
-      console.log(users)
+      // console.log(users)
       res.status(201).json({ message: "Users fetch successfully", users });
     } catch (error) {
       console.error("Fetch All Users Error:", error.message);

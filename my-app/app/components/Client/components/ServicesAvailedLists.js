@@ -20,7 +20,7 @@ export default function ServicesAvailedLists() {
     const getAvailedServices = async () => {
         setScreenLoading(true)
         const { user } = state;
-        console.log(user)
+        // console.log(user)
         try {
 
             const { data } = await axios.get(`${baseURL}/availTrainer/client/${user._id}`);
@@ -142,7 +142,7 @@ const ServiceDetail = ({ item }) => {
 }
 
 function getNextScheduleAfterLatestCompleted(item) {
-    console.log(item)
+    // console.log(item)
     // Sort schedules by date ascending (assuming each item has a date)
     const sortedSchedules = item?.schedule?.sort((a, b) => new Date(a?.dateAssigned) - new Date(b?.dateAssigned));
 

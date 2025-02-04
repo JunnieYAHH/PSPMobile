@@ -15,6 +15,11 @@ const logsSchema = new mongoose.Schema({
         type: Date,
         default: null, 
     },
+    adminBranchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     date: {
         type: Date,
         required: true,

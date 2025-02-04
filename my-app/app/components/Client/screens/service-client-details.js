@@ -32,7 +32,7 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
             const { data } = await axios.get(`${baseURL}/availTrainer/${trainerId}`)
 
             setServiceDetails(data);
-            console.log(data)
+            // console.log(data)
 
         } catch (error) {
             console.error("Error fetching training sessions:", error);

@@ -9,8 +9,8 @@ const exerciseController = {
 
             const images = req.files;
 
-            console.log(req.body)
-            console.log(req.files)
+            // console.log(req.body)
+            // console.log(req.files)
 
             let imageData = []
 

@@ -138,7 +138,7 @@ exports.getByAssignedCoach = async (req, res,) => {
             model: 'users'
         })
 
-        console.log(trainers)
+        // console.log(trainers)
 
         res.status(200).json(trainers);
     } catch (error) {
@@ -151,7 +151,7 @@ exports.getByAssignedCoach = async (req, res,) => {
 exports.getClientsAvailedServices = async (req, res,) => {
 
     try {
-        console.log(req.params)
+        // console.log(req.params)
 
         const trainers = await AvailTrainer.find({ userId: req.params.id }).populate({
             path: 'userId',
@@ -161,7 +161,7 @@ exports.getClientsAvailedServices = async (req, res,) => {
             model: 'users'
         })
 
-        console.log(trainers)
+        // console.log(trainers)
 
         res.status(200).json(trainers);
 
@@ -264,7 +264,7 @@ exports.hasActiveTraining = async (req, res) => {
     try {
 
         const trainer = await AvailTrainer.findOne({ userId: req.params.id, status: 'active' });
-        console.log("Trainer found:", trainer);
+        // console.log("Trainer found:", trainer);
 
         if (trainer) {
             return res.status(200).json({

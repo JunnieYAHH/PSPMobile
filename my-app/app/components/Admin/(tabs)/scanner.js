@@ -4,6 +4,7 @@ import { CameraType } from 'expo-camera/build/legacy/Camera.types';
 import { StyleSheet, Text, TouchableOpacity, View, Alert, Modal, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { userLog } from '../../../(services)/api/Users/userLog';
+import { useSelector } from 'react-redux';
 
 export default function Scanner() {
   const [facing, setFacing] = useState(CameraType.back);
@@ -12,6 +13,7 @@ export default function Scanner() {
   const [modalVisible, setModalVisible] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [message, setMessage] = useState('');
+  const { user } = useSelector((state) => state.auth);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,9 +35,10 @@ export default function Scanner() {
       setScanning(false);
 
       const userId = scannedData.data;
+      const adminBranchId = user?.user?._id;
 
       try {
-        const response = await userLog(userId);
+        const response = await userLog(userId, adminBranchId);
         // console.log(response.message)
         const { user } = response;
 

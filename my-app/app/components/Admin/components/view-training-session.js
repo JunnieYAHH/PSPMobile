@@ -241,7 +241,7 @@ const TrainingSession = () => {
                                                 opacity: pressed ? 0.7 : 1,  // Add visual feedback on press
                                             })}
                                             onPress={() => {
-                                                console.log(item._id);
+                                                // console.log(item._id);
                                                 setSelectedCoachId(item._id);
                                             }}
                                         >

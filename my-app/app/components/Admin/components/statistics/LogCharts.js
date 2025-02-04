@@ -1,14 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
 import { parseISO, differenceInMinutes, format } from 'date-fns';
+import { BottomSheetModal, BottomSheetView, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import axios from 'axios';
+import { useFocusEffect } from 'expo-router';
+import baseURL from '../../../../../assets/common/baseUrl';
+import { useSelector } from 'react-redux';
 
 const LogCharts = ({ logs }) => {
   const [dailyActivity, setDailyActivity] = useState([]);
   const [userFrequency, setUserFrequency] = useState([]);
+  const [userFrequencyData, setUserFrequencyData] = useState([]);
+  const { user } = useSelector((state) => state.auth);
   const [averageSession, setAverageSession] = useState([]);
   const [peakHours, setPeakHours] = useState([]);
+  // console.log(peakHours)
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
 
+      const fetchUsers = async () => {
+        try {
+          const response = await axios.get(`${baseURL}/users/get-all-users`);
+          if (isMounted) {
+            const adminBranchId = user?.userBranch?._id;
+
+            const filteredUsers = response.data.users.filter(
+              (user) => user.role !== "admin" && user.role !== "user" && user.role !== "coach" && user.userBranch?._id === adminBranchId
+            );
+            setUserFrequencyData(filteredUsers);
+          }
+        } catch (error) {
+          if (isMounted) {
+            console.error("Error fetching users:", error);
+          }
+        }
+      };
+
+      fetchUsers();
+
+      return () => {
+        isMounted = false;
+      };
+    }, [])
+  );
+
+  //Data
   useEffect(() => {
     const activityMap = {};
     const userMap = {};
@@ -22,46 +60,199 @@ const LogCharts = ({ logs }) => {
       const timeOut = parseISO(log.timeOut);
       const duration = differenceInMinutes(timeOut, timeIn);
       const hour = timeIn.getHours();
-      
-      // Daily Activity
+
       activityMap[date] = (activityMap[date] || 0) + 1;
-      
-      // User Frequency
       userMap[userId] = (userMap[userId] || 0) + 1;
-      
-      // Average Session
       sessionMap[date] = sessionMap[date] ? [...sessionMap[date], duration] : [duration];
-      
-      // Peak Hours
       hourMap[hour] += 1;
     });
 
-    setDailyActivity(Object.entries(activityMap).map(([date, count]) => ({ label: date, value: count })));
-    setUserFrequency(Object.entries(userMap).map(([user, count]) => ({ label: user, value: count })));
-    setAverageSession(Object.entries(sessionMap).map(([date, durations]) => ({ label: date, value: durations.reduce((a, b) => a + b, 0) / durations.length })));
-    setPeakHours(hourMap.map((count, index) => ({ label: `${index}:00`, value: count })));
+    setDailyActivity(
+      Object.entries(activityMap).map(([date, count]) => ({
+        label: format(parseISO(date), 'MMMM dd, yyyy'),
+        value: count
+      }))
+    );
+
+    setUserFrequency(
+      Object.entries(userMap).map(([userId, count]) => {
+        const user = userFrequencyData.find((u) => u._id === userId);
+        return {
+          label: user ? user.name : `User ${userId}`,
+          value: count
+        };
+      })
+    );
+
+    setAverageSession(
+      Object.entries(sessionMap)
+        .filter(([_, durations]) => durations.some((d) => d > 0))
+        .map(([date, durations]) => ({
+          label: format(parseISO(date), 'MMMM dd, yyyy'),
+          value: parseFloat((durations.reduce((a, b) => a + b, 0) / durations.length).toFixed(2)),
+          labelTextStyle: { color: 'black' },
+          color: 'black'
+        }))
+    );
+
+    setPeakHours(
+      hourMap
+        .map((count, index) => {
+          const period = index >= 12 ? 'PM' : 'AM';
+          const hour = index % 12 || 12; 
+          return {
+            label: `${hour}:00 ${period}`, 
+            value: count
+          };
+        })
+        .filter(item => item.value > 0)
+    );
   }, [logs]);
+
+  // Create separate modal refs
+  const dailyActivityModalRef = useRef(null);
+  const userFrequencyModalRef = useRef(null);
+  const averageSessionModalRef = useRef(null);
+  const peakHoursModalRef = useRef(null);
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Daily Activity</Text>
-      <BarChart data={dailyActivity} barWidth={50} />
+      <View style={{ backgroundColor: 'black', padding: 20, borderRadius: 10, marginTop: 10, marginBottom: 25 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.title}>Daily Activity</Text>
+          <TouchableOpacity onPress={() => dailyActivityModalRef.current?.present()}>
+            <Text style={{ textAlign: 'right', color: '#FFAC1C' }}>
+              See more -{'>'}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      <Text style={styles.title}>User Check-in Frequency</Text>
-      <BarChart data={userFrequency} barWidth={50} />
+        <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 20 }}>
+          <BarChart data={dailyActivity} barWidth={40} spacing={10} width={500} hideRules
+            yAxisThickness={0}
+            xAxisThickness={2}
+            xAxisLabelTextStyle={{ color: 'black' }}
+            yAxisLabelTextStyle={{ color: 'black' }}
+          />
+        </View>
+      </View>
 
-      <Text style={styles.title}>Average Session Duration</Text>
-      <LineChart data={averageSession} thickness={3} />
+      <View style={{ backgroundColor: 'black', padding: 20, borderRadius: 10, marginBottom: 25 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.title}>User Check-in Frequency</Text>
+          <TouchableOpacity onPress={() => userFrequencyModalRef.current?.present()}>
+            <Text style={{ textAlign: 'right', color: '#FFAC1C' }}>
+              See more -{'>'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 20 }}>
+          <BarChart data={userFrequency} barWidth={40} spacing={10} width={500} hideRules
+            yAxisThickness={0}
+            xAxisThickness={2}
+            xAxisLabelTextStyle={{ color: 'black' }}
+            yAxisLabelTextStyle={{ color: 'black' }}
+          />
+        </View>
+      </View>
 
-      <Text style={styles.title}>Peak Usage Hours</Text>
-      <BarChart data={peakHours} barWidth={30} />
-    </ScrollView>
+      <View style={{ backgroundColor: 'black', padding: 20, borderRadius: 10, marginBottom: 25 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.title}>Average Session Duration</Text>
+          <TouchableOpacity onPress={() => averageSessionModalRef.current?.present()}>
+            <Text style={{ textAlign: 'right', color: '#FFAC1C' }}>
+              See more -{'>'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 20 }}>
+          <LineChart data={averageSession} thickness={3} width={500} hideRules curved hideDataPoints
+            xAxisLabelTextStyle={{ color: 'black' }}
+            yAxisLabelTextStyle={{ color: 'black' }}
+            dataPointsColor={'black'}
+            textColor="black"
+            color="black"
+          />
+        </View>
+      </View>
+
+      <View style={{ backgroundColor: 'black', padding: 20, borderRadius: 10, marginBottom: 25 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.title}>Peak Usage Hours</Text>
+          <TouchableOpacity onPress={() => peakHoursModalRef.current?.present()}>
+            <Text style={{ textAlign: 'right', color: '#FFAC1C' }}>
+              See more -{'>'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 20 }}>
+          <BarChart data={peakHours} barWidth={30} spacing={8} width={500}
+            hideRules
+            yAxisThickness={0}
+            xAxisThickness={2}
+            xAxisLabelTextStyle={{ color: 'black' }}
+            yAxisLabelTextStyle={{ color: 'black' }}
+          />
+        </View>
+      </View>
+
+      <BottomSheetModal ref={dailyActivityModalRef} index={0} snapPoints={['50%']}>
+        <BottomSheetView style={[styles.modalContent, { backgroundColor: '#FFD700' }]}>
+          <Text style={[styles.modalTitle, { color: 'black' }]}>Daily Activity</Text>
+          <FlatList
+            data={dailyActivity}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => <Text style={styles.modalItem}>{`${item.label}: ${item.value}`}</Text>}
+          />
+        </BottomSheetView>
+      </BottomSheetModal>
+
+      <BottomSheetModal ref={userFrequencyModalRef} index={0} snapPoints={['50%']}>
+        <BottomSheetView style={[styles.modalContent, { backgroundColor: '#1E90FF' }]}>
+          <Text style={[styles.modalTitle, { color: 'white' }]}>User Check-in Frequency</Text>
+          <FlatList
+            data={userFrequency}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => <Text style={styles.modalItem}>{`${item.label}: ${item.value}`}</Text>}
+          />
+        </BottomSheetView>
+      </BottomSheetModal>
+
+      <BottomSheetModal ref={averageSessionModalRef} index={0} snapPoints={['50%']}>
+        <BottomSheetView style={[styles.modalContent, { backgroundColor: '#32CD32' }]}>
+          <Text style={[styles.modalTitle, { color: 'black' }]}>Average Session Duration</Text>
+          <FlatList
+            data={averageSession}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => <Text style={styles.modalItem}>{`${item.label}: ${item.value} min/s`}</Text>}
+          />
+        </BottomSheetView>
+      </BottomSheetModal>
+
+      <BottomSheetModal ref={peakHoursModalRef} index={0} snapPoints={['50%']}>
+        <BottomSheetView style={[styles.modalContent, { backgroundColor: '#FF4500' }]}>
+          <Text style={[styles.modalTitle, { color: 'white' }]}>Peak Usage Hours</Text>
+          <FlatList
+            data={peakHours}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => <Text style={styles.modalItem}>{`${item.label}: ${item.value}`}</Text>}
+          />
+        </BottomSheetView>
+      </BottomSheetModal>
+    </ScrollView >
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  container: { flex: 1, width: '100%', height: '100%' },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: 'white' },
+  chartContainer: { backgroundColor: 'black', padding: 20, borderRadius: 10, marginVertical: 10 },
+  chartHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  title: { fontSize: 18, fontWeight: 'bold', color: 'white' },
+  seeMore: { textAlign: 'right', color: '#FFAC1C' },
+  modalContent: { padding: 20, borderRadius: 15 },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  modalItem: { fontSize: 16, paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: '#ddd' }
 });
 
 export default LogCharts;
