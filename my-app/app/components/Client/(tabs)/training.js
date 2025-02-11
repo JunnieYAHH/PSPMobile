@@ -97,7 +97,8 @@ const Training = () => {
 
         }, [])
     )
-
+    console.log(hasActiveTraining, 'hasTraining')
+    console.log(training, 'training')
     return (
         <>
             {screenLoading ? (
@@ -106,7 +107,101 @@ const Training = () => {
 
                 <>
                     <StatusBar translucent backgroundColor="transparent" />
-                    {!hasActiveTraining && !training && (
+                    {hasActiveTraining && training ? (
+                        <View style={{ backgroundColor: '#353839', height: '100%' }}>
+                            {hasActiveTraining && training && (
+                                <SafeAreaView>
+                                    <View style={{ flexDirection: 'row', backgroundColor: '#353839', justifyContent: 'center' }}>
+                                        <View style={{ backgroundColor: '#CC5500', height: 130, width: 200, borderRadius: 7, marginTop: 10 }}>
+                                            <View style={{ backgroundColor: 'black', height: 115, width: 180, alignSelf: 'center', marginTop: 7, borderRadius: 10 }}>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <View style={{ padding: 10 }}>
+                                                        <View style={{ backgroundColor: '#FFAC1C', height: 60, width: 65, padding: 2, borderRadius: 40 }}>
+                                                            <View style={{ backgroundColor: 'black', height: 50, width: 57, padding: 10, borderRadius: 70, marginTop: 3, marginLeft: 2 }}>
+                                                                <FontAwesome6 name="user-clock" size={30} color="white" />
+                                                            </View>
+                                                        </View>
+                                                        <View style={{ marginTop: 5, marginLeft: 6 }}>
+                                                            <Text style={{ color: '#FFBF00', fontSize: 24 }}>{activeCount} <Text style={{ color: 'white', fontSize: 24 }}>/ ???</Text></Text>
+                                                        </View>
+                                                    </View>
+                                                    <View style={{ alignItems: 'center', marginTop: 25 }}>
+                                                        <Text style={{ color: 'white', fontSize: 15, fontStyle: 'italic' }}>Current User/s</Text>
+                                                        <Text style={{ color: '#FFBF00', fontSize: 16, fontWeight: 'bold', fontStyle: 'italic', marginTop: 5 }}>AT GYM</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
+                                        <View style={{ backgroundColor: '#CC5500', height: 130, width: 150, borderRadius: 7, marginTop: 10, marginLeft: 10 }}>
+                                            <View style={{ backgroundColor: 'black', height: 120, width: 140, alignSelf: 'center', marginTop: 5, borderRadius: 20 }}>
+                                                <View style={{ padding: 15 }}>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                                        <TouchableOpacity onPress={() => setActiveComponent('History')}>
+                                                            <MaterialIcons name="create-new-folder" size={24} color="white" />
+                                                            <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>History</Text>
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity onPress={() => setActiveComponent('Progress')}>
+                                                            <MaterialCommunityIcons name="sale" size={24} color="white" style={{ marginLeft: 2 }} />
+                                                            <Text style={{ color: 'white', fontSize: 8 }}>Progress</Text>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                                                        <TouchableOpacity onPress={() => setActiveComponent('Statistics')}>
+                                                            <AntDesign name="barschart" size={24} color="white" />
+                                                            <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Stats</Text>
+                                                        </TouchableOpacity>
+                                                        {/* <TouchableOpacity onPress={() => setActiveComponent('Post')}>
+                                                            <MaterialIcons name="post-add" size={24} color="white" />
+                                                            <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Post</Text>
+                                                        </TouchableOpacity> */}
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', gap: 5, padding: 10, }}>
+                                        <View style={{ flex: 1, }}>
+                                            <Button onPress={() => setView('current')} title='Services Availed'
+                                                color={view === 'current' ? '#FFAC1C' : '#AAAAAA'}
+                                            />
+                                        </View>
+                                        <View style={{ flex: 1, }}>
+                                            <Button onPress={() => setView('all')} title='Current Service'
+                                                color={view === 'all' ? '#FFAC1C' : '#AAAAAA'}
+                                            />
+                                        </View>
+                                    </View>
+
+                                    {view === 'current' && (
+                                        <View style={{ padding: 10, marginBottom: 50 }}>
+                                            <Text style={{ fontWeight: 900, fontSize: 16, marginBottom: 10, }}>Availed Services</Text>
+                                            <ServicesAvailedLists key={hasActiveTraining + "current"} />
+                                            <Text style={styles.header}>
+                                                Gym Calendar - {today.toLocaleString('default', { month: 'long' })} {year}
+                                            </Text>
+
+                                            {/* Calendar Section */}
+                                            <FlatList
+                                                data={Array.from({ length: totalDays }, (_, i) => i + 1)}
+                                                keyExtractor={(item) => item.toString()}
+                                                numColumns={7}
+                                                renderItem={renderDay}
+                                                contentContainerStyle={styles.calendarContainer}
+                                            />
+                                        </View>
+                                    )}
+
+                                    {view === 'all' && (
+                                        <View style={{ marginBottom: 100 }}>
+                                            <ClientServiceDetail key={hasActiveTraining + "all"} trainerIdProps={training._id} />
+                                        </View>
+                                    )}
+
+                                </SafeAreaView >
+                            )}
+                        </View>
+                    ) : (
                         <RNSafeAreaView style={styles.container}>
                             <ImageBackground
                                 source={require('../../../../assets/ProgramBG.png')}
@@ -161,9 +256,9 @@ const Training = () => {
                                                             <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Stats</Text>
                                                         </TouchableOpacity>
                                                         {/* <TouchableOpacity onPress={() => setActiveComponent('Post')}>
-                                                            <MaterialIcons name="post-add" size={24} color="white" />
-                                                            <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Post</Text>
-                                                        </TouchableOpacity> */}
+                                                        <MaterialIcons name="post-add" size={24} color="white" />
+                                                        <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Post</Text>
+                                                    </TouchableOpacity> */}
                                                     </View>
                                                 </View>
                                             </View>
@@ -193,99 +288,6 @@ const Training = () => {
                             </ImageBackground>
                         </RNSafeAreaView>
                     )}
-                    <View style={{ backgroundColor: '#353839', height: '100%' }}>
-                        {hasActiveTraining && training && (
-                            <SafeAreaView>
-                                <View style={{ flexDirection: 'row', backgroundColor: '#353839', justifyContent: 'center' }}>
-                                    <View style={{ backgroundColor: '#CC5500', height: 130, width: 200, borderRadius: 7, marginTop: 10 }}>
-                                        <View style={{ backgroundColor: 'black', height: 115, width: 180, alignSelf: 'center', marginTop: 7, borderRadius: 10 }}>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <View style={{ padding: 10 }}>
-                                                    <View style={{ backgroundColor: '#FFAC1C', height: 60, width: 65, padding: 2, borderRadius: 40 }}>
-                                                        <View style={{ backgroundColor: 'black', height: 50, width: 57, padding: 10, borderRadius: 70, marginTop: 3, marginLeft: 2 }}>
-                                                            <FontAwesome6 name="user-clock" size={30} color="white" />
-                                                        </View>
-                                                    </View>
-                                                    <View style={{ marginTop: 5, marginLeft: 6 }}>
-                                                        <Text style={{ color: '#FFBF00', fontSize: 24 }}>{activeCount} <Text style={{ color: 'white', fontSize: 24 }}>/ ???</Text></Text>
-                                                    </View>
-                                                </View>
-                                                <View style={{ alignItems: 'center', marginTop: 25 }}>
-                                                    <Text style={{ color: 'white', fontSize: 15, fontStyle: 'italic' }}>Current User/s</Text>
-                                                    <Text style={{ color: '#FFBF00', fontSize: 16, fontWeight: 'bold', fontStyle: 'italic', marginTop: 5 }}>AT GYM</Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </View>
-                                    <View style={{ backgroundColor: '#CC5500', height: 130, width: 150, borderRadius: 7, marginTop: 10, marginLeft: 10 }}>
-                                        <View style={{ backgroundColor: 'black', height: 120, width: 140, alignSelf: 'center', marginTop: 5, borderRadius: 20 }}>
-                                            <View style={{ padding: 15 }}>
-                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                                                    <TouchableOpacity onPress={() => setActiveComponent('History')}>
-                                                        <MaterialIcons name="create-new-folder" size={24} color="white" />
-                                                        <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>History</Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity onPress={() => setActiveComponent('Progress')}>
-                                                        <MaterialCommunityIcons name="sale" size={24} color="white" style={{ marginLeft: 2 }} />
-                                                        <Text style={{ color: 'white', fontSize: 8 }}>Progress</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-                                                    <TouchableOpacity onPress={() => setActiveComponent('Statistics')}>
-                                                        <AntDesign name="barschart" size={24} color="white" />
-                                                        <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Stats</Text>
-                                                    </TouchableOpacity>
-                                                    {/* <TouchableOpacity onPress={() => setActiveComponent('Post')}>
-                                                            <MaterialIcons name="post-add" size={24} color="white" />
-                                                            <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Post</Text>
-                                                        </TouchableOpacity> */}
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
-
-                                <View style={{ flexDirection: 'row', gap: 5, padding: 10, }}>
-                                    <View style={{ flex: 1, }}>
-                                        <Button onPress={() => setView('current')} title='Services Availed'
-                                            color={view === 'current' ? '#FFAC1C' : '#AAAAAA'}
-                                        />
-                                    </View>
-                                    <View style={{ flex: 1, }}>
-                                        <Button onPress={() => setView('all')} title='Current Service'
-                                            color={view === 'all' ? '#FFAC1C' : '#AAAAAA'}
-                                        />
-                                    </View>
-                                </View>
-
-                                {view === 'current' && (
-                                    <View style={{ padding: 10, marginBottom: 50 }}>
-                                        <Text style={{ fontWeight: 900, fontSize: 16, marginBottom: 10, }}>Availed Services</Text>
-                                        <ServicesAvailedLists key={hasActiveTraining + "current"} />
-                                        <Text style={styles.header}>
-                                            Gym Calendar - {today.toLocaleString('default', { month: 'long' })} {year}
-                                        </Text>
-
-                                        {/* Calendar Section */}
-                                        <FlatList
-                                            data={Array.from({ length: totalDays }, (_, i) => i + 1)}
-                                            keyExtractor={(item) => item.toString()}
-                                            numColumns={7}
-                                            renderItem={renderDay}
-                                            contentContainerStyle={styles.calendarContainer}
-                                        />
-                                    </View>
-                                )}
-
-                                {view === 'all' && (
-                                    <View style={{ marginBottom: 100 }}>
-                                        <ClientServiceDetail key={hasActiveTraining + "all"} trainerIdProps={training._id} />
-                                    </View>
-                                )}
-
-                            </SafeAreaView >
-                        )}
-                    </View>
                 </>
             )}
         </>
