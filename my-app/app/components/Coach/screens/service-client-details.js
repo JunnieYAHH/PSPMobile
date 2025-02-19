@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import LoadingScreen from '../../LodingScreen';
+import { Picker } from '@react-native-picker/picker';
 
 const ClientServiceDetail = () => {
 
@@ -131,6 +132,8 @@ const Schedules = ({ schedules, serviceDetails, getClientService }) => {
     )
 }
 
+const trainings = ['Chest', 'Back', 'Arms', 'Legs', 'Core', 'Cardio'];
+
 const Session = ({ item, index, serviceDetails, getClientService }) => {
 
     const [date, setDate] = useState(null);
@@ -138,6 +141,7 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [status, setStatus] = useState('pending');
+    const [selectedTrainings, setSelectedTrainings] = useState([]);
 
     const onChange = (event, selectedDate) => {
         setShow(false);
@@ -173,15 +177,25 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
             setDate(item?.dateAssigned ? new Date(item?.dateAssigned) : null)
             setTime(item?.timeAssigned ? new Date(item?.timeAssigned) : null)
             setStatus(item?.status)
+            setSelectedTrainings(item?.trainings)
         }, [])
     )
 
+    const handleTrainingSelect = (training) => {
+        setSelectedTrainings((prev) =>
+            prev.includes(training)
+                ? prev.filter((t) => t !== training)
+                : [...prev, training]
+        );
+    };
+
+    // console.log(selectedTrainings)
     const saveDateTimeSession = async () => {
         try {
 
             const { data } = await axios.put(
                 `${baseURL}/availTrainer/update/session/${serviceDetails._id}?sessionId=${item._id}`,
-                { sessionId: item._id, date, time }
+                { sessionId: item._id, date, time, trainings: selectedTrainings }
             )
 
             getClientService()
@@ -284,6 +298,23 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
                     <Text>{formatTime(time)}</Text>
                 </View>
             </Pressable>
+            <View style={{ marginBottom: 10, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ textAlign: 'center', marginBottom: 5 }}>Training Type</Text>
+                <Picker
+                    selectedValue={selectedTrainings.length > 0 ? selectedTrainings[selectedTrainings.length - 1] : ""}
+                    onValueChange={(itemValue) => handleTrainingSelect(itemValue)}
+                    style={{ width: '80%', borderRadius: 5 }}
+                >
+                    <Picker.Item label="Select Training" value="" />
+                    {trainings.map((training) => (
+                        <Picker.Item key={training} label={training} value={training} />
+                    ))}
+                </Picker>
+                <Text style={{ textAlign: 'center', marginTop: 5 }}>
+                    Selected: {selectedTrainings.length > 0 ? selectedTrainings.join(', ') : 'None'}
+                </Text>
+            </View>
+
             {show && (
                 <DateTimePicker
                     testID="dateTimePicker"

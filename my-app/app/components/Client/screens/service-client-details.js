@@ -49,7 +49,7 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                 <View style={{ marginTop: 30, }} />
             )}
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ padding: 10, }}>
+                <View style={{ padding: 10, marginBottom: 275 }}>
 
                     <View style={{ marginBottom: 10, }}>
                         <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, color: 'white' }}>Coach Info</Text>
@@ -153,12 +153,14 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
     const [date, setDate] = useState(null);
     const [time, setTime] = useState(null);
     const [status, setStatus] = useState('pending');
+    const [trainings, setTrainings] = useState([]);
 
     useFocusEffect(
         useCallback(() => {
             setDate(item?.dateAssigned ? new Date(item?.dateAssigned) : null)
             setTime(item?.timeAssigned ? new Date(item?.timeAssigned) : null)
             setStatus(item?.status)
+            setTrainings(item?.trainings || [])
         }, [])
     )
 
@@ -182,6 +184,21 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
                     <Text style={{ color: 'white' }}>{formatTime(time)}</Text>
                 </View>
             </Pressable>
+            {/* Display Trainings */}
+            <View style={{ marginTop: 10 }}>
+                <Text style={{ color: 'white' }}>Trainings</Text>
+                {trainings.length > 0 ? (
+                    <View style={{ marginTop: 5 }}>
+                        {trainings.map((training, idx) => (
+                            <Text key={idx} style={{ color: 'white', fontSize: 14 }}>
+                                • {training}
+                            </Text>
+                        ))}
+                    </View>
+                ) : (
+                    <Text style={{ color: 'gray', fontSize: 14 }}>No trainings assigned</Text>
+                )}
+            </View>
         </View>
     )
 }

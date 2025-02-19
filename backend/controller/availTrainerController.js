@@ -38,17 +38,16 @@ exports.createPaymentIntent = async (req, res) => {
 // Create a new trainer
 exports.createTrainer = async (req, res) => {
     try {
-
         req.body.schedule = [];
         for (let i = 0; i < req.body.sessions; i++) {
 
             req.body.schedule.push({
                 index: i + 1,
-                dateAssigned: null, // Placeholder for date
-                timeAssigned: null, // Placeholder for time
+                dateAssigned: null,
+                timeAssigned: null,
                 status: 'pending',
+                trainings: [],
             });
-
         }
 
         const trainer = new AvailTrainer(req.body);
@@ -175,15 +174,17 @@ exports.getClientsAvailedServices = async (req, res,) => {
 exports.updateSessionSchedule = async (req, res,) => {
 
     try {
+        // console.log(req.body.trainings)
         const servicesAvailed = await AvailTrainer.findById(req.params.id);
 
         servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
             if (session._id.toString() === req.query.sessionId) {
                 return {
-                    ...session._doc,  // Ensures document properties are spread correctly
+                    ...session._doc,
                     dateAssigned: req.body.date,
                     timeAssigned: req.body.time,
                     status: 'waiting',
+                    trainings: req.body.trainings || [],
                 };
             }
             return session;
@@ -240,7 +241,7 @@ exports.completeSessionSchedule = async (req, res,) => {
         servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
             if (session._id.toString() === req.query.sessionId) {
                 return {
-                    ...session._doc,  // Ensures document properties are spread correctly
+                    ...session._doc,
                     status: 'completed',
                 };
             }

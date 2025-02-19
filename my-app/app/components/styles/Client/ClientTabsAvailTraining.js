@@ -49,6 +49,31 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
     },
+    pickerContainer: {
+        borderRadius: 10,
+        overflow: 'hidden',
+        borderColor: '#ccc',
+        backgroundColor: '#f9f1f1',
+        height: 45,
+        width: 150,
+        alignSelf: 'flex-start',
+        marginBottom: 10,
+    },
+    picker: {
+        height: 40,
+        width: 150,
+        borderColor: "#ccc",
+        borderWidth: 1,
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        backgroundColor: "#fff",
+        alignSelf: 'flex-start',
+        borderRadius: 20,
+    },
+    pickerItem: {
+        fontSize: 12,
+        borderRadius: 20,
+    },
 })
 
 export default styles;

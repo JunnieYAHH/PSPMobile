@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image, StatusBar, ImageBackground } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRouter } from "expo-router";
@@ -22,8 +22,14 @@ const Profile = () => {
 
     const handleLogout = () => {
         dispatch(logoutAction());
-        router.push("/");
+        router.replace("/");
     };
+    useEffect(() => {
+        if (!user) {
+            router.replace("/");
+            return;
+        }
+    }, [user, router]);
 
     const bottomSheetModalRef = useRef(null);
 

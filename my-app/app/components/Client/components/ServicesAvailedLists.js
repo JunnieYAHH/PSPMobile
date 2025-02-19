@@ -143,16 +143,13 @@ const ServiceDetail = ({ item }) => {
 
 function getNextScheduleAfterLatestCompleted(item) {
     // console.log(item)
-    // Sort schedules by date ascending (assuming each item has a date)
     const sortedSchedules = item?.schedule?.sort((a, b) => new Date(a?.dateAssigned) - new Date(b?.dateAssigned));
 
-    // Find the index of the last completed schedule
     const lastCompletedIndex = sortedSchedules?.findLastIndex(s => s.status === "completed");
 
-    // Return the next schedule after the latest completed one, if it exists
     return lastCompletedIndex !== -1 && lastCompletedIndex < sortedSchedules?.length - 1
         ? sortedSchedules[lastCompletedIndex + 1]
-        : null;  // Return null if no next schedule exists
+        : null; 
 }
 
 function formatDate(dateString) {

@@ -429,6 +429,7 @@ const UserMemberShipPayment = () => {
                                                             />
                                                         </TouchableOpacity>
                                                         <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>Accept Terms and Conditions</Text>
+                                                        <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>Name: {user?.user?.name}</Text>
                                                     </View>
 
                                                     <TouchableOpacity style={styles.button} onPress={handleSubmit}>

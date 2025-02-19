@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux';
 import ClientServiceDetail from '../screens/service-client-details';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ServicesAvailedLists from '../components/ServicesAvailedLists';
+import { getTimedInLogs } from '../../../(services)/api/Users/getTimedInLogs';
 import LoadingScreen from '../../LodingScreen';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -42,6 +43,27 @@ const Training = () => {
     const [hasActiveTraining, setHasActiveTraining] = useState(false);
     const [training, setTraining] = useState(null);
     const [view, setView] = useState('current');
+
+    const getActiveLogs = async () => {
+        try {
+            const data = await getTimedInLogs();
+            if (data && data.activeLogs) {
+                const logsArray = Array.isArray(data.activeLogs) ? data.activeLogs : [data.activeLogs];
+                const activeLogsCount = logsArray.filter(log => log.timeOut === null).length;
+                setActiveCount(activeLogsCount);
+            } else {
+                setActiveCount(0);
+            }
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            getActiveLogs();
+        }, [])
+    );
 
     // Static Health Data
     const healthData = {
@@ -97,8 +119,7 @@ const Training = () => {
 
         }, [])
     )
-    console.log(hasActiveTraining, 'hasTraining')
-    console.log(training, 'training')
+
     return (
         <>
             {screenLoading ? (

@@ -21,6 +21,7 @@ import baseUrl from '../../../../assets/common/baseUrl';
 import styles from '../../styles/Client/ClientTabsAvailTraining';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { Picker } from '@react-native-picker/picker';
 import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import baseURL from '../../../../assets/common/baseUrl';
 
@@ -39,22 +40,48 @@ const Training = () => {
     const [email, setEmail] = useState(user?.user?.email || user?.email || '');
     const [homePhone, setHomePhone] = useState('');
     const [workPhone, setWorkPhone] = useState('');
-    const [sessions, setSessions] = useState('');
-    const [sessionRate, setSessionRate] = useState('');
+    const [sessions, setSessions] = useState("1");
+    const [sessionRate, setSessionRate] = useState(500);
     const [total, setTotal] = useState(0);
-    const [endDate, setEndDate] = useState('');
+    const [trainingType, setTrainingType] = useState('');
+
+    const calculateRate = (numSessions) => {
+        const baseRate = 500;
+        numSessions = Number(numSessions) || 1;
+        let discountFactor = 0;
+        if (numSessions === 6) discountFactor = 1;
+        else if (numSessions === 8) discountFactor = 2;
+        else if (numSessions === 12) discountFactor = 3;
+        else if (numSessions === 18) discountFactor = 4;
+        else if (numSessions === 24) discountFactor = 5;
+        else if (numSessions === 30) discountFactor = 6;
+        else if (numSessions === 50) discountFactor = 7;
+        else if (numSessions === 100) discountFactor = 8;
+        if (discountFactor === 0) return baseRate;
+        let finalRate = baseRate;
+        for (let i = 1; i <= discountFactor; i++) {
+            const discount = finalRate * 0.025;
+            finalRate -= discount;
+        }
+
+        return parseFloat(finalRate.toFixed(2));
+    };
 
     //Total Calculation
     useEffect(() => {
-        const numSessions = parseFloat(sessions) || 0;
-        const numSessionRate = parseFloat(sessionRate) || 0;
-        const calculatedTotal = numSessions * numSessionRate;
-        setTotal(calculatedTotal);
-    }, [sessions, sessionRate]);
+        const numSessions = Number(sessions) || 1;
+        const rate = calculateRate(numSessions);
+
+        setSessionRate(rate);
+        setTotal(parseFloat((numSessions * rate).toFixed(2)));
+    }, [sessions]);
+
 
     //Avail Training
     const submit = async () => {
-
+        // console.log(sessions)
+        // console.log(sessionRate)
+        // console.log(total)
         const response = await axios.post(`${baseURL}/availTrainer/avail-trainer-payment-intent`, {
             amount: total,
             currency: 'php',
@@ -98,10 +125,9 @@ const Training = () => {
             sessions: sessions,
             sessionRate: sessionRate,
             total: total,
-            endDate: endDate,
+            trainingType: trainingType,
             package: selectedPackage,
         }
-        // console.log(data)
 
         try {
             const response = await axios.post(`${baseUrl}/availTrainer`, data);
@@ -115,10 +141,7 @@ const Training = () => {
 
     // Package details
     const packages = [
-        { name: 'Boot Camp', price: '₱5000', value: 'boot-camp' },
-        { name: 'Lifestyle Training', price: '₱4000', value: 'lifestyle-training' },
-        { name: 'Goal Based Training', price: '₱4500', value: 'goal-based-training' },
-        { name: 'Personal Training', price: '₱6000', value: 'personal-training' },
+        { name: 'Personal Training', value: 'personal-training' },
     ];
 
     //Package Handling
@@ -234,7 +257,7 @@ const Training = () => {
                                         />
                                     </TouchableOpacity>
                                     <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>
-                                        {pkg.name} - {pkg.price}
+                                        {pkg.name}
                                     </Text>
                                 </View>
 
@@ -243,55 +266,46 @@ const Training = () => {
 
                             <Text style={[styles.text, { fontSize: 18 }]}>Pricing:</Text>
                             <Text style={[styles.text,]}>Number of Sessions</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter Number of Sessions"
-                                onChangeText={(value) => setSessions(value)}
-                                value={sessions}
-                                keyboardType="numeric"
-                            />
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    selectedValue={sessions}
+                                    onValueChange={(itemValue) => setSessions(itemValue)}
+                                    style={styles.picker}
+                                    itemStyle={styles.pickerItem}
+                                >
+                                    {[1, 6, 12, 18, 24, 30, 50, 100].map((value) => (
+                                        <Picker.Item key={value} label={`${value}`} value={`${value}`} style={styles.pickerItem} />
+                                    ))}
+                                </Picker>
+                            </View>
+
                             <Text style={styles.text}>Per Session Rate</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Enter Per Session Rate"
-                                onChangeText={(value) => setSessionRate(value)}
-                                value={sessionRate}
-                                keyboardType="numeric"
+                                value={`₱ ${sessionRate.toFixed(2)}`}
+                                editable={false}
                             />
+
                             <Text style={styles.text}>Total</Text>
                             <TextInput
                                 style={styles.input}
                                 value={`₱ ${total.toFixed(2)}`}
                                 editable={false}
                             />
-                            <Text style={styles.text}>Final Session Date</Text>
-                            <TouchableOpacity
-                                onPress={() => setShowEndDate(true)}
-                                style={[styles.input, { justifyContent: "center" }]}
-                            >
-                                <Text style={{
-                                    fontSize: 14,
-                                    color: '#000',
-                                    marginTop: 3,
-                                }}>
-                                    {endDate ? endDate.toLocaleDateString() : "Select a date"}
-                                </Text>
-                            </TouchableOpacity>
-                            {showEndDate && (
-                                <DateTimePicker
-                                    value={endDate || new Date()}
-                                    mode="date"
-                                    display="default"
-                                    onChange={(event, selectedDate) => {
-                                        if (event.type === 'set') {
-                                            setShowEndDate(false);
-                                            setEndDate(selectedDate);
-                                        } else {
-                                            setShowEndDate(false);
-                                        }
-                                    }}
-                                />
-                            )}
+                            <Text style={styles.text}>Training Type</Text>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    selectedValue={trainingType}
+                                    onValueChange={(itemValue) => setTrainingType(itemValue)}
+                                    style={styles.picker}
+                                    itemStyle={styles.pickerItem}
+                                >
+                                    {['Health', 'Shape', 'Sports', 'Strength'].map((value) => (
+                                        <Picker.Item key={value} label={`${value}`} value={`${value}`} style={{ fontSize: 14 }} />
+                                    ))}
+                                </Picker>
+                            </View>
+
                             <TouchableOpacity
                                 style={[styles.button, { backgroundColor: selectedPackage ? "#FFAC1C" : "#ccc" }]}
                                 disabled={!selectedPackage}
