@@ -106,6 +106,10 @@ const ClientServiceDetail = () => {
                                         <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Status:</Text>
                                         <Text style={{ textAlign: 'center', width: '50%', fontSize: 16 }}>{serviceDetails?.status}</Text>
                                     </View>
+                                    <View style={{ flexDirection: 'row', }}>
+                                        <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Type:</Text>
+                                        <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.trainingType}</Text>
+                                    </View>
                                 </View>
 
                             </View>

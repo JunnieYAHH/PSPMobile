@@ -39,10 +39,11 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
         }
     }
 
-    useEffect(() => {
-        getClientService()
-    }, [])
-
+    useFocusEffect(
+        useCallback(() => {
+            getClientService()
+        }, [])
+    );
     return (
         <>
             {!trainerIdProps && (
@@ -122,6 +123,10 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                                 <View style={{ flexDirection: 'row', }}>
                                     <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Status:</Text>
                                     <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.status}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', }}>
+                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Type:</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.trainingType}</Text>
                                 </View>
                             </View>
 

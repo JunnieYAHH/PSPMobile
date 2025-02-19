@@ -248,6 +248,12 @@ exports.completeSessionSchedule = async (req, res,) => {
             return session;
         });
 
+        const allCompleted = servicesAvailed.schedule.every(session => session.status === 'completed');
+
+        if (allCompleted) {
+            servicesAvailed.status = 'inactive';
+        }
+
         await servicesAvailed.save();
 
         res.status(200).json({
