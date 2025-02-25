@@ -74,6 +74,58 @@ const styles = StyleSheet.create({
         fontSize: 12,
         borderRadius: 20,
     },
+    modalBackground: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContainer: {
+        width: "90%",
+        backgroundColor: "#fff",
+        padding: 20,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    signatureWrapper: {
+        width: "100%",
+        height: 300,
+        borderWidth: 2,
+        borderColor: "#000",
+    },
+    buttonRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 10,
+    },
+    modalButton: {
+        backgroundColor: "#007BFF",
+        padding: 10,
+        borderRadius: 5,
+        marginHorizontal: 5,
+    },
+    closeButton: {
+        backgroundColor: "#FF0000",
+        padding: 10,
+        borderRadius: 5,
+        marginHorizontal: 5,
+    },
+    modalButtonText: {
+        color: "#fff",
+        fontWeight: "bold",
+    },
+    signatureImage: {
+        width: 200,
+        height: 100,
+        marginTop: 20,
+        borderWidth: 1,
+        borderColor: "#000",
+    },
 })
 
 export default styles;

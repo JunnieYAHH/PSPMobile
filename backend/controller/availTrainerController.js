@@ -1,6 +1,7 @@
 const AvailTrainer = require('../model/availTrainer');
 const User = require('../model/user')
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
+const { cloudinary, secretKey } = require('../config/cloudinaryConfig')
 
 // Create payment intent
 exports.createPaymentIntent = async (req, res) => {
@@ -37,10 +38,10 @@ exports.createPaymentIntent = async (req, res) => {
 
 // Create a new trainer
 exports.createTrainer = async (req, res) => {
+    // console.log(req.body)
     try {
         req.body.schedule = [];
         for (let i = 0; i < req.body.sessions; i++) {
-
             req.body.schedule.push({
                 index: i + 1,
                 dateAssigned: null,
@@ -49,14 +50,37 @@ exports.createTrainer = async (req, res) => {
                 trainings: [],
             });
         }
+        let signatureData = [];
+        if (req.body.signature) {
+            try {
+                const result = await cloudinary.uploader.upload(req.body.signature, {
+                    folder: "PSPCloudinaryData/users",
+                    width: 150,
+                    crop: "scale",
+                });
 
-        const trainer = new AvailTrainer(req.body);
+                signatureData.push({
+                    public_id: result.public_id,
+                    url: result.secure_url,
+                });
+            } catch (uploadError) {
+                console.error("Cloudinary upload failed:", uploadError);
+                return res.status(500).json({ message: "Signature upload failed", error: uploadError.message });
+            }
+        }
 
+        const trainer = new AvailTrainer({
+            ...req.body,
+            signature: signatureData,
+        });
+
+        console.log("Trainer saved:", trainer);
         await trainer.save();
 
-        res.status(201).json({ message: 'Trainer created successfully', trainer });
 
+        res.status(201).json({ message: 'Trainer created successfully', trainer });
     } catch (error) {
+        console.error("Error creating trainer:", error);
         res.status(400).json({ message: 'Error creating trainer', error: error.message });
     }
 };

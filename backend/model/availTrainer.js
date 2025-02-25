@@ -64,6 +64,18 @@ const availTrainerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    signature: [
+        {
+            public_id: {
+                type: String,
+                required: true
+            },
+            url: {
+                type: String,
+                required: true
+            },
+        }
+    ],
     schedule: [
         {
             index: { type: Number, required: true, },

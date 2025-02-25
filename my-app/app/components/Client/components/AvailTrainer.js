@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -9,7 +9,9 @@ import {
     Image,
     TextInput,
     ScrollView,
-    Alert
+    Alert,
+    Button,
+    Modal
 } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Constants from 'expo-constants';
@@ -24,6 +26,7 @@ import { useSelector } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import baseURL from '../../../../assets/common/baseUrl';
+import SignatureCanvas from "react-native-signature-canvas";
 
 const Training = () => {
     const navigation = useNavigation();
@@ -44,6 +47,9 @@ const Training = () => {
     const [sessionRate, setSessionRate] = useState(500);
     const [total, setTotal] = useState(0);
     const [trainingType, setTrainingType] = useState('');
+    const signatureRef = useRef(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [signature, setSignature] = useState(null);
 
     const calculateRate = (numSessions) => {
         const baseRate = 500;
@@ -127,11 +133,12 @@ const Training = () => {
             total: total,
             trainingType: trainingType,
             package: selectedPackage,
+            signature: signature
         }
-
+        // console.log(data,'DATA')
         try {
-            const response = await axios.post(`${baseUrl}/availTrainer`, data);
-            // console.log('Trainer created successfully:', response.data);
+            const response = await axios.post(`${baseUrl}/availTrainer/create`, data);
+            console.log('Trainer created successfully:', response.data);
             Alert.alert("Succesfully Submitted", "Please Wait for the Confirmation")
             navigation.goBack()
         } catch (error) {
@@ -148,6 +155,17 @@ const Training = () => {
     const handlePackageSelection = (packageName) => {
         setSelectedPackage(packageName === selectedPackage ? '' : packageName);
     };
+
+    const handleSignatureSave = (signature) => {
+        setSignature(signature);
+        setModalVisible(false);
+    };
+
+    const handleClear = () => {
+        signatureRef.current.clearSignature();
+        setSignature(null);
+    };
+
 
     return (
         <>
@@ -305,6 +323,49 @@ const Training = () => {
                                     ))}
                                 </Picker>
                             </View>
+
+                            <Button title="Open Signature Pad" onPress={() => setModalVisible(true)} />
+
+                            {/* Show saved signature */}
+                            {signature && (
+                                <Image source={{ uri: signature }} style={styles.signatureImage} />
+                            )}
+
+                            {/* Signature Modal */}
+                            <Modal visible={modalVisible} animationType="slide" transparent={true}>
+                                <View style={styles.modalBackground}>
+                                    <View style={styles.modalContainer}>
+                                        <Text style={styles.modalTitle}>Sign Here</Text>
+                                        <View style={styles.signatureWrapper}>
+                                            <SignatureCanvas
+                                                ref={signatureRef}
+                                                onOK={handleSignatureSave}
+                                                descriptionText="Sign here"
+                                                clearText="Clear"
+                                                confirmText="Save"
+                                                webStyle={`
+.m-signature-pad { border: 2px solid #000; height: 100%; }
+.m-signature-pad--footer { display: none; }
+`}
+                                            />
+                                        </View>
+                                        <View style={styles.buttonRow}>
+                                            <TouchableOpacity style={styles.modalButton} onPress={handleClear}>
+                                                <Text style={styles.modalButtonText}>Clear</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={styles.modalButton}
+                                                onPress={() => signatureRef.current.readSignature()}
+                                            >
+                                                <Text style={styles.modalButtonText}>Save</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                                                <Text style={styles.modalButtonText}>Close</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </View>
+                            </Modal>
 
                             <TouchableOpacity
                                 style={[styles.button, { backgroundColor: selectedPackage ? "#FFAC1C" : "#ccc" }]}

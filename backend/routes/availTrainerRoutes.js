@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const availTrainerController = require('../controller/availTrainerController');
 
-router.post('/', availTrainerController.createTrainer);
+router.post('/create', availTrainerController.createTrainer);
 router.get('/', availTrainerController.getAllTrainers);
 router.get('/:id', availTrainerController.getTrainerById);
 router.put('/:id', availTrainerController.updateTrainer);

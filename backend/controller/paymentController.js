@@ -185,8 +185,7 @@ const paymentController = {
                 emergencyContactNumber, promo, agreeTerms,
                 subscribedDate, subscriptionExpiration, stripeSubscriptionId,
                 amount: finalAmount,
-            signature: { public_id: result.public_id, url: result.secure_url },
-
+                signature: { public_id: result.public_id, url: result.secure_url },
             });
             // console.log(transaction)
 
