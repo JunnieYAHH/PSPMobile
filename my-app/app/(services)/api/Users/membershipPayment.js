@@ -4,14 +4,14 @@ import baseURL from '../../../../assets/common/baseUrl'
 const MembershipPayment = async ({ userId, userBranch, birthDate,
     address, city, phone, emergencyContactName,
     emergencyContactNumber, promo,
-    agreeTerms, stripeSubscriptionId
+    agreeTerms, stripeSubscriptionId, signature
 }) => {
 
     try {
         const response = await axios.post(`${baseURL}/payments/create-psp-subscription-transaction`, {
             userId, userBranch, birthDate: new Date(birthDate).toISOString(), 
             address, city, phone, emergencyContactName,
-            emergencyContactNumber, promo, agreeTerms, stripeSubscriptionId
+            emergencyContactNumber, promo, agreeTerms, stripeSubscriptionId, signature
         });
 
         // console.log('Membership Form Response', response)

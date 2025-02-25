@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const User = require('../model/user');
+const { cloudinary, secretKey } = require('../config/cloudinaryConfig')
 const Transaction = require('../model/transaction');
 const priceId = process.env.STRIPE_PRICE_ID
 const berMonthsPromo = process.env.STRIPE_BERMONTHS_PROMO
@@ -108,9 +109,21 @@ const paymentController = {
             const {
                 userId, userBranch, birthDate, address, city,
                 phone, emergencyContactName, emergencyContactNumber,
-                promo, agreeTerms, stripeSubscriptionId
+                promo, agreeTerms, stripeSubscriptionId, signature
             } = req.body;
 
+            if (!signature) {
+                return res.status(400).json({ success: false, message: "Signature is required" });
+            }
+
+            // Upload Base64 image directly to Cloudinary
+            const result = await cloudinary.uploader.upload(signature, {
+                folder: "PSPCloudinaryData/users",
+                width: 150,
+                crop: "scale",
+            });
+
+            // console.log("Signature uploaded to Cloudinary:", result.secure_url);
             if (!emergencyContactName || !emergencyContactNumber) {
                 return res.status(400).json({
                     success: false,
@@ -172,6 +185,8 @@ const paymentController = {
                 emergencyContactNumber, promo, agreeTerms,
                 subscribedDate, subscriptionExpiration, stripeSubscriptionId,
                 amount: finalAmount,
+            signature: { public_id: result.public_id, url: result.secure_url },
+
             });
             // console.log(transaction)
 

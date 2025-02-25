@@ -8,8 +8,6 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getAllExercise } from '../(services)/api/Exercises/getAllExercise';
 import ExerciseCardDisplay from '../components/Exercise/ExerciseCardDisplay';
-import { createSubscription, loadClientSecret } from '../(redux)/paymentSlice';
-import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import { Alert, Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const TabHome = () => {
@@ -21,14 +19,12 @@ const TabHome = () => {
   const [activeTab, setActiveTab] = useState('Exercise');
   const { clientSecret, isLoading, error } = useSelector((state) => state.payment);
 
-  // Loading
   useEffect(() => {
     if (!user) {
-      setScreenLoading(false); // Disable the loading if user is not yet fetch
+      setScreenLoading(false); 
     }
   }, [user]);
 
-  //Tabs
   const tabs = [
     { name: 'Exercise', screen: 'ExerciseDetails', scrollTo: 1000, color: 'white' },
     { name: 'About PSP', screen: 'AboutScreen', scrollTo: 250, color: 'white' },
@@ -99,11 +95,6 @@ const TabHome = () => {
           <View style={styles.container}>
             {user ? (
               <>
-                {/* <ImageBackground
-                  source={require('../../assets/HomeBackground.png')}
-                  style={styles.backgroundImage}
-                  resizeMode='stretch'
-                > */}
                 <SafeAreaView style={styles.safeAreaView}>
 
                   {/* Content Header */}

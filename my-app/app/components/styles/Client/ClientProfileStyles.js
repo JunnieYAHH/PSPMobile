@@ -81,6 +81,33 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         padding: 2,
     },
+    bottomSheetContainer: {
+        backgroundColor: '#36454F',
+        paddingVertical: 30,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        alignItems: 'center',
+    },
+    qrContainer: {
+        alignItems: 'center',
+        width: '100%',
+    },
+    qrTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
+        marginBottom: 10,
+    },
+    qrBox: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 5,
+    },
 });
 
 export default styles;

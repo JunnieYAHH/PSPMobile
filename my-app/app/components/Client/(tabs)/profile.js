@@ -93,7 +93,9 @@ const Profile = () => {
                                     )
                                 )}
                                 <View style={styles.section}>
-                                    <TouchableOpacity style={styles.option}>
+                                    <TouchableOpacity style={styles.option}
+                                        onPress={() => router.push('/components/Client/components/membership')}
+                                    >
                                         <Icon name="user" size={24} color="#4caf50" />
                                         <Text style={styles.optionText}>Membership</Text>
                                         <Icon
@@ -145,10 +147,12 @@ const Profile = () => {
                                         index={1}
                                         snapPoints={snapPoints}
                                     >
-                                        <BottomSheetView>
-                                            <View style={{ alignItems: 'center', marginTop: 40, flex: 1 }}>
-                                                <Text>Your QR Code</Text>
-                                                <QRCode value={user.user?._id || user._id} size={150} />
+                                        <BottomSheetView style={[styles.bottomSheetContainer, { flex: 1 }]}>
+                                            <View style={styles.qrContainer}>
+                                                <Text style={styles.qrTitle}>Your QR Code</Text>
+                                                <View style={styles.qrBox}>
+                                                    <QRCode value={user.user?._id || user._id} size={150} />
+                                                </View>
                                             </View>
                                         </BottomSheetView>
                                     </BottomSheetModal>

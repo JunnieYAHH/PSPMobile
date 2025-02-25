@@ -54,6 +54,18 @@ const transactionSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    signature: [
+        {
+            public_id: {
+                type: String,
+                required: true
+            },
+            url: {
+                type: String,
+                required: true
+            },
+        }
+    ],
     subscribedDate: {
         type: Date,
         default: null,
@@ -76,9 +88,9 @@ const transactionSchema = new mongoose.Schema({
     },
 });
 
-transactionSchema.pre('save', function(next) {
+transactionSchema.pre('save', function (next) {
     this.updatedAt = Date.now();
     next();
 });
 
-module.exports  = mongoose.model('transaction', transactionSchema);
+module.exports = mongoose.model('transaction', transactionSchema);

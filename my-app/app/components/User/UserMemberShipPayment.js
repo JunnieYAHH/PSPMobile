@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, StatusBar, ImageBackground, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, StatusBar, ImageBackground, TouchableOpacity, Image, Alert, TextInput, Button, Modal } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -8,7 +8,6 @@ import { getAllBranch } from '../../(services)/api/Branches/getAllBranch';
 import { getAllTransactions } from '../../(services)/api/Transactions/getAllTransactions';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-// import styles from '../styles/CompUserMemberPaymentStyle';
 import { MembershipPayment } from '../../(services)/api/Users/membershipPayment';
 import { createSubscription, loadClientSecret } from '../../(redux)/paymentSlice';
 import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
@@ -20,6 +19,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import SignatureCanvas from "react-native-signature-canvas";
 
 const UserMemberShipPayment = () => {
     const navigation = useNavigation();
@@ -32,6 +32,9 @@ const UserMemberShipPayment = () => {
     const userId = user.user._id;
     const [promo, setPromo] = useState('');
     const [stripeSubscriptionId, setStripeSubscriptionId] = useState('');
+    const signatureRef = useRef(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [signature, setSignature] = useState(null);
 
     // Get All branches and transactions
     const [branches, setBranches] = useState([]);
@@ -148,6 +151,17 @@ const UserMemberShipPayment = () => {
         }
     };
 
+    const handleSignatureSave = (signature) => {
+        setSignature(signature);
+        setModalVisible(false);
+    };
+
+    const handleClear = () => {
+        signatureRef.current.clearSignature();
+        setSignature(null);
+    };
+
+    // console.log(signature)
 
     return (
         <>
@@ -177,7 +191,7 @@ const UserMemberShipPayment = () => {
                                         <Formik
                                             initialValues={{
                                                 userBranch: "", birthDate: date, address: "", emergencyContactName: "",
-                                                emergencyContactNumber: "", promo: '', agreeTerms: false, phone: '', city: ''
+                                                emergencyContactNumber: "", promo: '', agreeTerms: false, phone: '', city: '', signature: ""
                                             }}
                                             onSubmit={async (values) => {
                                                 try {
@@ -200,8 +214,8 @@ const UserMemberShipPayment = () => {
                                                         ...values,
                                                         userId: user.user._id || user._id,
                                                         stripeSubscriptionId: response.stripeSubscriptionId,
+                                                        signature: signature,
                                                     });
-
 
                                                     Alert.alert(
                                                         "You are now Subscribed",
@@ -367,6 +381,48 @@ const UserMemberShipPayment = () => {
                                                     {errors.emergencyContactNumber && touched.emergencyContactNumber && (
                                                         <Text style={styles.errorText}>{errors.emergencyContactNumber}</Text>
                                                     )}
+                                                    <Button title="Open Signature Pad" onPress={() => setModalVisible(true)} />
+
+                                                    {/* Show saved signature */}
+                                                    {signature && (
+                                                        <Image source={{ uri: signature }} style={styles.signatureImage} />
+                                                    )}
+
+                                                    {/* Signature Modal */}
+                                                    <Modal visible={modalVisible} animationType="slide" transparent={true}>
+                                                        <View style={styles.modalBackground}>
+                                                            <View style={styles.modalContainer}>
+                                                                <Text style={styles.modalTitle}>Sign Here</Text>
+                                                                <View style={styles.signatureWrapper}>
+                                                                    <SignatureCanvas
+                                                                        ref={signatureRef}
+                                                                        onOK={handleSignatureSave}
+                                                                        descriptionText="Sign here"
+                                                                        clearText="Clear"
+                                                                        confirmText="Save"
+                                                                        webStyle={`
+            .m-signature-pad { border: 2px solid #000; height: 100%; }
+            .m-signature-pad--footer { display: none; }
+          `}
+                                                                    />
+                                                                </View>
+                                                                <View style={styles.buttonRow}>
+                                                                    <TouchableOpacity style={styles.modalButton} onPress={handleClear}>
+                                                                        <Text style={styles.modalButtonText}>Clear</Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity
+                                                                        style={styles.modalButton}
+                                                                        onPress={() => signatureRef.current.readSignature()}
+                                                                    >
+                                                                        <Text style={styles.modalButtonText}>Save</Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                                                                        <Text style={styles.modalButtonText}>Close</Text>
+                                                                    </TouchableOpacity>
+                                                                </View>
+                                                            </View>
+                                                        </View>
+                                                    </Modal>
                                                     {/* Ber Months Promo Promo */}
                                                     {(availablePromos.december && month >= 8) ? (
                                                         <View style={styles.promo}>
@@ -429,7 +485,6 @@ const UserMemberShipPayment = () => {
                                                             />
                                                         </TouchableOpacity>
                                                         <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>Accept Terms and Conditions</Text>
-                                                        <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>Name: {user?.user?.name}</Text>
                                                     </View>
 
                                                     <TouchableOpacity style={styles.button} onPress={handleSubmit}>
@@ -549,6 +604,58 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontSize: 18,
         fontWeight: "bold",
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContainer: {
+        width: "90%",
+        backgroundColor: "#fff",
+        padding: 20,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    signatureWrapper: {
+        width: "100%",
+        height: 300,
+        borderWidth: 2,
+        borderColor: "#000",
+    },
+    buttonRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 10,
+    },
+    modalButton: {
+        backgroundColor: "#007BFF",
+        padding: 10,
+        borderRadius: 5,
+        marginHorizontal: 5,
+    },
+    closeButton: {
+        backgroundColor: "#FF0000",
+        padding: 10,
+        borderRadius: 5,
+        marginHorizontal: 5,
+    },
+    modalButtonText: {
+        color: "#fff",
+        fontWeight: "bold",
+    },
+    signatureImage: {
+        width: 200,
+        height: 100,
+        marginTop: 20,
+        borderWidth: 1,
+        borderColor: "#000",
     },
 });
 
