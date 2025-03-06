@@ -31,7 +31,6 @@ const Training = () => {
 
     const router = useRouter();
     const state = useSelector(state => state.auth);
-    const [gymDays, setGymDays] = useState([2, 5, 9, 12, 16, 20, 23, 27]);
     const [weightData] = useState({
         initialWeight: 62, // in kilos
         currentWeight: 65, // in kilos
@@ -78,20 +77,8 @@ const Training = () => {
     const month = today.getMonth() + 1;
     const totalDays = daysInMonth(year, month);
 
-    const renderDay = ({ item }) => (
-        <View
-            style={[
-                styles.dayContainer,
-                gymDays.includes(item) ? styles.gymDay : null,
-            ]}
-        >
-            <Text style={[styles.dayText, gymDays.includes(item) ? styles.highlightedText : null]}>
-                {item}
-            </Text>
-        </View>
-    );
-
     const weightGains = weightData.currentWeight - weightData.initialWeight;
+
 
     const checkActiveTraining = async () => {
 
@@ -111,12 +98,46 @@ const Training = () => {
         }
         setScreenLoading(false)
     }
+    const [myLogs, setMyLogs] = useState([])
+
+    const getMyLogs = async () => {
+        setScreenLoading(true)
+        const { user } = state;
+        try {
+
+            const { data } = await axios.get(`${baseURL}/logs/get-my-logs/${user?.user?._id}`);
+            setMyLogs(data.logs);
+
+        } catch (error) {
+            console.log(error)
+        }
+        setScreenLoading(false)
+    }
+    // console.log(myLogs)
+    const gymDays = myLogs.map(log => new Date(log.timeIn).getDate());
+
+    // Function to render each day in the calendar
+    const renderDay = ({ item }) => {
+        const isGymDay = gymDays.includes(item); // Check if this day is in the logs
+
+        return (
+            <View
+                style={[
+                    styles.dayContainer,
+                    isGymDay && styles.highlightedDay // Apply highlight if user went to the gym
+                ]}
+            >
+                <Text style={styles.dayText}>{item}</Text>
+            </View>
+        );
+    };
+
+    console.log(gymDays,'Gym Days')
 
     useFocusEffect(
         useCallback(() => {
-
             checkActiveTraining();
-
+            getMyLogs();
         }, [])
     )
 
@@ -196,7 +217,7 @@ const Training = () => {
 
                                     {view === 'current' && (
                                         <View style={{ padding: 10, marginBottom: 50 }}>
-                                            <Text style={{ fontWeight: 900, fontSize: 16, marginBottom: 10, }}>Availed Services</Text>
+                                            <Text style={{ fontWeight: '900', fontSize: 16, marginBottom: 10 }}>Availed Services</Text>
                                             <ServicesAvailedLists key={hasActiveTraining + "current"} />
                                             <Text style={styles.header}>
                                                 Gym Calendar - {today.toLocaleString('default', { month: 'long' })} {year}
@@ -384,18 +405,18 @@ const styles = StyleSheet.create({
     dayContainer: {
         width: 40,
         height: 40,
-        margin: 5,
         justifyContent: 'center',
         alignItems: 'center',
+        margin: 5,
         borderRadius: 5,
-        backgroundColor: '#f4f4f4',
+        backgroundColor: 'white'
     },
-    gymDay: {
-        backgroundColor: '#4caf50',
+    highlightedDay: {
+        backgroundColor: '#FFD700',
     },
     dayText: {
         fontSize: 16,
-        color: '#333',
+        fontWeight: 'bold',
     },
     highlightedText: {
         color: 'white',

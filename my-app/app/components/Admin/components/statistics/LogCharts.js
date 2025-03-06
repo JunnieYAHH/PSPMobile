@@ -10,41 +10,28 @@ import { useSelector } from 'react-redux';
 
 const LogCharts = ({ logs }) => {
   const [dailyActivity, setDailyActivity] = useState([]);
-  const [userFrequency, setUserFrequency] = useState([]);
-  const [userFrequencyData, setUserFrequencyData] = useState([]);
   const { user } = useSelector((state) => state.auth);
   const [averageSession, setAverageSession] = useState([]);
   const [peakHours, setPeakHours] = useState([]);
-  // console.log(peakHours)
+  const [trainingTypes, setTrainingTypes] = useState([]);
+
+  const getTrainingSessions = async () => {
+    try {
+      const { data } = await axios.get(`${baseURL}/availTrainer`);
+      const trainingTypes = data.map(session => session.trainingType).filter(type => type !== undefined);
+      setTrainingTypes(trainingTypes);
+    } catch (error) {
+      console.error("Error fetching training sessions:", error);
+    }
+  };
+  console.log(trainingTypes);
+
   useFocusEffect(
     useCallback(() => {
-      let isMounted = true;
-
-      const fetchUsers = async () => {
-        try {
-          const response = await axios.get(`${baseURL}/users/get-all-users`);
-          if (isMounted) {
-            const adminBranchId = user?.userBranch?._id;
-
-            const filteredUsers = response.data.users.filter(
-              (user) => user.role !== "admin" && user.role !== "user" && user.role !== "coach" && user.userBranch?._id === adminBranchId
-            );
-            setUserFrequencyData(filteredUsers);
-          }
-        } catch (error) {
-          if (isMounted) {
-            console.error("Error fetching users:", error);
-          }
-        }
-      };
-
-      fetchUsers();
-
-      return () => {
-        isMounted = false;
-      };
+      getTrainingSessions();
     }, [])
-  );
+  )
+
 
   //Data
   useEffect(() => {
@@ -74,16 +61,6 @@ const LogCharts = ({ logs }) => {
       }))
     );
 
-    setUserFrequency(
-      Object.entries(userMap).map(([userId, count]) => {
-        const user = userFrequencyData.find((u) => u._id === userId);
-        return {
-          label: user ? user.name : `User ${userId}`,
-          value: count
-        };
-      })
-    );
-
     setAverageSession(
       Object.entries(sessionMap)
         .filter(([_, durations]) => durations.some((d) => d > 0))
@@ -99,9 +76,9 @@ const LogCharts = ({ logs }) => {
       hourMap
         .map((count, index) => {
           const period = index >= 12 ? 'PM' : 'AM';
-          const hour = index % 12 || 12; 
+          const hour = index % 12 || 12;
           return {
-            label: `${hour}:00 ${period}`, 
+            label: `${hour}:00 ${period}`,
             value: count
           };
         })
@@ -111,7 +88,6 @@ const LogCharts = ({ logs }) => {
 
   // Create separate modal refs
   const dailyActivityModalRef = useRef(null);
-  const userFrequencyModalRef = useRef(null);
   const averageSessionModalRef = useRef(null);
   const peakHoursModalRef = useRef(null);
 
@@ -129,25 +105,6 @@ const LogCharts = ({ logs }) => {
 
         <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 20 }}>
           <BarChart data={dailyActivity} barWidth={40} spacing={10} width={500} hideRules
-            yAxisThickness={0}
-            xAxisThickness={2}
-            xAxisLabelTextStyle={{ color: 'black' }}
-            yAxisLabelTextStyle={{ color: 'black' }}
-          />
-        </View>
-      </View>
-
-      <View style={{ backgroundColor: 'black', padding: 20, borderRadius: 10, marginBottom: 25 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.title}>User Check-in Frequency</Text>
-          <TouchableOpacity onPress={() => userFrequencyModalRef.current?.present()}>
-            <Text style={{ textAlign: 'right', color: '#FFAC1C' }}>
-              See more -{'>'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 20 }}>
-          <BarChart data={userFrequency} barWidth={40} spacing={10} width={500} hideRules
             yAxisThickness={0}
             xAxisThickness={2}
             xAxisLabelTextStyle={{ color: 'black' }}
@@ -201,17 +158,6 @@ const LogCharts = ({ logs }) => {
           <Text style={[styles.modalTitle, { color: 'black' }]}>Daily Activity</Text>
           <FlatList
             data={dailyActivity}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => <Text style={styles.modalItem}>{`${item.label}: ${item.value}`}</Text>}
-          />
-        </BottomSheetView>
-      </BottomSheetModal>
-
-      <BottomSheetModal ref={userFrequencyModalRef} index={0} snapPoints={['50%']}>
-        <BottomSheetView style={[styles.modalContent, { backgroundColor: '#1E90FF' }]}>
-          <Text style={[styles.modalTitle, { color: 'white' }]}>User Check-in Frequency</Text>
-          <FlatList
-            data={userFrequency}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => <Text style={styles.modalItem}>{`${item.label}: ${item.value}`}</Text>}
           />

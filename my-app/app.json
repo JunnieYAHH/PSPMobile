@@ -8,7 +8,7 @@
     "icon": "./assets/PSPIcon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/PSPIcon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,14 +18,21 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/PSPIcon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
-      "package": "com.junnieyahh.frontend"
+      "package": "com.junnieyahh.frontend",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAQ0HexX01OZ_JrbaWLWALOowguElQ6A6k"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

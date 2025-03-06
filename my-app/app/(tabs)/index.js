@@ -30,7 +30,6 @@ const TabHome = () => {
     { name: 'About PSP', screen: 'AboutScreen', scrollTo: 250, color: 'white' },
     { name: 'This App', screen: 'AppInfoScreen', scrollTo: 680, color: 'white' },
     { name: 'Branches', screen: 'BranchesScreen', scrollTo: 1200, color: 'white' },
-    { name: 'BMI', screen: 'BMI', scrollTo: 1400, color: 'white' },
     { name: 'Membership', screen: 'Membership', scrollTo: 1600, color: '#FFAC1C' }
   ];
 
@@ -282,8 +281,6 @@ const TabHome = () => {
                         </TouchableOpacity>
                       </View>
                     )}
-
-                    {/* You can add more conditional sections for 'Branches', 'BMI' */}
                   </ScrollView>
                 </SafeAreaView>
                 {/* </ImageBackground> */}

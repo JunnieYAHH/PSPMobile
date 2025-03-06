@@ -381,11 +381,28 @@ const UserMemberShipPayment = () => {
                                                     {errors.emergencyContactNumber && touched.emergencyContactNumber && (
                                                         <Text style={styles.errorText}>{errors.emergencyContactNumber}</Text>
                                                     )}
-                                                    <Button title="Open Signature Pad" onPress={() => setModalVisible(true)} />
+                                                    <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+                                                        <Text style={styles.buttonText}>Open Signature Pad</Text>
+                                                    </TouchableOpacity>
 
                                                     {/* Show saved signature */}
                                                     {signature && (
-                                                        <Image source={{ uri: signature }} style={styles.signatureImage} />
+                                                        <View style={{
+                                                            backgroundColor: 'white',
+                                                            borderRadius: 40,
+                                                            padding: 10, 
+                                                            width: 300,
+                                                            alignSelf:'center'
+                                                        }}>
+                                                            <View style={{
+                                                                borderWidth: 1,
+                                                                borderColor: "#000",
+                                                                borderRadius: 100
+                                                            }}>
+                                                                <Image source={{ uri: signature }} style={styles.signatureImage} />
+                                                            </View>
+                                                        </View>
+
                                                     )}
 
                                                     {/* Signature Modal */}
@@ -651,11 +668,11 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     signatureImage: {
-        width: 200,
-        height: 100,
+        width: 100,
+        height: 50,
         marginTop: 20,
-        borderWidth: 1,
-        borderColor: "#000",
+        marginBottom: 20,
+        alignSelf: 'center'
     },
 });
 
