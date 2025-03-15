@@ -294,8 +294,8 @@ exports.completeSessionSchedule = async (req, res,) => {
 exports.hasActiveTraining = async (req, res) => {
     try {
 
+        // console.log("Trainer ID:", req.params.id);
         const trainer = await AvailTrainer.findOne({ userId: req.params.id, status: 'active' });
-        // console.log("Trainer found:", trainer);
 
         if (trainer) {
             return res.status(200).json({

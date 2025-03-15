@@ -13,17 +13,19 @@ import baseURL from '../../../../assets/common/baseUrl';
 export default function ServicesAvailedLists() {
 
     const state = useSelector(state => state.auth);
+    const user = useSelector((state) => state.auth.user);
+    const userId = user?.user?._id || user?._id
+
     const [screenLoading, setScreenLoading] = useState(false);
 
     const [services, setServices] = useState([]);
 
     const getAvailedServices = async () => {
         setScreenLoading(true)
-        const { user } = state;
         // console.log(user)
         try {
 
-            const { data } = await axios.get(`${baseURL}/availTrainer/client/${user._id}`);
+            const { data } = await axios.get(`${baseURL}/availTrainer/client/${userId}`);
 
             setServices(data);
 
@@ -149,7 +151,7 @@ function getNextScheduleAfterLatestCompleted(item) {
 
     return lastCompletedIndex !== -1 && lastCompletedIndex < sortedSchedules?.length - 1
         ? sortedSchedules[lastCompletedIndex + 1]
-        : null; 
+        : null;
 }
 
 function formatDate(dateString) {

@@ -402,7 +402,6 @@ const UserMemberShipPayment = () => {
                                                                 <Image source={{ uri: signature }} style={styles.signatureImage} />
                                                             </View>
                                                         </View>
-
                                                     )}
 
                                                     {/* Signature Modal */}

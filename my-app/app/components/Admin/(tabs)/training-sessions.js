@@ -1,32 +1,31 @@
-import { View, Text, StatusBar, ImageBackground, StyleSheet, Pressable, TouchableOpacity, FlatList } from 'react-native'
-import React, { useCallback } from 'react'
+import {
+    View, Text, StatusBar, ImageBackground, StyleSheet, TouchableOpacity, FlatList,
+    ScrollView
+} from 'react-native';
+import React, { useCallback } from 'react';
 import Constants from 'expo-constants';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
-import { ScrollView } from 'react-native-gesture-handler';
-import { router, useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 
 export default function TrainingSessions() {
-
     const [trainingSessions, setTrainingSessions] = React.useState([]);
+    const router = useRouter();
 
     const getTrainingSessions = async () => {
         try {
-
-            const { data } = await axios.get(`${baseURL}/availTrainer`)
-
+            const { data } = await axios.get(`${baseURL}/availTrainer`);
             setTrainingSessions(data);
-
         } catch (error) {
             console.error("Error fetching training sessions:", error);
         }
-    }
+    };
 
     useFocusEffect(
         useCallback(() => {
             getTrainingSessions();
         }, [])
-    )
+    );
 
     return (
         <View style={styles.container}>
@@ -34,86 +33,65 @@ export default function TrainingSessions() {
             <ImageBackground
                 source={require('../../../../assets/ProgramBG.png')}
                 style={styles.backgroundImage}
-                imageStyle={{ opacity: 2.0 }}
                 blurRadius={2}
                 resizeMode="cover"
             >
                 <View style={styles.overlay}>
-
-                    <View style={{ padding: 10, }}>
-                        <View style={{ display: 'flex', flexDirection: 'row', gap: 5, }}>
-                            <Text style={{
-                                fontSize: 30,
-                                color: '#FFAC1C',
-                                fontStyle: 'italic',
-                            }}>
-                                PSP
-                            </Text>
-                            <Text style={{
-                                color: 'white',
-                                fontSize: 30,
-                                fontStyle: 'italic',
-                            }}>Training Sessions</Text>
-                        </View>
-                        <Text style={{
-                            color: 'white', textAlign: 'right', fontSize: 30,
-                            fontStyle: 'italic',
-                        }}>
-                            Availed / Availing
-                        </Text>
+                    <Text style={styles.headerTitle}>Availed/Availing Sessions</Text>
+                    <View style={styles.sessionContainer}>
+                        <Text style={styles.sessionTitle}>PSP Training Sessions</Text>
+                        <FlatList
+                            style={{ height: 600 }}
+                            data={trainingSessions}
+                            keyExtractor={(item) => item._id}
+                            renderItem={({ item }) => <SessionCard item={item} />}
+                            contentContainerStyle={{ paddingBottom: 20 }}
+                            showsVerticalScrollIndicator={false}
+                        />
                     </View>
-
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={{ marginTop: 5, maxHeight: 530, }}>
-                            <View style={{ display: 'flex', flexDirection: 'row', marginBottom: 2, backgroundColor: '#FFAC1C', padding: 10, }}>
-                                <Text style={{ color: 'white', fontSize: 18, width: 120, }}>Client</Text>
-                                <Text style={{ color: 'white', fontSize: 18, width: 120, paddingHorizontal: 10, }}>Coach</Text>
-                                <Text style={{ color: 'white', fontSize: 18, width: 120, paddingHorizontal: 10, }}>Package</Text>
-                                <Text style={{ color: 'white', fontSize: 18, paddingHorizontal: 10, }}>Status</Text>
-                            </View>
-
-                            <FlatList
-                                data={trainingSessions}
-                                keyExtractor={item => item._id}
-                                renderItem={({ item }) => <SessionsList item={item} />}
-                            />
-                        </View>
-                    </ScrollView>
                 </View>
-
             </ImageBackground>
         </View>
-    )
+    );
 }
 
-const SessionsList = ({ item }) => {
-
-    const router = useRouter()
-
-    const gotoSingleSession = () => {
+const SessionCard = ({ item }) => {
+    const router = useRouter();
+    const navigateToSession = () => {
         router.push({
             pathname: '/components/Admin/components/view-training-session',
             params: { id: item._id }
         });
-    }
+    };
+
+    const statusColor = !item.coachID ? "blue" : item.status?.toLowerCase() === "active" ? "green" : "gray";
+    const coachText = item.coachID ? item.coachID.name : "Assigned A Coach!!";
 
     return (
-        <TouchableOpacity onPress={gotoSingleSession}>
-            <View style={{ display: 'flex', flexDirection: 'row', padding: 10, }}>
-                <Text style={{ color: 'white', fontSize: 18, width: 120 }}>{item.userId.name}</Text>
-                <Text style={{ color: 'white', fontSize: 18, width: 120, paddingHorizontal: 10, }}>{item?.coachID?.name || "Please Assign"}</Text>
-                <Text style={{ color: 'white', fontSize: 18, width: 120, paddingHorizontal: 10, }}>{item.package}</Text>
-                <Text style={{ color: 'white', fontSize: 18, paddingHorizontal: 10, }}>{item?.status}</Text>
+        <TouchableOpacity onPress={navigateToSession} activeOpacity={0.7}>
+            <View style={styles.card}>
+                <View style={styles.cardContent}>
+                    <Text style={styles.cardText}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 17, }}>
+                            Client: {" "}
+                        </Text>
+                        {item?.userId?.name || "Unknown"}</Text>
+                    <Text style={styles.cardText}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 17, }}>
+                            Coach:  {" "}
+                        </Text>
+                        {coachText}</Text>
+                    <Text style={styles.cardText}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 17, }}>
+                            Package: {" "}
+                        </Text>
+                        {item?.package || "N/A"}</Text>
+                </View>
+                <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
             </View>
-            <View
-                style={{
-                    borderBottomColor: 'white',
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                }}
-            />
         </TouchableOpacity>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -126,22 +104,53 @@ const styles = StyleSheet.create({
     },
     overlay: {
         flex: 1,
-        marginTop: 10,
-        // padding: 15,
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        paddingTop: 20,
     },
-    dashboardContainer: {
+    headerTitle: {
+        color: 'white',
+        fontSize: 22,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    sessionContainer: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        padding: 10,
+        width: '90%',
+        marginTop: 10,
+        alignItems: 'center',
+        elevation: 5, // Shadow effect
+    },
+    sessionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    card: {
+        backgroundColor: 'orange',
+        padding: 15,
+        borderRadius: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        width: 280,
+    },
+    cardContent: {
         flexDirection: 'column',
     },
-    pspText: {
-        fontSize: 50,
-        color: '#FFAC1C',
-        fontStyle: 'italic',
-        transform: [{ skewX: '-10deg' }],
+    cardText: {
+        fontSize: 16,
+        color: 'black',
+        fontWeight: 'bold',
+        marginBottom: 5,
     },
-    dashboardText: {
-        fontSize: 40,
-        color: 'white',
-        fontStyle: 'italic',
-        transform: [{ skewX: '-10deg' }],
+    statusDot: {
+        width: 15,
+        height: 15,
+        borderRadius: 50,
     },
 });

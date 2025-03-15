@@ -31,6 +31,7 @@ const Training = () => {
 
     const router = useRouter();
     const state = useSelector(state => state.auth);
+    const user = useSelector((state) => state.auth.user);
     const [weightData] = useState({
         initialWeight: 62, // in kilos
         currentWeight: 65, // in kilos
@@ -79,6 +80,7 @@ const Training = () => {
 
     const weightGains = weightData.currentWeight - weightData.initialWeight;
 
+    const userId = user?.user?._id || user?._id
 
     const checkActiveTraining = async () => {
 
@@ -86,10 +88,10 @@ const Training = () => {
         setHasActiveTraining(false)
         setTraining(null)
 
-        const { user } = state;
+        // const { user } = state;
         try {
 
-            const { data } = await axios.get(`${baseURL}/availTrainer/has-active/${user?.user?._id}`);
+            const { data } = await axios.get(`${baseURL}/availTrainer/has-active/${userId}`);
             setHasActiveTraining(data.hasActive);
             setTraining(data.training);
 
@@ -105,7 +107,7 @@ const Training = () => {
         const { user } = state;
         try {
 
-            const { data } = await axios.get(`${baseURL}/logs/get-my-logs/${user?.user?._id}`);
+            const { data } = await axios.get(`${baseURL}/logs/get-my-logs/${userId}`);
             setMyLogs(data.logs);
 
         } catch (error) {
@@ -116,15 +118,14 @@ const Training = () => {
     // console.log(myLogs)
     const gymDays = myLogs.map(log => new Date(log.timeIn).getDate());
 
-    // Function to render each day in the calendar
     const renderDay = ({ item }) => {
-        const isGymDay = gymDays.includes(item); // Check if this day is in the logs
+        const isGymDay = gymDays.includes(item);
 
         return (
             <View
                 style={[
                     styles.dayContainer,
-                    isGymDay && styles.highlightedDay // Apply highlight if user went to the gym
+                    isGymDay && styles.highlightedDay
                 ]}
             >
                 <Text style={styles.dayText}>{item}</Text>
@@ -186,16 +187,6 @@ const Training = () => {
                                                             <MaterialCommunityIcons name="sale" size={24} color="white" style={{ marginLeft: 2 }} />
                                                             <Text style={{ color: 'white', fontSize: 8 }}>Progress</Text>
                                                         </TouchableOpacity>
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-                                                        <TouchableOpacity onPress={() => setActiveComponent('Statistics')}>
-                                                            <AntDesign name="barschart" size={24} color="white" />
-                                                            <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Stats</Text>
-                                                        </TouchableOpacity>
-                                                        {/* <TouchableOpacity onPress={() => setActiveComponent('Post')}>
-                                                            <MaterialIcons name="post-add" size={24} color="white" />
-                                                            <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Post</Text>
-                                                        </TouchableOpacity> */}
                                                     </View>
                                                 </View>
                                             </View>
@@ -291,16 +282,6 @@ const Training = () => {
                                                             <MaterialCommunityIcons name="sale" size={24} color="white" style={{ marginLeft: 2 }} />
                                                             <Text style={{ color: 'white', fontSize: 8 }}>Progress</Text>
                                                         </TouchableOpacity>
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-                                                        <TouchableOpacity onPress={() => setActiveComponent('Statistics')}>
-                                                            <AntDesign name="barschart" size={24} color="white" />
-                                                            <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Stats</Text>
-                                                        </TouchableOpacity>
-                                                        {/* <TouchableOpacity onPress={() => setActiveComponent('Post')}>
-                                                        <MaterialIcons name="post-add" size={24} color="white" />
-                                                        <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Post</Text>
-                                                    </TouchableOpacity> */}
                                                     </View>
                                                 </View>
                                             </View>

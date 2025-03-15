@@ -328,7 +328,27 @@ const Training = () => {
 
                             {/* Show saved signature */}
                             {signature && (
-                                <Image source={{ uri: signature }} style={styles.signatureImage} />
+                                <View style={{
+                                    backgroundColor: 'white',
+                                    borderRadius: 40,
+                                    padding: 10,
+                                    width: 300,
+                                    alignSelf: 'center'
+                                }}>
+                                    <View style={{
+                                        borderWidth: 1,
+                                        borderColor: "#000",
+                                        borderRadius: 100
+                                    }}>
+                                        <Image source={{ uri: signature }} style={{
+                                            width: 100,
+                                            height: 50,
+                                            marginTop: 20,
+                                            marginBottom: 20,
+                                            alignSelf: 'center'
+                                        }} />
+                                    </View>
+                                </View>
                             )}
 
                             {/* Signature Modal */}
@@ -344,9 +364,9 @@ const Training = () => {
                                                 clearText="Clear"
                                                 confirmText="Save"
                                                 webStyle={`
-.m-signature-pad { border: 2px solid #000; height: 100%; }
-.m-signature-pad--footer { display: none; }
-`}
+            .m-signature-pad { border: 2px solid #000; height: 100%; }
+            .m-signature-pad--footer { display: none; }
+          `}
                                             />
                                         </View>
                                         <View style={styles.buttonRow}>
