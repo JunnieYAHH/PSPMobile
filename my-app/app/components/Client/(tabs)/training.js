@@ -133,7 +133,7 @@ const Training = () => {
         );
     };
 
-    console.log(gymDays,'Gym Days')
+    console.log(gymDays, 'Gym Days')
 
     useFocusEffect(
         useCallback(() => {
@@ -179,11 +179,11 @@ const Training = () => {
                                             <View style={{ backgroundColor: 'black', height: 120, width: 140, alignSelf: 'center', marginTop: 5, borderRadius: 20 }}>
                                                 <View style={{ padding: 15 }}>
                                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                                                        <TouchableOpacity onPress={() => setActiveComponent('History')}>
+                                                        <TouchableOpacity onPress={() => router.push('/components/Client/screens/history')}>
                                                             <MaterialIcons name="create-new-folder" size={24} color="white" />
                                                             <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>History</Text>
                                                         </TouchableOpacity>
-                                                        <TouchableOpacity onPress={() => setActiveComponent('Progress')}>
+                                                        <TouchableOpacity onPress={() => router.push('/components/Client/screens/progress')}>
                                                             <MaterialCommunityIcons name="sale" size={24} color="white" style={{ marginLeft: 2 }} />
                                                             <Text style={{ color: 'white', fontSize: 8 }}>Progress</Text>
                                                         </TouchableOpacity>
@@ -195,12 +195,12 @@ const Training = () => {
 
                                     <View style={{ flexDirection: 'row', gap: 5, padding: 10, }}>
                                         <View style={{ flex: 1, }}>
-                                            <Button onPress={() => setView('current')} title='Services Availed'
+                                            <Button onPress={() => setView('current')} title='Gym Service'
                                                 color={view === 'current' ? '#FFAC1C' : '#AAAAAA'}
                                             />
                                         </View>
                                         <View style={{ flex: 1, }}>
-                                            <Button onPress={() => setView('all')} title='Current Service'
+                                            <Button onPress={() => setView('all')} title='Client Service'
                                                 color={view === 'all' ? '#FFAC1C' : '#AAAAAA'}
                                             />
                                         </View>
@@ -208,7 +208,7 @@ const Training = () => {
 
                                     {view === 'current' && (
                                         <View style={{ padding: 10, marginBottom: 50 }}>
-                                            <Text style={{ fontWeight: '900', fontSize: 16, marginBottom: 10 }}>Availed Services</Text>
+                                            <Text style={{ fontWeight: '900', fontSize: 16, marginBottom: 10, color: 'white' }}>Client Availed Services</Text>
                                             <ServicesAvailedLists key={hasActiveTraining + "current"} />
                                             <Text style={styles.header}>
                                                 Gym Calendar - {today.toLocaleString('default', { month: 'long' })} {year}

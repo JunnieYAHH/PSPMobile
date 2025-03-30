@@ -67,12 +67,12 @@ const ServiceDetail = ({ item }) => {
     const router = useRouter();
     const [completedSession, setCompletedSession] = useState(0);
 
-    const goToDetail = () => {
-        router.push({
-            pathname: '/components/Client/screens/service-client-details',
-            params: { id: item._id }
-        });
-    }
+    // const goToDetail = () => {
+    //     router.push({
+    //         pathname: '/components/Client/screens/service-client-details',
+    //         params: { id: item._id }
+    //     });
+    // }
 
     useFocusEffect(
         useCallback(() => {
@@ -86,7 +86,7 @@ const ServiceDetail = ({ item }) => {
     )
 
     return (
-        <Pressable onPress={goToDetail}>
+        <Pressable>
             <View style={{ padding: 10, borderRadius: 10, borderWidth: 1, marginBottom: 10, }} >
                 <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10, }}>
                     {item?.coachID?.image[0]?.url ? (
@@ -97,42 +97,42 @@ const ServiceDetail = ({ item }) => {
                         </>
                     )}
                     <View style={{ alignSelf: 'center' }}>
-                        <Text>Coach: {item?.coachID?.name || "Not specified"}</Text>
-                        <Text>Email: {item?.coachID?.email || "Not specified"}</Text>
-                        <Text>Phone: {item?.coachID?.phone || "Not specified"}</Text>
+                        <Text style={{ color: 'white' }}>Coach: {item?.coachID?.name || "Not specified"}</Text>
+                        <Text style={{ color: 'white' }}>Email: {item?.coachID?.email || "Not specified"}</Text>
+                        <Text style={{ color: 'white' }}>Phone: {item?.coachID?.phone || "Not specified"}</Text>
                     </View>
                 </View>
 
                 <View style={{ flexDirection: 'row', gap: 10 }}>
-                    <Text>
+                    <Text style={{ color: 'white' }}>
                         {item.package}
                     </Text>
 
-                    <Text>
+                    <Text style={{ color: 'white' }} >
                         |
                     </Text>
 
-                    <Text>
+                    <Text style={{ color: 'white' }}>
                         {completedSession}/{item.sessions} Sessions
                     </Text>
 
-                    <Text>
+                    <Text style={{ color: 'white' }}>
                         |
                     </Text>
 
-                    <Text>
+                    <Text style={{ color: 'white' }}>
                         P{item.sessionRate} Rate
                     </Text>
                 </View>
 
                 <View style={{ marginTop: 5, flexDirection: 'row', gap: 10 }}>
-                    <Text>Status: {item.status}</Text>
+                    <Text style={{ color: 'white' }}>Status: {item.status}</Text>
 
-                    <Text>
+                    <Text style={{ color: 'white' }}>
                         |
                     </Text>
 
-                    <Text>
+                    <Text style={{ color: 'white' }}>
                         Next Schedule: {item?.schedule && formatDate(getNextScheduleAfterLatestCompleted(item)?.dateAssigned)}
                     </Text>
 

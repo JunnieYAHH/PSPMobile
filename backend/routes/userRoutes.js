@@ -13,6 +13,7 @@ router.put('/update-password', isAuthenticatedUser, userController.updateUserPas
 router.get('/get-user/:id', userController.getUser);
 router.get('/get-all-users', userController.getAllUsers);
 router.post('/user-log/:id', userController.userLog);
+router.post('/progress-input/:id', userController.userProgressInput);
 router.get('/get-timedin-logs', userController.getTimeInLogs);
 
 module.exports = router;

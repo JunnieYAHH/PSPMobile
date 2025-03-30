@@ -32,6 +32,17 @@ const userSchema = new mongoose.Schema(
         phone: {
             type: String,
         },
+        progress: [
+            {
+                kilogram: {
+                    type: String,
+                },
+                date: {
+                    type: Date,
+                    default: () => new Date(Date.now() + 8 * 60 * 60 * 1000),
+                },
+            }
+        ],
         subscribedDate: {
             type: Date,
             default: null,

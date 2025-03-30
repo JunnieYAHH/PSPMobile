@@ -12,6 +12,17 @@ const logsController = {
             res.status(500).json({ message: "Fetch Logs Error" });
         }
     },
+    getAllUserLogs: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const logs = await Logs.find({ userId: id }).sort({ date: -1 })
+            console.log(logs)
+            res.status(201).json({ message: "Logs fetch successfully", logs });
+        } catch (error) {
+            console.error("Fetch All Logs Error:", error.message);
+            res.status(500).json({ message: "Fetch Logs Error" });
+        }
+    },
     getMyLogs: async (req, res) => {
         try {
             const { id } = req.params;

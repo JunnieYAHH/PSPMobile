@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Branch = require("../model/branch");
+const User = require("../model/user");
 
 const branchController = {
   createBranch: asyncHandler(async (req, res) => {
@@ -33,6 +34,18 @@ const branchController = {
     try {
       const branch = await Branch.find()
       // console.log(exercise)
+      res.status(201).json({ message: "Branch fetch successfully", branch });
+    } catch (error) {
+      console.error("Fetch All Branch Error:", error.message);
+      res.status(500).json({ message: "Create Branch Error" });
+    }
+  }),
+  getBranch: asyncHandler(async (req, res) => {
+    try {
+      const { id } = req.params;
+      // console.log(id, "id")
+      const branch = await User.findById(id)
+      // console.log(branch, 'Branch')
       res.status(201).json({ message: "Branch fetch successfully", branch });
     } catch (error) {
       console.error("Fetch All Branch Error:", error.message);

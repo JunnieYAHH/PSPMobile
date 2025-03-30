@@ -312,5 +312,29 @@ const userController = {
       res.status(500).json({ message: "Create Users Error" });
     }
   },
+  userProgressInput: async (req, res) => {
+    const { id } = req.params;
+    const { kilogram } = req.body;
+    if (!kilogram) {
+      return res.status(400).json({ message: 'Weight (kilogram) is required.' });
+    }
+
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        id,
+        { $push: { progress: { kilogram } } },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+
+      res.status(200).json({ message: 'Progress updated successfully.', user: updatedUser });
+    } catch (error) {
+      console.error('Error inputting the progress of the user:', error.message);
+      res.status(500).json({ message: 'Input Progress Error' });
+    }
+  },
 };
 module.exports = userController;
