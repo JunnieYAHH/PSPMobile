@@ -315,3 +315,30 @@ exports.hasActiveTraining = async (req, res) => {
         });
     }
 }
+
+exports.getCoachDateSessions = async (req, res) => {
+    try {
+      const { coachId } = req.params;
+  
+      // Find clients assigned to the coach
+      const clients = await AvailTrainer.find({ coachID: coachId }).populate('userId');
+  
+      if (!clients.length) {
+        return res.status(404).json({ message: "No clients found" });
+      }
+  
+      // Sort clients by the most recent session date
+      clients.sort((a, b) => {
+        const dateA = new Date(a.schedule[a.schedule.length - 1]?.dateAssigned || 0);
+        const dateB = new Date(b.schedule[b.schedule.length - 1]?.dateAssigned || 0);
+        return dateB - dateA; // Descending order
+      });
+  
+      // Return the client with the most recent session
+      res.status(200).json({ recentClient: clients[0] });
+  
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };

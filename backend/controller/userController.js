@@ -339,7 +339,7 @@ const userController = {
   },
   userRating: async (req, res) => {
     try {
-      console.log(req.body)
+      // console.log(req.body)
       const { rating, userId, coachId } = req.body;
       let rate = new Rating({
         rating,
@@ -359,5 +359,23 @@ const userController = {
       res.status(500).json({ message: 'Input Rating Error' });
     }
   },
+  getCoachRatings: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const ratings = await Rating.find({ coachId: id });
+
+      return res.status(200).json({
+        success: true,
+        ratings,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error fetching ratings data",
+        error: error.message,
+      });
+    }
+  }),
 };
 module.exports = userController;

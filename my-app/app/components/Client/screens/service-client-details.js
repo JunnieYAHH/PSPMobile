@@ -73,7 +73,7 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                     },
                 ]
             );
-            setSelectedRating(null)
+            setSelectedRating()
         } catch (error) {
             console.log(error)
         }
@@ -116,11 +116,11 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                                     </View>
                                 </View>
                             </View>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', color: 'white', marginTop: 15 }}>Rating</Text>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', textAlign: 'center', color: 'white', marginTop: 15 }}>Pick to Rate:</Text>
                             <View style={{ flexDirection: 'row', gap: 30, alignSelf: 'center', marginTop: 15 }}>
                                 {Object.entries(emojiSentimentMap).map(([emoji, rating]) => (
                                     <TouchableOpacity key={rating} onPress={() => handleRating(rating)}>
-                                        <Text style={{ fontSize: 30, opacity: selectedRating === rating ? 1 : 0.5 }}>
+                                        <Text style={{ fontSize: 30 }}>
                                             {emoji}
                                         </Text>
                                     </TouchableOpacity>

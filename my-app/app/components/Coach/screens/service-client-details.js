@@ -298,9 +298,9 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
                     onValueChange={(itemValue) => handleTrainingSelect(itemValue)}
                     style={{ width: '80%', borderRadius: 5, color: 'white' }}
                 >
-                    <Picker.Item label="Select Training" value="" color='white' />
+                    <Picker.Item label="Select Training" value="" color='black' />
                     {trainings.map((training) => (
-                        <Picker.Item key={training} label={training} value={training} color='white' />
+                        <Picker.Item key={training} label={training} value={training} color='black' />
                     ))}
                 </Picker>
                 <Text style={{ textAlign: 'center', marginTop: 5, color: 'white' }}>
@@ -325,14 +325,14 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
                         <Button
                             onPress={cancelAssignedSession}
                             title='Cancel'
-                            color='white'
+                            color='black'
                         />
                     </View>
                     <View style={{ flex: 1 }}>
                         <Button
                             onPress={completeAssignedSession}
                             title='Done'
-                            color='white'
+                            color='black'
                         />
                     </View>
                 </View>
@@ -344,7 +344,7 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
                         <Button
                             disabled={true}
                             title='NO ACTION'
-                            color='white'
+                            color='black'
                         />
                     </View>
                 </View>
@@ -357,7 +357,7 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
                             disabled={!date || !time}
                             onPress={saveDateTimeSession}
                             title='Confirm'
-                            color='white'
+                            color='black'
                         />
                     </View>
                 </View>
