@@ -4,6 +4,7 @@ const { cloudinary, secretKey } = require('../config/cloudinaryConfig')
 const asyncHandler = require("express-async-handler");
 const User = require("../model/user");
 const Log = require('../model/logs');
+const Rating = require('../model/rating');
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const userController = {
@@ -334,6 +335,28 @@ const userController = {
     } catch (error) {
       console.error('Error inputting the progress of the user:', error.message);
       res.status(500).json({ message: 'Input Progress Error' });
+    }
+  },
+  userRating: async (req, res) => {
+    try {
+      console.log(req.body)
+      const { rating, userId, coachId } = req.body;
+      let rate = new Rating({
+        rating,
+        clientId: userId,
+        coachId,
+      });
+
+      rate = await rate.save();
+
+      return res.status(201).json({
+        success: true,
+        message: 'You Rate Successfully',
+        rate
+      });
+    } catch (error) {
+      console.error('Error inputting the rating for coach.', error.message);
+      res.status(500).json({ message: 'Input Rating Error' });
     }
   },
 };

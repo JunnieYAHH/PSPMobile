@@ -14,6 +14,7 @@ router.get('/get-user/:id', userController.getUser);
 router.get('/get-all-users', userController.getAllUsers);
 router.post('/user-log/:id', userController.userLog);
 router.post('/progress-input/:id', userController.userProgressInput);
+router.post('/rating', userController.userRating);
 router.get('/get-timedin-logs', userController.getTimeInLogs);
 
 module.exports = router;

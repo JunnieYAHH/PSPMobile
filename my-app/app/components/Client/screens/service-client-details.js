@@ -1,4 +1,4 @@
-import { Alert, Button, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Alert, Button, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
@@ -6,12 +6,16 @@ import baseURL from '../../../../assets/common/baseUrl';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useSelector } from 'react-redux';
 
 const ClientServiceDetail = ({ trainerIdProps = null }) => {
 
     const { id } = useLocalSearchParams();
     const [serviceDetails, setServiceDetails] = useState({})
-
+    const { user } = useSelector((state) => state.auth);
+    const coachId = serviceDetails.coachID?._id || []
+    const userId = user.user?._id || []
+    // console.log(coachId, 'Coach')
     const getClientService = async () => {
 
         let trainerId = id;
@@ -44,6 +48,37 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
             getClientService()
         }, [])
     );
+
+    const [selectedRating, setSelectedRating] = useState(null);
+
+    const emojiSentimentMap = {
+        "😊": 5,
+        "😀": 4,
+        "😐": 3,
+        "😞": 2,
+        "😡": 1
+    };
+
+    const handleRating = async (rating) => {
+        setSelectedRating(rating);
+        // console.log(rating)
+        try {
+            const data = await axios.post(`${baseURL}/users/rating`, { rating, userId, coachId });
+            Alert.alert(
+                "Submission Of Rating Successful",
+                "Thank you for your feedback.",
+                [
+                    {
+                        text: "OK",
+                    },
+                ]
+            );
+            setSelectedRating(null)
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
     return (
         <>
             {!trainerIdProps && (
@@ -57,12 +92,6 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
 
                             <View style={{ flexDirection: 'row', gap: 10, }}>
-                                {/* <Image
-                                    height={130}
-                                    width={120}
-                                    borderRadius={5}
-                                    source={{ uri: serviceDetails?.coachID?.image[0].url }}
-                                /> */}
                                 {serviceDetails?.coachID?.image[0]?.url ? (
                                     <Image height={130} width={120} borderRadius={5} source={{ uri: serviceDetails?.coachID?.image[0]?.url }} />
                                 ) : (
@@ -87,7 +116,16 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                                     </View>
                                 </View>
                             </View>
-
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', color: 'white', marginTop: 15 }}>Rating</Text>
+                            <View style={{ flexDirection: 'row', gap: 30, alignSelf: 'center', marginTop: 15 }}>
+                                {Object.entries(emojiSentimentMap).map(([emoji, rating]) => (
+                                    <TouchableOpacity key={rating} onPress={() => handleRating(rating)}>
+                                        <Text style={{ fontSize: 30, opacity: selectedRating === rating ? 1 : 0.5 }}>
+                                            {emoji}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
                         </View>
                     </View>
 
@@ -136,7 +174,7 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                     <Schedules schedules={serviceDetails?.schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
 
                 </View>
-            </ScrollView>
+            </ScrollView >
         </>
     )
 }
