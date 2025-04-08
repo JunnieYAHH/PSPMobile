@@ -39,11 +39,11 @@ const Training = () => {
     const [activeCount, setActiveCount] = useState(0);
     const [activeComponent, setActiveComponent] = useState(null);
     const [screenLoading, setScreenLoading] = useState(false);
-
+    const [predictionLogs, setPredictiveLogs] = useState([]);
     const [hasActiveTraining, setHasActiveTraining] = useState(false);
     const [training, setTraining] = useState(null);
     const [view, setView] = useState('current');
-
+    console.log(predictionLogs, 'Prediction logs')
     const getActiveLogs = async () => {
         try {
             const data = await getTimedInLogs();
@@ -59,9 +59,19 @@ const Training = () => {
         }
     };
 
+    const logsPrediction = async () => {
+        try {
+            const predictLogs = await axios.get(`${baseURL}/ml/logs-prediction`);
+            setPredictiveLogs(predictLogs.data);
+        } catch (error) {
+            console.error("Error fetching predictive log.:", error);
+        }
+    };
+
     useFocusEffect(
         useCallback(() => {
             getActiveLogs();
+            logsPrediction();
         }, [])
     );
 
@@ -133,7 +143,7 @@ const Training = () => {
         );
     };
 
-    console.log(gymDays, 'Gym Days')
+    // console.log(gymDays, 'Gym Days')
 
     useFocusEffect(
         useCallback(() => {
@@ -188,6 +198,12 @@ const Training = () => {
                                                             <Text style={{ color: 'white', fontSize: 8 }}>Progress</Text>
                                                         </TouchableOpacity>
                                                     </View>
+                                                </View>
+                                                <View style={{ padding: 15}}>
+                                                    <TouchableOpacity onPress={() => router.push('/components/Client/screens/predictive')}>
+                                                        <MaterialCommunityIcons name="sale" size={24} color="white" style={{ marginLeft: 3, }} />
+                                                        <Text style={{ color: 'white', fontSize: 8 }}>Predictive</Text>
+                                                    </TouchableOpacity>
                                                 </View>
                                             </View>
                                         </View>

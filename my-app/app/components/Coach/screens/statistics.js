@@ -65,13 +65,15 @@ const Statistics = () => {
 
     // Determine the most common rating
     const highestRating = Object.keys(ratingCounts).reduce((a, b) => ratingCounts[a] > ratingCounts[b] ? a : b, 1);
-    
+
     // Get the corresponding emoji
     const highestEmoji = Object.keys(emojiSentimentMap).find(emoji => emojiSentimentMap[emoji] == highestRating);
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Sentiment Analysis</Text>
+            <View style={{ backgroundColor: 'white', padding: 10, marginBottom: 10, borderRadius: 30 }}>
+                <Text style={styles.title}>Sentiment Analysis</Text>
+            </View>
 
             {ratings.length > 0 ? (
                 <>
@@ -81,19 +83,47 @@ const Statistics = () => {
                             Most Common Rating: <Text style={styles.ratingNumber}>{highestRating}</Text> {highestEmoji}
                         </Text>
                     </View>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 }}>
+                        {Object.entries(emojiSentimentMap).map(([emoji, rating]) => (
+                            <View key={rating} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }}>
+                                <Text style={{ fontSize: 20 }}>{emoji}</Text>
+                                <View
+                                    style={{
+                                        width: 15,
+                                        height: 15,
+                                        marginLeft: 5,
+                                        backgroundColor: getColorForRating(rating),
+                                        borderRadius: 10,
+                                    }}
+                                />
+                            </View>
+                        ))}
+                    </View>
 
                     {/* Bar Chart */}
-                    <Text style={styles.chartTitle}>Rating Distribution</Text>
-                    <BarChart
-                        data={barChartData}
-                        barWidth={30}
-                        spacing={20}
-                        roundedTop
-                        roundedBottom
-                        hideRules
-                        yAxisThickness={0}
-                        xAxisThickness={2}
-                    />
+                    <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 20 }}>
+                        <View style={{ backgroundColor: '#FFAC1C', padding: 5, borderRadius: 20, marginBottom: 10 }}>
+                            <Text style={{
+                                fontSize: 16,
+                                fontWeight: 'bold',
+                                marginVertical: 10,
+                                color: 'white',
+                                textAlign: 'center'
+                            }}>Rating Distribution</Text>
+                        </View>
+                        <BarChart
+                            data={barChartData}
+                            barWidth={30}
+                            spacing={20}
+                            roundedTop
+                            roundedBottom
+                            hideRules
+                            yAxisThickness={0}
+                            xAxisThickness={2}
+                            textColor='white'
+                            label
+                        />
+                    </View>
 
                     {/* Pie Chart */}
                     <Text style={styles.chartTitle}>Rating Breakdown</Text>
@@ -104,7 +134,7 @@ const Statistics = () => {
                         radius={100}
                         innerRadius={50}
                         textSize={14}
-                        textColor="black"
+                        textColor="white"
                     />
                 </>
             ) : (
@@ -122,12 +152,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 20,
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#353839',
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
+        color: 'black',
+        marginTop: 8
     },
     sentimentContainer: {
         backgroundColor: '#E3F2FD',
@@ -147,6 +179,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginVertical: 10,
+        color: 'white'
     },
     noDataText: {
         fontSize: 16,

@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, TouchableOpacity, Modal, StyleSheet, ScrollView } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { logoutAction } from '../../../(redux)/authSlice';
 import LoadingScreen from '../../LodingScreen';
@@ -59,14 +59,8 @@ const Schedule = () => {
               {/* Menu */}
               {menuVisible && (
                 <View style={styles.menu}>
-                  <Pressable onPress={() => router.push('/components/Coach/screens/service-client-details')}>
-                    <Text style={styles.menuItem}>Clients</Text>
-                  </Pressable>
                   <Pressable onPress={() => router.push('/components/Coach/screens/statistics')}>
                     <Text style={styles.menuItem}>Statistics</Text>
-                  </Pressable>
-                  <Pressable onPress={() => router.push('/components/Coach/screens/schedule')}>
-                    <Text style={styles.menuItem}>Schedules</Text>
                   </Pressable>
                 </View>
               )}
@@ -87,16 +81,52 @@ const Schedule = () => {
 };
 
 const ClientLists = ({ users }) => {
+  const isToday = (dateStr) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    date.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    return date.getTime() === today.getTime();
+  };
+
+  const getNextSchedule = (client) => {
+    return client.schedule
+      ?.filter((s) => s.status === 'active')
+      .sort((a, b) => new Date(a.dateAssigned) - new Date(b.dateAssigned))[0];
+  };
+
+  const sortedUsers = [...users].sort((a, b) => {
+    const nextA = getNextSchedule(a);
+    const nextB = getNextSchedule(b);
+
+    const isTodayA = nextA && isToday(nextA.dateAssigned);
+    const isTodayB = nextB && isToday(nextB.dateAssigned);
+
+    // Push today's schedule clients to the top
+    if (isTodayA && !isTodayB) return -1;
+    if (!isTodayA && isTodayB) return 1;
+
+    // If both have schedules today, sort by earliest time
+    if (isTodayA && isTodayB) {
+      return new Date(nextA.dateAssigned) - new Date(nextB.dateAssigned);
+    }
+
+    return 0;
+  });
+
   return (
     <View>
-      <FlatList
-        data={users}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <ClientServiceDetail item={item} />}
-      />
+      <View style={{ backgroundColor: '#FFAC1C', padding: 10, borderRadius: 20 }}>
+        <FlatList
+          data={sortedUsers}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => <ClientServiceDetail item={item} />}
+        />
+      </View>
     </View>
   );
 };
+
 
 const ClientServiceDetail = ({ item }) => {
   const router = useRouter();
@@ -187,19 +217,20 @@ function formatDate(dateString) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: '#353839'
   },
   header: {
     padding: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFAC1C',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
   menu: {
     backgroundColor: '#fff',
-    padding: 10,
+    padding: 2,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
@@ -210,8 +241,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   menuItem: {
-    padding: 10,
-    fontSize: 16,
+    padding: 5,
+    fontSize: 14,
   },
   contentContainer: {
     flex: 1,
@@ -221,6 +252,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: 'white'
   },
   clientDetail: {
     padding: 10,
