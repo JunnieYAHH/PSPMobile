@@ -80,7 +80,7 @@ const Membership = () => {
                                 <Text style={styles.signatureLabel}>Signature:</Text>
                                 {memberInfo.signature && memberInfo.signature.length > 0 ? (
                                     <Image
-                                        source={{ uri: memberInfo.signature[0].url }}
+                                        source={{ uri: memberInfo?.signature[0]?.url }}
                                         style={styles.signatureImage}
                                         resizeMode="contain"
                                     />
@@ -196,6 +196,8 @@ const styles = StyleSheet.create({
     signatureImage: {
         width: 150,
         height: 80,
+        borderWidth: 1,
+        borderColor: '#FFA1C1',
     },
     noSignatureText: {
         fontSize: 14,

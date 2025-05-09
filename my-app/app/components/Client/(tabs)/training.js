@@ -55,7 +55,7 @@ const Training = () => {
                 setActiveCount(0);
             }
         } catch (error) {
-            console.error("Error fetching products:", error);
+            // console.error("Error fetching products:", error);
         }
     };
 
@@ -64,7 +64,7 @@ const Training = () => {
             const predictLogs = await axios.get(`${baseURL}/ml/logs-prediction`);
             setPredictiveLogs(predictLogs.data);
         } catch (error) {
-            console.error("Error fetching predictive log.:", error);
+
         }
     };
 

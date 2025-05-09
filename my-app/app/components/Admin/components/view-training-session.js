@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, StatusBar, ImageBackground, Image, Button, Modal, FlatList, Pressable, Alert } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import Constants from 'expo-constants';
 import axios from 'axios';
@@ -12,7 +12,6 @@ const TrainingSession = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCoachId, setSelectedCoachId] = useState(null);
     const [coaches, setCoaches] = useState([]);
-
     const { id } = useLocalSearchParams();
 
     const getTrainingSession = async () => {
@@ -28,21 +27,10 @@ const TrainingSession = () => {
         }
     }
 
-    const getCoaches = async () => {
-        try {
-
-            const { data } = await axios.get(`${baseURL}/users/get-all-users?role=coach`);
-            setCoaches(data.users);
-
-        } catch (error) {
-            console.error("Error fetching training sessions:", error);
-        }
-    }
-
     const setCoach = async () => {
         try {
             const { data } = await axios.put(`${baseURL}/availTrainer/${id}`, { coachID: selectedCoachId, })
-            getCoaches();
+            // getCoaches();
             getTrainingSession()
             setIsModalOpen(false);
         } catch (error) {
@@ -50,10 +38,19 @@ const TrainingSession = () => {
         }
     }
 
+    const fetchCoachClients = async () => {
+        try {
+            const { data } = await axios.get(`${baseURL}/users/coach-clients`);
+            console.log("Coach Clients:", data.coachesWithClients);
+            setCoaches(data.coachesWithClients);
+        } catch (err) {
+            console.error("Error fetching coach clients:", err);
+        }
+    };
 
     useFocusEffect(
         useCallback(() => {
-            getCoaches();
+            fetchCoachClients();
             getTrainingSession()
         }, [])
     )
@@ -227,43 +224,55 @@ const TrainingSession = () => {
                             <View>
                                 <FlatList
                                     showsVerticalScrollIndicator={false}
-                                    keyExtractor={item => item._id}
+                                    keyExtractor={(item) => item.coachId}
                                     data={coaches}
                                     renderItem={({ item }) => (
                                         <Pressable
                                             style={({ pressed }) => ({
-                                                flexDirection: 'row',
-                                                gap: 10,
                                                 padding: 10,
                                                 borderTopWidth: 1,
                                                 borderColor: '#FFAC1C',
-                                                backgroundColor: selectedCoachId === item._id ? '#505050' : null,
-                                                opacity: pressed ? 0.7 : 1,  // Add visual feedback on press
+                                                backgroundColor: selectedCoachId === item.coachId ? '#505050' : null,
+                                                opacity: pressed ? 0.7 : 1,
                                             })}
-                                            onPress={() => {
-                                                // console.log(item._id);
-                                                setSelectedCoachId(item._id);
-                                            }}
+                                            onPress={() => setSelectedCoachId(item.coachId)}
                                         >
-                                            <Image
-                                                source={{ uri: item?.image?.[0]?.url }}
-                                                style={{
-                                                    width: 75,
-                                                    height: 75,
-                                                    borderRadius: 37.5,
-                                                    overflow: 'hidden',
-                                                }}
-                                            />
-                                            <View style={{ alignSelf: 'center', marginTop: -10 }}>
-                                                <Text style={{ color: 'white', fontSize: 16 }}>{item?.name}</Text>
-                                                <Text style={{ color: 'white', fontSize: 12 }}>{item?.email}</Text>
-                                                <Text style={{ color: 'white', fontSize: 12 }}>{item?.phone || "Phone Not Specified"}</Text>
+                                            <View style={{ flexDirection: 'row', gap: 10 }}>
+                                                <Image
+                                                    source={{ uri: item?.image?.[0]?.url }}
+                                                    style={{
+                                                        width: 75,
+                                                        height: 75,
+                                                        borderRadius: 37.5,
+                                                        overflow: 'hidden',
+                                                    }}
+                                                />
+                                                <View style={{ alignSelf: 'center', marginTop: -10 }}>
+                                                    <Text style={{ color: 'white', fontSize: 16 }}>{item?.coachName}</Text>
+                                                    <Text style={{ color: 'white', fontSize: 12 }}>{item?.coachEmail}</Text>
+                                                </View>
+                                            </View>
+
+                                            {/* 👇 Display clients here */}
+                                            <View style={{ marginTop: 10, paddingLeft: 10 }}>
+                                                <Text style={{ color: 'white', fontSize: 12, marginBottom: 8 }}>Clients At The Moment:</Text>
+                                                {Array.isArray(item.clients)
+                                                    ? item.clients.map((client) => (
+                                                        <View key={client.clientId} style={{ marginBottom: 5 }}>
+                                                            <Text style={{ color: '#ccc', fontSize: 13 }}>
+                                                                • {client.name} ({client.email})
+                                                            </Text>
+                                                        </View>
+                                                    ))
+                                                    : (
+                                                        <Text style={{ color: '#999', fontSize: 13 }}>
+                                                            {item.clients}
+                                                        </Text>
+                                                    )}
                                             </View>
                                         </Pressable>
                                     )}
                                 />
-
-
                             </View>
 
                             <View style={{ marginTop: 'auto', flexDirection: 'row', padding: 10, borderTopWidth: 1, borderTopColor: '#FFAC1C', justifyContent: 'space-between' }}>
@@ -287,7 +296,6 @@ const TrainingSession = () => {
                                     title='Assign'
                                 />
                             </View>
-
                         </View>
                     </View>
                 </Modal>

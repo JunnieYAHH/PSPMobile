@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, StatusBar, ImageBackground, FlatList } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Constants from 'expo-constants';
 import { getUserData } from '../../../(services)/api/Admin/scanLogIn';
@@ -14,6 +14,10 @@ import Sales from '../components/sales';
 import Statistics from '../components/statistics';
 import Post from '../components/post';
 import Users from '../components/users';
+import { useSelector } from 'react-redux';
+import LottieView from 'lottie-react-native';
+import axios from 'axios';
+import baseURL from '../../../../assets/common/baseUrl';
 
 const AdminIndex = () => {
   const router = useRouter();
@@ -31,7 +35,7 @@ const AdminIndex = () => {
         setActiveCount(0);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      // console.error("Error fetching products:", error);
     }
   };
 
@@ -40,6 +44,48 @@ const AdminIndex = () => {
       getActiveLogs();
     }, [])
   );
+
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const { user } = useSelector((state) => state.auth);
+  const animation = useRef(null)
+
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
+
+      const fetchUsers = async () => {
+        try {
+          const response = await axios.get(`${baseURL}/users/get-all-users`);
+          if (isMounted) {
+            const adminBranchId = user?.userBranch?._id;
+
+            const filteredUsers = response.data.users.filter(
+              (user) => user.role !== "admin" && user.role !== "user" && user.userBranch?._id === adminBranchId
+            );
+
+            setUsers(filteredUsers);
+            setFilteredUsers(filteredUsers);
+          }
+        } catch (error) {
+          if (isMounted) {
+            console.error("Error fetching users:", error);
+          }
+        }
+      };
+
+      fetchUsers();
+
+      return () => {
+        isMounted = false;
+      };
+    }, [])
+  );
+
+  const filterUsersByRole = (role) => {
+    const filtered = users.filter(user => user.role === role);
+    setFilteredUsers(filtered);
+  };
 
   return (
     <View style={styles.container}>
@@ -90,19 +136,9 @@ const AdminIndex = () => {
                       <MaterialIcons name="create-new-folder" size={24} color="white" />
                       <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Users</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setActiveComponent('Sales')}>
-                      <MaterialCommunityIcons name="sale" size={24} color="white" />
-                      <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Sales</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                     <TouchableOpacity onPress={() => setActiveComponent('Statistics')}>
                       <AntDesign name="barschart" size={24} color="white" />
                       <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Stats</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setActiveComponent('Post')}>
-                      <MaterialIcons name="post-add" size={24} color="white" />
-                      <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Post</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -118,8 +154,37 @@ const AdminIndex = () => {
 
           {/* Default text when nothing is selected */}
           {!activeComponent && (
-            <View>
-              <Text style={{ color: 'white' }}>HELLO</Text>
+            <View style={styles.ntcontainer}>
+              <View style={styles.ntsideNav}>
+                <TouchableOpacity style={styles.ntbutton} onPress={() => filterUsersByRole('client')}>
+                  <Text style={styles.ntbuttonText}>Clients</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.ntbutton} onPress={() => filterUsersByRole('coach')}>
+                  <Text style={styles.ntbuttonText}>Coaches</Text>
+                </TouchableOpacity>
+                <LottieView
+                  ref={animation}
+                  source={require('../../../../assets/DumbellPress.json')}
+                  autoPlay
+                  loop
+                  style={{ width: 170, height: 200, position: 'absolute', marginTop: 100 }}
+                />
+              </View>
+
+              <View style={styles.userListContainer}>
+                <FlatList
+                  data={filteredUsers}
+                  keyExtractor={(item) => item.id ? item.id.toString() : Math.random().toString()}
+                  renderItem={({ item }) => (
+                    <View style={styles.userItem}>
+                      <View>
+                        <Text style={styles.userName}>{item.name}</Text>
+                        <Text style={styles.userRole}>{item.role}</Text>
+                      </View>
+                    </View>
+                  )}
+                />
+              </View>
             </View>
           )}
         </View>
@@ -156,6 +221,54 @@ const styles = StyleSheet.create({
     color: 'white',
     fontStyle: 'italic',
     transform: [{ skewX: '-10deg' }],
+  },
+  ntcontainer: { flex: 1, flexDirection: 'row', marginTop: 30 },
+  ntbackButton: { marginBottom: 30 },
+  ntbutton: {
+    backgroundColor: '#FFAC1C',
+    paddingVertical: 10,
+    marginBottom: 15,
+    width: 70,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  ntbuttonText: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  userListContainer: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+    backgroundColor: '#DD571C',
+    borderRadius: 30,
+    marginLeft: 20,
+    height: '80%'
+  },
+  userItem: {
+    backgroundColor: '#2C2C2C',
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
+  },
+  userName: {
+    color: '#FFAC1C',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  userRole: {
+    color: 'white',
+    fontSize: 11,
+    marginTop: 5,
   },
 });
 

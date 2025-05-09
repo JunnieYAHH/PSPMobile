@@ -81,7 +81,6 @@ const Create = ({ onBack }) => {
                                 <Text style={styles.userName}>{item.name}</Text>
                                 <Text style={styles.userRole}>{item.role}</Text>
                             </View>
-                            <Text style={{ color: 'white', fontSize: 13 }}>Hello</Text>
                         </View>
                     )}
                 />
