@@ -174,6 +174,7 @@ const paymentController = {
             user.emergencyContactNumber = emergencyContactNumber;
             user.subscribedDate = subscribedDate;
             user.subscriptionExpiration = subscriptionExpiration;
+            user.isClient = true;
 
             // Save user and transaction
             finalAmount = finalAmount / 100;

@@ -125,6 +125,10 @@ const userSchema = new mongoose.Schema(
         stripeCustomerId: {
             type: String,
         },
+        isClient: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );
