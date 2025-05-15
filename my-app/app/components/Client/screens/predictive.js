@@ -17,7 +17,7 @@ const Predictive = () => {
                 setPredictiveLogs(res.data);
                 setLoading(false);
             } catch (err) {
-                console.error('Error fetching prediction logs:', err);
+                // console.error('Error fetching prediction logs:', err);
                 setLoading(false);
             }
         };

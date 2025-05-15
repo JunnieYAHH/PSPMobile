@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image, StatusBar, ImageBackground } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { logoutAction } from '../../../(redux)/authSlice';
 import ProtectedRoute from '../../ProtectedRoute';
@@ -13,12 +13,38 @@ import {
     BottomSheetView,
     BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
+import axios from 'axios';
+import baseURL from '../../../../assets/common/baseUrl';
+import SubscriptionReminder from '../components/SubscriptionReminder';
 
 const Profile = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
     const navigation = useNavigation();
+
+    const [membershipExpiration, setMembershipExpiration] = useState({})
+
+    const getUser = async () => {
+        try {
+            const data = await axios.get(`${baseURL}/users/get-user/${user?._id || user?.user?._id}`)
+            // console.log(data.data.user,'Data')
+            setMembershipExpiration(data.data.user.subscriptionExpiration)
+        } catch (error) {
+            console.log('Frontend Index Error', error.message)
+        }
+    }
+    useFocusEffect(
+        useCallback(() => {
+            if (user?._id || user?.user?._id) {
+                getUser();
+                const interval = setInterval(() => {
+                    getUser();
+                }, 3000);
+                return () => clearInterval(interval);
+            }
+        }, [user?._id || user?.user?._id])
+    );
 
     const handleLogout = () => {
         dispatch(logoutAction());
@@ -49,6 +75,7 @@ const Profile = () => {
                 blurRadius={2}
                 resizeMode="cover"
             >
+                <SubscriptionReminder expirationDate={membershipExpiration} userId={user?._id || user?.user?._id} />
                 <View style={styles.container}>
                     <BottomSheetModalProvider>
 

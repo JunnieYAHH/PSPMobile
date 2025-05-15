@@ -24,6 +24,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import SubscriptionReminder from '../components/SubscriptionReminder';
 
 const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
 
@@ -43,7 +44,29 @@ const Training = () => {
     const [hasActiveTraining, setHasActiveTraining] = useState(false);
     const [training, setTraining] = useState(null);
     const [view, setView] = useState('current');
-    console.log(predictionLogs, 'Prediction logs')
+    const [membershipExpiration, setMembershipExpiration] = useState({})
+
+    const getUser = async () => {
+        try {
+            const data = await axios.get(`${baseURL}/users/get-user/${user?._id || user?.user?._id}`)
+            // console.log(data.data.user,'Data')
+            setMembershipExpiration(data.data.user.subscriptionExpiration)
+        } catch (error) {
+            console.log('Frontend Index Error', error.message)
+        }
+    }
+    useFocusEffect(
+        useCallback(() => {
+            if (user?._id || user?.user?._id) {
+                getUser();
+                const interval = setInterval(() => {
+                    getUser();
+                }, 3000);
+                return () => clearInterval(interval);
+            }
+        }, [user?._id || user?.user?._id])
+    );
+
     const getActiveLogs = async () => {
         try {
             const data = await getTimedInLogs();
@@ -164,6 +187,7 @@ const Training = () => {
                         <View style={{ backgroundColor: '#353839', height: '100%' }}>
                             {hasActiveTraining && training && (
                                 <SafeAreaView>
+                                    <SubscriptionReminder expirationDate={membershipExpiration} userId={user?._id || user?.user?._id} />
                                     <View style={{ flexDirection: 'row', backgroundColor: '#353839', justifyContent: 'center' }}>
                                         <View style={{ backgroundColor: '#CC5500', height: 130, width: 200, borderRadius: 7, marginTop: 10 }}>
                                             <View style={{ backgroundColor: 'black', height: 115, width: 180, alignSelf: 'center', marginTop: 7, borderRadius: 10 }}>
@@ -199,7 +223,7 @@ const Training = () => {
                                                         </TouchableOpacity>
                                                     </View>
                                                 </View>
-                                                <View style={{ padding: 15}}>
+                                                <View style={{ padding: 15 }}>
                                                     <TouchableOpacity onPress={() => router.push('/components/Client/screens/predictive')}>
                                                         <MaterialCommunityIcons name="sale" size={24} color="white" style={{ marginLeft: 3, }} />
                                                         <Text style={{ color: 'white', fontSize: 8 }}>Predictive</Text>
@@ -252,6 +276,7 @@ const Training = () => {
                         </View>
                     ) : (
                         <RNSafeAreaView style={styles.container}>
+                            <SubscriptionReminder expirationDate={membershipExpiration} userId={user?._id || user?.user?._id} />
                             <ImageBackground
                                 source={require('../../../../assets/ProgramBG.png')}
                                 style={styles.backgroundImage}

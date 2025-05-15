@@ -231,6 +231,27 @@ const userController = {
       });
     }
   }),
+  changeUserRole: asyncHandler(async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+
+      user.role = 'user';
+      user.isClient = false;
+      user.subscriptionExpiration = null;
+      user.subscribedDate = null;
+
+      await user.save();
+
+      res.status(200).json({ success: true, message: 'Client was downgraded to regular user' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  }),
   getUser: asyncHandler(async (req, res) => {
     const { id } = req.params;
 

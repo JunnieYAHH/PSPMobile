@@ -18,5 +18,6 @@ router.post('/rating', userController.userRating);
 router.get('/get-ratings/:id', userController.getCoachRatings);
 router.get('/get-ratings/:id', userController.getCoachRatings);
 router.get('/coach-clients', userController.getCoachClients);
+router.put('/downgrade-role/:id', userController.changeUserRole);
 
 module.exports = router;

@@ -179,19 +179,44 @@ const paymentController = {
             // Save user and transaction
             finalAmount = finalAmount / 100;
 
-            let transaction = new Transaction({
-                transactionType: 'Membership Subscription',
-                userId, userBranch, birthDate,
-                address, city, phone, emergencyContactName,
-                emergencyContactNumber, promo, agreeTerms,
-                subscribedDate, subscriptionExpiration, stripeSubscriptionId,
-                amount: finalAmount,
-                signature: { public_id: result.public_id, url: result.secure_url },
-            });
-            // console.log(transaction)
-
+            // Save user data
             await user.save();
-            transaction = await transaction.save();
+
+            // Check if user already has a previous transaction
+            let transaction = await Transaction.findOne({ userId, transactionType: 'Membership Subscription' });
+
+            if (transaction) {
+                // update existing transaction
+                transaction.userBranch = userBranch;
+                transaction.birthDate = birthDate;
+                transaction.address = address;
+                transaction.city = city;
+                transaction.phone = phone;
+                transaction.emergencyContactName = emergencyContactName;
+                transaction.emergencyContactNumber = emergencyContactNumber;
+                transaction.promo = promo;
+                transaction.agreeTerms = agreeTerms;
+                transaction.subscribedDate = subscribedDate;
+                transaction.subscriptionExpiration = subscriptionExpiration;
+                transaction.stripeSubscriptionId = stripeSubscriptionId;
+                transaction.amount = finalAmount;
+                transaction.signature = { public_id: result.public_id, url: result.secure_url };
+
+                await transaction.save();
+            } else {
+                // create new if doesn't exist
+                transaction = new Transaction({
+                    transactionType: 'Membership Subscription',
+                    userId, userBranch, birthDate,
+                    address, city, phone, emergencyContactName,
+                    emergencyContactNumber, promo, agreeTerms,
+                    subscribedDate, subscriptionExpiration, stripeSubscriptionId,
+                    amount: finalAmount,
+                    signature: { public_id: result.public_id, url: result.secure_url },
+                });
+
+                await transaction.save();
+            }
 
             return res.status(201).json({
                 success: true,

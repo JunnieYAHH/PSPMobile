@@ -1,13 +1,41 @@
 import { Image, ImageBackground, StatusBar, StyleSheet, Text, View, TouchableOpacity, Animated, FlatList, ScrollView, TextInput } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Constants from 'expo-constants';
 import { getAllExercise } from '../../../(services)/api/Exercises/getAllExercise';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import styles from '../../styles/TabProgramStyles';
+import SubscriptionReminder from '../components/SubscriptionReminder';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import baseURL from '../../../../assets/common/baseUrl';
+import { useFocusEffect } from 'expo-router';
 
 const Programs = () => {
   const [scale] = useState(new Animated.Value(1));
   const [selectedView, setSelectedView] = useState('exercise');
+  const { user } = useSelector((state) => state.auth);
+  const [membershipExpiration, setMembershipExpiration] = useState({})
+
+  const getUser = async () => {
+    try {
+      const data = await axios.get(`${baseURL}/users/get-user/${user?._id || user?.user?._id}`)
+      // console.log(data.data.user,'Data')
+      setMembershipExpiration(data.data.user.subscriptionExpiration)
+    } catch (error) {
+      console.log('Frontend Index Error', error.message)
+    }
+  }
+  useFocusEffect(
+    useCallback(() => {
+      if (user?._id || user?.user?._id) {
+        getUser();
+        const interval = setInterval(() => {
+          getUser();
+        }, 3000);
+        return () => clearInterval(interval);
+      }
+    }, [user?._id || user?.user?._id])
+  );
 
   const handlePress = (view) => {
     Animated.timing(scale, {
@@ -116,6 +144,7 @@ const Programs = () => {
         blurRadius={2}
         resizeMode="stretch"
       >
+        <SubscriptionReminder expirationDate={membershipExpiration} userId={user?._id || user?.user?._id} />
         <View style={styles.container}>
           <View style={styles.card}>
             <Image

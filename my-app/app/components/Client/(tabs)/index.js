@@ -1,14 +1,17 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import LoadingScreen from '../../LodingScreen';
 import { useDispatch, useSelector } from "react-redux";
 import styles from '../../styles/TabHomeStyles';
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getAllExercise } from '../../../(services)/api/Exercises/getAllExercise';
 import ExerciseCardDisplay from '../../Exercise/ExerciseCardDisplay';
 import { Alert, Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import SubscriptionReminder from '../components/SubscriptionReminder';
+import axios from 'axios';
+import baseURL from '../../../../assets/common/baseUrl';
 
 const ClientIndex = () => {
   const { user } = useSelector((state) => state.auth);
@@ -20,6 +23,7 @@ const ClientIndex = () => {
   const scrollViewRef = useRef(null);
   const [activeTab, setActiveTab] = useState('Exercise');
   const { clientSecret, isLoading, error } = useSelector((state) => state.payment);
+  const [membershipExpiration, setMembershipExpiration] = useState({})
 
   useEffect(() => {
     if (!user) {
@@ -27,6 +31,27 @@ const ClientIndex = () => {
     }
   }, [user]);
 
+  const getUser = async () => {
+    try {
+      const data = await axios.get(`${baseURL}/users/get-user/${user?._id || user?.user?._id}`)
+      // console.log(data.data.user,'Data')
+      setMembershipExpiration(data.data.user.subscriptionExpiration)
+    } catch (error) {
+      console.log('Frontend Index Error', error.message)
+    }
+  }
+  useFocusEffect(
+    useCallback(() => {
+      if (user?._id || user?.user?._id) {
+        getUser();
+        const interval = setInterval(() => {
+          getUser();
+        }, 3000);
+        return () => clearInterval(interval);
+      }
+    }, [user?._id || user?.user?._id])
+  );
+  // console.log(membershipExpiration)
   const tabs = [
     { name: 'Exercise', screen: 'ExerciseDetails', scrollTo: 1000, color: 'white' },
     { name: 'About PSP', screen: 'AboutScreen', scrollTo: 250, color: 'white' },
@@ -95,6 +120,7 @@ const ClientIndex = () => {
           <View style={styles.container}>
             {user ? (
               <>
+                <SubscriptionReminder expirationDate={membershipExpiration} userId={user?._id || user?.user?._id} />
                 <SafeAreaView style={styles.safeAreaView}>
 
                   {/* Content Header */}
