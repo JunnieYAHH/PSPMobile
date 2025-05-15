@@ -22,13 +22,15 @@ const Profile = () => {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
     const navigation = useNavigation();
-
     const [membershipExpiration, setMembershipExpiration] = useState({})
+    // const [userData, setUserData] = useState({})
+    // console.log(userData, 'User')
 
     const getUser = async () => {
         try {
             const data = await axios.get(`${baseURL}/users/get-user/${user?._id || user?.user?._id}`)
             // console.log(data.data.user,'Data')
+            // setUserData(data.data.user)
             setMembershipExpiration(data.data.user.subscriptionExpiration)
         } catch (error) {
             console.log('Frontend Index Error', error.message)
@@ -95,7 +97,7 @@ const Profile = () => {
                                                 />
                                                 <TouchableOpacity
                                                     style={styles.iconContainer}
-                                                    onPress={() => navigation.navigate('components/User/EditUserProfile', { user })}
+                                                    onPress={() => navigation.navigate('components/User/EditUserProfile')}
                                                 >
                                                     <FontAwesome name="pencil" size={24} color="black" />
                                                 </TouchableOpacity>

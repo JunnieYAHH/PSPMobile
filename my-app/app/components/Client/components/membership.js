@@ -1,14 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
+import { useFocusEffect } from 'expo-router';
 
 const Membership = () => {
     const userData = useSelector((state) => state.auth.user);
     const user = userData?.user || userData;
     const id = user?._id;
     const [memberInfo, setMembershipInfo] = useState(null);
+    const [membershipExpiration, setMembershipExpiration] = useState({})
+    // console.log(membershipExpiration,'exp')
+    const getUser = async () => {
+        try {
+            const data = await axios.get(`${baseURL}/users/get-user/${user?._id}`)
+            // console.log(data.data.user,'Data')
+            // setUserData(data.data.user)
+            setMembershipExpiration(data.data.user.subscriptionExpiration)
+        } catch (error) {
+            console.log('Frontend Index Error', error.message)
+        }
+    }
+    useFocusEffect(
+        useCallback(() => {
+            if (user?._id || user?.user?._id) {
+                getUser();
+                const interval = setInterval(() => {
+                    getUser();
+                }, 3000);
+                return () => clearInterval(interval);
+            }
+        }, [user?._id || user?.user?._id])
+    );
 
     const getMembershipInfo = async () => {
         if (!id) return;
@@ -40,7 +64,7 @@ const Membership = () => {
         return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(date);
     };
 
-    console.log(memberInfo)
+    // console.log(user.subscriptionExpiration)
 
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -62,7 +86,7 @@ const Membership = () => {
                         <DetailItem label="Email" value={user.email || 'N/A'} />
                         <DetailItem label="Address" value={memberInfo.address} />
                         <DetailItem label="City" value={memberInfo.city} />
-                        <DetailItem label="Membership Expiry" value={formatDate(memberInfo.subscriptionExpiration)} />
+                        <DetailItem label="Membership Expiry" value={formatDate(membershipExpiration)} />
                     </View>
                     <View style={styles.card}>
                         <Text style={styles.sectionTitle}>Membership Card</Text>
@@ -75,7 +99,7 @@ const Membership = () => {
                                 />
                             </View>
                             <Text style={styles.memberType}>Type: {memberInfo.transactionType}</Text>
-                            <Text style={styles.expiry}>Expiry: {formatDate(memberInfo.subscriptionExpiration)}</Text>
+                            <Text style={styles.expiry}>Expiry: {formatDate(membershipExpiration)}</Text>
                             <View style={styles.signatureContainer}>
                                 <Text style={styles.signatureLabel}>Signature:</Text>
                                 {memberInfo.signature && memberInfo.signature.length > 0 ? (
