@@ -3,6 +3,7 @@
 # dependencies
 node_modules/
 /assets/common/baseUrl.js
+firebase/
 # Expo
 .expo/
 dist/
