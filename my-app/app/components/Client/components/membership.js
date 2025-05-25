@@ -60,8 +60,17 @@ const Membership = () => {
 
     const formatDate = (dateString) => {
         if (!dateString) return "N/A";
+
         const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(date);
+        if (isNaN(date.getTime())) {
+            return "Invalid date";
+        }
+
+        return new Intl.DateTimeFormat('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        }).format(date);
     };
 
     // console.log(user.subscriptionExpiration)

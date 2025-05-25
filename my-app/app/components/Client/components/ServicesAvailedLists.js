@@ -9,6 +9,7 @@ import LoadingScreen from '../../LodingScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function ServicesAvailedLists() {
 
@@ -67,12 +68,8 @@ const ServiceDetail = ({ item }) => {
     const router = useRouter();
     const [completedSession, setCompletedSession] = useState(0);
 
-    // const goToDetail = () => {
-    //     router.push({
-    //         pathname: '/components/Client/screens/service-client-details',
-    //         params: { id: item._id }
-    //     });
-    // }
+    const user = useSelector((state) => state.auth.user);
+    const userId = user?.user?._id || user?._id
 
     useFocusEffect(
         useCallback(() => {
@@ -101,6 +98,21 @@ const ServiceDetail = ({ item }) => {
                         <Text style={{ color: 'white' }}>Email: {item?.coachID?.email || "Not specified"}</Text>
                         <Text style={{ color: 'white' }}>Phone: {item?.coachID?.phone || "Not specified"}</Text>
                     </View>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push({
+                                pathname: '/components/Client/Chat/ChatRoom',
+                                params: {
+                                    userId: userId,
+                                    receiverId: item?.coachID?._id,
+                                },
+                            });
+                        }}
+                        style={{ padding: 8 }}
+                    >
+                        <FontAwesome name="comments" size={24} color="white" />
+                    </TouchableOpacity>
                 </View>
 
                 <View style={{ flexDirection: 'row', gap: 10 }}>

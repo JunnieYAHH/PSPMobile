@@ -7,12 +7,13 @@ import { logoutAction } from '../../../(redux)/authSlice';
 import ProtectedRoute from '../../ProtectedRoute';
 import styles from '../../styles/Client/ClientProfileStyles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-
+import AntDesign from '@expo/vector-icons/AntDesign';
 import {
     BottomSheetModal,
     BottomSheetView,
     BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
+import QRCode from 'react-native-qrcode-svg';
 
 const Profile = () => {
     const router = useRouter();
@@ -25,12 +26,12 @@ const Profile = () => {
         router.push("/");
     };
 
-    const bottomSheetModalRef = useRef(null);
-
     const snapPoints = useMemo(() => ['25%', '50%', '75'], []);
 
-    const handlePresentModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.present();
+    const appQRModalRef = useRef(null);
+
+    const handleAppQRModalPress = useCallback(() => {
+        appQRModalRef.current?.present();
     }, []);
 
     return (
@@ -100,10 +101,10 @@ const Profile = () => {
                                         />
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.option}>
-                                        <Icon name="info-circle" size={24} color="#3f51b5" />
+                                        <AntDesign name="qrcode" size={24} color="black" />
                                         <Text style={styles.optionText}
-                                            onPress={handlePresentModalPress}
-                                        >About</Text>
+                                            onPress={handleAppQRModalPress}
+                                        >App_QR</Text>
                                         <Icon
                                             name="angle-right"
                                             size={24}
@@ -123,15 +124,19 @@ const Profile = () => {
                                     </TouchableOpacity>
 
 
-                                    {/* About Modal */}
+                                    {/* QR Modal */}
                                     <BottomSheetModal
-                                        ref={bottomSheetModalRef}
+                                        ref={appQRModalRef}
                                         index={1}
                                         snapPoints={snapPoints}
-                                    // onChange={handleSheetChanges}
                                     >
-                                        <BottomSheetView>
-                                            <Text>Awesome 🎉</Text>
+                                        <BottomSheetView style={[styles.bottomSheetContainer, { flex: 1 }]}>
+                                            <View style={styles.qrContainer}>
+                                                <Text style={styles.qrTitle}>App QR Code</Text>
+                                                <View style={styles.qrBox}>
+                                                    <QRCode value="https://drive.google.com/drive/folders/1vLBuM5xQyIwN5Lw6ryyav1Bq0wdNJ7zG" size={150} />
+                                                </View>
+                                            </View>
                                         </BottomSheetView>
                                     </BottomSheetModal>
                                 </View>
