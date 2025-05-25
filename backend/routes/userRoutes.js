@@ -19,5 +19,6 @@ router.get('/get-ratings/:id', userController.getCoachRatings);
 router.get('/get-ratings/:id', userController.getCoachRatings);
 router.get('/coach-clients', userController.getCoachClients);
 router.put('/downgrade-role/:id', userController.changeUserRole);
+router.get("/chat-users", userController.chatUsers);
 
 module.exports = router;

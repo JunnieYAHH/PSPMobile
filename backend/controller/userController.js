@@ -432,5 +432,14 @@ const userController = {
       res.status(500).json({ message: 'Server error fetching coach clients' });
     }
   }),
+  chatUsers: asyncHandler(async (req, res) => {
+    try {
+      const ids = req.query.ids.split(",");
+      const users = await User.find({ _id: { $in: ids } }).select("name image.url");
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching users" });
+    }
+  }),
 };
 module.exports = userController;
