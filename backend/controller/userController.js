@@ -310,7 +310,7 @@ const userController = {
       const today = new Date().setHours(0, 0, 0, 0);
       let activeLogs = await Log.find({ date: today, timeOut: null });
 
-      console.log(activeLogs)
+      console.log(activeLogs,'logs')
       res.status(201).json({ message: "Logs fetch successfully", activeLogs });
     } catch (error) {
       console.error("Fetch All Logs Error:", error.message);
