@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity, ImageBackground } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { sendMessage, subscribeToMessages } from "../../../../firebase/chatService";
 import { generateRoomId } from "../../../../utils/generateRoom";
@@ -79,47 +79,64 @@ const ChatRoom = () => {
     };
 
     return (
-        <View style={styles.container}>
-            {/* 💬 Messages */}
-            <FlatList
-                ref={flatListRef}
-                data={messages}
-                keyExtractor={(item) => item.id}
-                renderItem={renderItem}
-                contentContainerStyle={{ flexGrow: 1, justifyContent: "flex-end" }}
-                onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-            />
-
-            {/* 📥 Input */}
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    value={inputText}
-                    onChangeText={setInputText}
-                    placeholder="Type a message..."
-                />
-                <TouchableOpacity onPress={handleSend} style={{ borderRadius: 5, backgroundColor: 'white', padding: 10 }} >
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={{ marginRight: 5 }}>Send</Text>
-                        <FontAwesome name="envelope" size={24} color="black" />
+        <ImageBackground
+            source={require('../../../../assets/ProgramBG.png')}
+            style={styles.backgroundImage}
+            imageStyle={{ opacity: 2.0 }}
+            blurRadius={2}
+            resizeMode="cover"
+        >
+            <View style={styles.container}>
+                {/* 💬 Messages */}
+                <View style={{ backgroundColor: 'black', borderBottomRightRadius: 20, borderBottomLeftRadius: 20 }}>
+                    <View style={{ padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                        <FontAwesome name="comments" size={24} color="#fff" />
+                        <Text style={{ color: 'white', fontSize: 20, marginLeft: 10 }}>Chat Heads</Text>
                     </View>
-                </TouchableOpacity>
+                </View>
+                <FlatList
+                    ref={flatListRef}
+                    data={messages}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderItem}
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: "flex-end" }}
+                    onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                />
+
+                {/* 📥 Input */}
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        value={inputText}
+                        onChangeText={setInputText}
+                        placeholder="Type a message..."
+                    />
+                    <TouchableOpacity onPress={handleSend} style={{ borderRadius: 5, backgroundColor: 'white', padding: 10 }} >
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Text style={{ marginRight: 5 }}>Send</Text>
+                            <FontAwesome name="envelope" size={24} color="black" />
+                        </View>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </ImageBackground>
     );
 };
 
 export default ChatRoom;
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 10, backgroundColor: '#353839' },
+    container: { flex: 1, padding: 10, },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
         paddingTop: 8,
         borderTopWidth: 1,
         borderColor: "#ccc",
-        backgroundColor: "#353839",
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
     },
     input: {
         flex: 1,

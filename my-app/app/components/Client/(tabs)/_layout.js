@@ -16,13 +16,18 @@ export default function RootLayout() {
           <FontAwesome name='home' color={color} size={28} />
         )
       }} />
+      <Tabs.Screen name="chats" options={{
+        headerShown: false, title: 'Chats', tabBarIcon: ({ color }) => (
+          <FontAwesome name='comments' color={color} size={28} />
+        )
+      }} />
       <Tabs.Screen name="training" options={{
         headerShown: false, title: 'Training', tabBarIcon: ({ color }) => (
-          <Ionicons name="barbell-sharp" size={24} color="black" />)
+          <Ionicons name="barbell-sharp" size={24} color={color} />)
       }} />
       <Tabs.Screen name="programs" options={{
         headerShown: false, title: 'Programs', tabBarIcon: ({ color }) => (
-          <AntDesign name="dropbox" size={24} color="black" />)
+          <AntDesign name="dropbox" size={24} color={color} />)
       }} />
       <Tabs.Screen name="profile" options={{
         headerShown: false, title: 'Profile', tabBarIcon: ({ color }) => (

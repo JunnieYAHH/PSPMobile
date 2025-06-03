@@ -140,9 +140,9 @@ const Programs = () => {
       <ImageBackground
         source={require('../../../../assets/ProgramBG.png')}
         style={styles.backgroundImage}
-        imageStyle={{ opacity: 1.5 }}
+        imageStyle={{ opacity: 2.0 }}
         blurRadius={2}
-        resizeMode="stretch"
+        resizeMode="cover"
       >
         <SubscriptionReminder expirationDate={membershipExpiration} userId={user?._id || user?.user?._id} />
         <View style={styles.container}>

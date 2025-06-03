@@ -23,10 +23,11 @@ const AdminIndex = () => {
   const router = useRouter();
   const [activeCount, setActiveCount] = useState(0);
   const [activeComponent, setActiveComponent] = useState(null);
-
+  console.log(activeCount, 'counts')
   const getActiveLogs = async () => {
     try {
       const data = await getTimedInLogs();
+      console.log(data,'Logs')
       if (data && data.activeLogs) {
         const logsArray = Array.isArray(data.activeLogs) ? data.activeLogs : [data.activeLogs];
         const activeLogsCount = logsArray.filter(log => log.timeOut === null).length;

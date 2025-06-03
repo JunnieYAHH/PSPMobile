@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable, TouchableOpacity, Modal, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, Pressable, TouchableOpacity, Modal, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import { logoutAction } from '../../../(redux)/authSlice';
 import LoadingScreen from '../../LodingScreen';
@@ -50,29 +50,38 @@ const Schedule = () => {
       ) : (
         <>
           <SafeAreaView style={styles.safeArea}>
-            {/* Header with Burger Icon */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => setMenuVisible(!menuVisible)}>
-                <Ionicons name="menu" size={30} color="black" />
-              </TouchableOpacity>
+            <ImageBackground
+              source={require('../../../../assets/ProgramBG.png')}
+              style={styles.backgroundImage}
+              imageStyle={{ opacity: 2.0 }}
+              blurRadius={2}
+              resizeMode="cover"
+            >
 
-              {/* Menu */}
-              {menuVisible && (
-                <View style={styles.menu}>
-                  <Pressable onPress={() => router.push('/components/Coach/screens/statistics')}>
-                    <Text style={styles.menuItem}>Statistics</Text>
-                  </Pressable>
-                </View>
-              )}
-            </View>
+              {/* Header with Burger Icon */}
+              <View style={styles.header}>
+                <TouchableOpacity onPress={() => setMenuVisible(!menuVisible)}>
+                  <Ionicons name="menu" size={30} color="black" />
+                </TouchableOpacity>
 
-            {/* Main content */}
-            <View style={styles.contentContainer}>
-              <Text style={styles.headerText}>Your Clients</Text>
-              <View style={{ marginTop: 10 }}>
-                <ClientLists users={clients} />
+                {/* Menu */}
+                {menuVisible && (
+                  <View style={styles.menu}>
+                    <Pressable onPress={() => router.push('/components/Coach/screens/statistics')}>
+                      <Text style={styles.menuItem}>Statistics</Text>
+                    </Pressable>
+                  </View>
+                )}
               </View>
-            </View>
+
+              {/* Main content */}
+              <View style={styles.contentContainer}>
+                <Text style={styles.headerText}>Your Clients</Text>
+                <View style={{ marginTop: 10 }}>
+                  <ClientLists users={clients} />
+                </View>
+              </View>
+            </ImageBackground>
           </SafeAreaView>
         </>
       )}
@@ -227,6 +236,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFAC1C',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
   },
   menu: {
     backgroundColor: '#fff',

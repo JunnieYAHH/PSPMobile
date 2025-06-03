@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Image, ImageBackground } from 'react-native';
 import React, { useRef } from 'react';
 import { Video, ResizeMode } from 'expo-av';
 import { useRouter } from "expo-router";
@@ -14,26 +14,34 @@ const Home = () => {
     return (
         <>
             <StatusBar translucent backgroundColor="transparent" />
-            <View style={styles.container}>
-                <Image source={require('../assets/backroundMovable.png')} style={{ alignSelf: 'center', width: 390, height: 325, borderBottomRightRadius: 40, borderBottomLeftRadius: 40 }} />
-                <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-                    <LottieView
-                        ref={animation}
-                        source={require('../assets/LandingPage.json')}
-                        autoPlay
-                        loop
-                        style={{ width: 400, height: 600, marginTop: 80,  marginBottom: 300 }}
-                    />
-                </View>
-                <TouchableOpacity
-                    style={styles.buttons}
-                    onPress={() => router.push("/auth/login")}
-                >
-                    <View style={styles.button}>
-                        <Text style={styles.buttonText}>Proceed</Text>
+            <ImageBackground
+                source={require('../assets/ProgramBG.png')}
+                style={styles.backgroundImage}
+                imageStyle={{ opacity: 2.0 }}
+                blurRadius={2}
+                resizeMode="cover"
+            >
+                <View style={styles.container}>
+                    <Image source={require('../assets/backroundMovable.png')} style={{ alignSelf: 'center', width: 390, height: 325, borderBottomRightRadius: 40, borderBottomLeftRadius: 40 }} />
+                    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                        <LottieView
+                            ref={animation}
+                            source={require('../assets/LandingPage.json')}
+                            autoPlay
+                            loop
+                            style={{ width: 400, height: 600, marginTop: 80, marginBottom: 300 }}
+                        />
                     </View>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity
+                        style={styles.buttons}
+                        onPress={() => router.push("/auth/login")}
+                    >
+                        <View style={styles.button}>
+                            <Text style={styles.buttonText}>Proceed</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </ImageBackground>
         </>
     );
 };
@@ -44,7 +52,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: Constants.statusBarHeight,
-        backgroundColor: '#353839',
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
     },
     videoContainer: {
         flex: 1,

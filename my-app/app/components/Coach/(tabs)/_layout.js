@@ -14,7 +14,7 @@ export default function RootLayout() {
       }} />
       <Tabs.Screen name="schedule" options={{
         headerShown: false, title: 'Clients', tabBarIcon: ({ color }) => (
-            <MaterialIcons name="list-alt" size={24} color="black" />)
+            <MaterialIcons name="list-alt" size={24} color={color} />)
       }} />
       <Tabs.Screen name="chats" options={{
         headerShown: false, title: 'Chats', tabBarIcon: ({ color }) => (

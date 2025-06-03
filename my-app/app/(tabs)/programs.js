@@ -109,114 +109,121 @@ const Programs = () => {
   return (
     <>
       <StatusBar translucent backgroundColor="transparent" />
-      <View style={styles.container}>
-        <View style={styles.card}>
-          <LottieView
-            ref={animation}
-            source={require('../../assets/UserProgram.json')}
-            autoPlay
-            loop
-            style={{ width: 400, height: 250, position: 'absolute' }}
-          />
-        </View>
+      <ImageBackground
+        source={require('../../assets/ProgramBG.png')}
+        style={styles.backgroundImage}
+        imageStyle={{ opacity: 2.0 }}
+        blurRadius={2}
+        resizeMode="cover"
+      >
+        <View style={styles.container}>
+          <View style={styles.card}>
+            <LottieView
+              ref={animation}
+              source={require('../../assets/UserProgram.json')}
+              autoPlay
+              loop
+              style={{ width: 400, height: 250, position: 'absolute' }}
+            />
+          </View>
 
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handlePress('exercise')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.buttonText}>Exercise Programs</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handlePress('BMI')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.buttonText}>BMI Calculator</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handlePress('exercise')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.buttonText}>Exercise Programs</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handlePress('BMI')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.buttonText}>BMI Calculator</Text>
+            </TouchableOpacity>
+          </View>
 
-        {selectedView === 'exercise' && (
-          <View>
-            {/* Filter Exercise Programs */}
-            <View style={styles.filterContainer}>
-              <View style={styles.filterBackground}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {filterOptions.map((filter) => (
-                    <TouchableOpacity
-                      key={filter}
-                      style={[
-                        styles.checkbox,
-                        selectedFilters.includes(filter) && styles.checkboxSelected,
-                      ]}
-                      onPress={() => handleFilterSelect(filter)}
-                    >
-                      <Text style={styles.checkboxText}>{filter}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
+          {selectedView === 'exercise' && (
+            <View>
+              {/* Filter Exercise Programs */}
+              <View style={styles.filterContainer}>
+                <View style={styles.filterBackground}>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {filterOptions.map((filter) => (
+                      <TouchableOpacity
+                        key={filter}
+                        style={[
+                          styles.checkbox,
+                          selectedFilters.includes(filter) && styles.checkboxSelected,
+                        ]}
+                        onPress={() => handleFilterSelect(filter)}
+                      >
+                        <Text style={styles.checkboxText}>{filter}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
               </View>
-            </View>
-            {/* Render filtered exercises */}
-            <FlatList
-              data={filteredExercises}
-              keyExtractor={(item) => item._id}
-              numColumns={2}
-              columnWrapperStyle={styles.row}
-              renderItem={({ item }) => (
-                <View style={{ marginBottom: 90 }}>
-                  <View style={styles.exerciseCard}>
-                    <Image source={{ uri: item.image[0]?.url }} style={styles.exerciseImage} />
-                    <View style={styles.exerciseInfoContainer}>
-                      <Text style={styles.exerciseName}>{item.name}</Text>
-                      <Text style={styles.exerciseDetails}>Target Muscle: {item.targetMuscle}</Text>
+              {/* Render filtered exercises */}
+              <FlatList
+                data={filteredExercises}
+                keyExtractor={(item) => item._id}
+                numColumns={2}
+                columnWrapperStyle={styles.row}
+                renderItem={({ item }) => (
+                  <View style={{ marginBottom: 90 }}>
+                    <View style={styles.exerciseCard}>
+                      <Image source={{ uri: item.image[0]?.url }} style={styles.exerciseImage} />
+                      <View style={styles.exerciseInfoContainer}>
+                        <Text style={styles.exerciseName}>{item.name}</Text>
+                        <Text style={styles.exerciseDetails}>Target Muscle: {item.targetMuscle}</Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              )}
-            />
-          </View>
-        )}
+                )}
+              />
+            </View>
+          )}
 
-        {selectedView === 'BMI' && (
-          <View style={styles.bmiContainer}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', marginTop: 20, color: 'white' }}>BMI CALCULATOR</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter weight (kg)"
-              keyboardType="numeric"
-              value={weight}
-              onChangeText={setWeight}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter height (cm)"
-              keyboardType="numeric"
-              value={height}
-              onChangeText={setHeight}
-            />
-            <TouchableOpacity style={styles.calculateButton} onPress={calculateBMI}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <LottieView
-                  ref={animation}
-                  source={require('../../assets/Calculator.json')}
-                  autoPlay
-                  loop
-                  style={{ width: 50, height: 50 }}
-                />
-                <Text style={{color:'black'}}>
-                  Calculate BMI
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {bmi && (
-              <Text style={{ fontSize: 20, color: 'white' }}>Your BMI: {bmi} - {bmiMessage}</Text>
-            )}
-          </View>
-        )}
-      </View>
-      {/* </ImageBackground> */}
+          {selectedView === 'BMI' && (
+            <View style={styles.bmiContainer}>
+              <Text style={{ fontSize: 24, fontWeight: 'bold', marginTop: 20, color: 'white' }}>BMI CALCULATOR</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter weight (kg)"
+                keyboardType="numeric"
+                value={weight}
+                onChangeText={setWeight}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter height (cm)"
+                keyboardType="numeric"
+                value={height}
+                onChangeText={setHeight}
+              />
+              <TouchableOpacity style={styles.calculateButton} onPress={calculateBMI}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <LottieView
+                    ref={animation}
+                    source={require('../../assets/Calculator.json')}
+                    autoPlay
+                    loop
+                    style={{ width: 50, height: 50 }}
+                  />
+                  <Text style={{ color: 'black' }}>
+                    Calculate BMI
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              {bmi && (
+                <Text style={{ fontSize: 20, color: 'white' }}>Your BMI: {bmi} - {bmiMessage}</Text>
+              )}
+            </View>
+          )}
+        </View>
+      </ImageBackground>
     </>
   );
 };

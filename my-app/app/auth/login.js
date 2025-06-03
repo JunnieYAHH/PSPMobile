@@ -75,87 +75,95 @@ const Login = () => {
             ) : (
                 <>
                     <StatusBar translucent backgroundColor="transparent" />
-                    <View style={styles.container}>
-                        <LottieView
-                            ref={animation}
-                            source={require('../../assets/LandingScreen.json')}
-                            autoPlay
-                            loop
-                            style={{ width: 400, height: 300, marginTop: 80, position: 'absolute' }}
-                        />
-                        <View style={styles.overlay}>
-                            <Text style={styles.title}>Login</Text>
-                            <Formik
-                                initialValues={{ email: "", password: "" }}
-                                validationSchema={LoginSchema}
-                                onSubmit={(values) => {
-                                    setIsLoading(true);
-                                    mutation.mutateAsync(values)
-                                        .then((data) => {
-                                            dispatch(loginAction(data));
-                                        })
-                                        .catch((error) => {
-                                            setIsLoading(false);
-                                            Alert.alert(
-                                                "Login Failed", "Your Email or Password is Incorrent. Try Again",
-                                                [{ text: "OK" }]
-                                            );
-                                        });
-                                }}
-                            >
-                                {({
-                                    handleChange,
-                                    handleBlur,
-                                    handleSubmit,
-                                    values,
-                                    errors,
-                                    touched,
-                                }) => (
-                                    <View style={styles.form}>
-                                        <TextInput
-                                            style={styles.input}
-                                            placeholder="Email"
-                                            onChangeText={handleChange("email")}
-                                            onBlur={handleBlur("email")}
-                                            value={values.email}
-                                            keyboardType="email-address"
-                                        />
-                                        {errors.email && touched.email ? (
-                                            <Text style={styles.errorText}>{errors.email}</Text>
-                                        ) : null}
-                                        <View style={styles.passwordContainer}>
+                    <ImageBackground
+                        source={require('../../assets/ProgramBG.png')}
+                        style={styles.backgroundImage}
+                        imageStyle={{ opacity: 2.0 }}
+                        blurRadius={2}
+                        resizeMode="cover"
+                    >
+                        <View style={styles.container}>
+                            <LottieView
+                                ref={animation}
+                                source={require('../../assets/LandingScreen.json')}
+                                autoPlay
+                                loop
+                                style={{ width: 400, height: 300, marginTop: 80, position: 'absolute' }}
+                            />
+                            <View style={styles.overlay}>
+                                <Text style={styles.title}>Login</Text>
+                                <Formik
+                                    initialValues={{ email: "", password: "" }}
+                                    validationSchema={LoginSchema}
+                                    onSubmit={(values) => {
+                                        setIsLoading(true);
+                                        mutation.mutateAsync(values)
+                                            .then((data) => {
+                                                dispatch(loginAction(data));
+                                            })
+                                            .catch((error) => {
+                                                setIsLoading(false);
+                                                Alert.alert(
+                                                    "Login Failed", "Your Email or Password is Incorrent. Try Again",
+                                                    [{ text: "OK" }]
+                                                );
+                                            });
+                                    }}
+                                >
+                                    {({
+                                        handleChange,
+                                        handleBlur,
+                                        handleSubmit,
+                                        values,
+                                        errors,
+                                        touched,
+                                    }) => (
+                                        <View style={styles.form}>
                                             <TextInput
-                                                style={styles.passwordInput}
-                                                placeholder="Password"
-                                                onChangeText={handleChange("password")}
-                                                onBlur={handleBlur("password")}
-                                                value={values.password}
-                                                secureTextEntry={!showPassword}
+                                                style={styles.input}
+                                                placeholder="Email"
+                                                onChangeText={handleChange("email")}
+                                                onBlur={handleBlur("email")}
+                                                value={values.email}
+                                                keyboardType="email-address"
                                             />
-                                            <TouchableOpacity
-                                                onPress={() => setShowPassword(!showPassword)}
-                                            >
-                                                <FontAwesome
-                                                    name={showPassword ? "eye-slash" : "eye"}
-                                                    size={19}
-                                                    color="grey"
+                                            {errors.email && touched.email ? (
+                                                <Text style={styles.errorText}>{errors.email}</Text>
+                                            ) : null}
+                                            <View style={styles.passwordContainer}>
+                                                <TextInput
+                                                    style={styles.passwordInput}
+                                                    placeholder="Password"
+                                                    onChangeText={handleChange("password")}
+                                                    onBlur={handleBlur("password")}
+                                                    value={values.password}
+                                                    secureTextEntry={!showPassword}
                                                 />
+                                                <TouchableOpacity
+                                                    onPress={() => setShowPassword(!showPassword)}
+                                                >
+                                                    <FontAwesome
+                                                        name={showPassword ? "eye-slash" : "eye"}
+                                                        size={19}
+                                                        color="grey"
+                                                    />
+                                                </TouchableOpacity>
+                                            </View>
+                                            {errors.password && touched.password ? (
+                                                <Text style={styles.errorText}>{errors.password}</Text>
+                                            ) : null}
+                                            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                                                <Text style={styles.buttonText}>Login</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={{ alignSelf: 'flex-end', fontWeight: 'bold', marginTop: 20 }} onPress={() => router.push('/auth/register')}>
+                                                <Text style={styles.buttonText}>Register</Text>
                                             </TouchableOpacity>
                                         </View>
-                                        {errors.password && touched.password ? (
-                                            <Text style={styles.errorText}>{errors.password}</Text>
-                                        ) : null}
-                                        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                                            <Text style={styles.buttonText}>Login</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={{ alignSelf: 'flex-end', fontWeight: 'bold', marginTop: 20 }} onPress={() => router.push('/auth/register')}>
-                                            <Text style={styles.buttonText}>Register</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </Formik>
+                                    )}
+                                </Formik>
+                            </View>
                         </View>
-                    </View>
+                    </ImageBackground>
                 </>
             )}
         </>
@@ -168,7 +176,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: Constants.statusBarHeight,
-        backgroundColor: '#353839',
     },
     backgroundImage: {
         flex: 1,

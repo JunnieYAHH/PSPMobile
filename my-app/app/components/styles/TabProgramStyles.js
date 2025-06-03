@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: Constants.statusBarHeight,
-        backgroundColor: '#353839',
     },
     card: {
         width: 400,

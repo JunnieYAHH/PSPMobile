@@ -54,9 +54,11 @@ const Register = () => {
           <StatusBar translucent backgroundColor="transparent" />
           <View style={styles.container}>
             <ImageBackground
-              source={require('../../assets/letsStart.png')}
+              source={require('../../assets/ProgramBG.png')}
               style={styles.backgroundImage}
-              imageStyle={{ opacity: 1.5 }}
+              imageStyle={{ opacity: 2.0 }}
+              blurRadius={2}
+              resizeMode="cover"
             >
               <View style={styles.overlay}>
                 <Formik
@@ -110,6 +112,9 @@ const Register = () => {
                     touched,
                   }) => (
                     <View style={styles.form}>
+                      <View style={{ alignItems: 'center', padding: 10, backgroundColor: '#FFAC1C', marginBottom: 15, borderRadius: 20 }}>
+                        <Text style={{ color: 'black', fontSize: 24 }}>Register on our App!</Text>
+                      </View>
                       <View style={styles.imageContainer}>
                         <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
                           {image ? (

@@ -84,7 +84,7 @@ const ServiceDetail = ({ item }) => {
 
     return (
         <Pressable>
-            <View style={{ padding: 10, borderRadius: 10, borderWidth: 1, marginBottom: 10, }} >
+            <View style={{ padding: 10, borderRadius: 10, borderWidth: 1, marginBottom: 10, borderColor: 'white' }} >
                 <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10, }}>
                     {item?.coachID?.image[0]?.url ? (
                         <Image height={65} width={65} borderRadius={5} source={{ uri: item?.coachID?.image[0]?.url }} />

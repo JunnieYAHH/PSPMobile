@@ -3,7 +3,7 @@ import baseURL from '../../../../assets/common/baseUrl';
 
 // Get User Data by ID
 const getTimedInLogs = async () => {
-    const response = await axios.get(`${baseURL}/users/get-timedin-logs/`);
+    const response = await axios.get(`${baseURL}/users/get-timedin-logs`);
     return response.data;
 };
 
