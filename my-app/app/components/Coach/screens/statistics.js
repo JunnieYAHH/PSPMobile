@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
 import { useSelector } from 'react-redux';
 import { BarChart, PieChart } from 'react-native-gifted-charts';
+import Constants from 'expo-constants';
 
 const Statistics = () => {
     const [ratings, setRatings] = useState([]);
@@ -70,77 +71,91 @@ const Statistics = () => {
     const highestEmoji = Object.keys(emojiSentimentMap).find(emoji => emojiSentimentMap[emoji] == highestRating);
 
     return (
-        <View style={styles.container}>
-            <View style={{ backgroundColor: 'white', padding: 10, marginBottom: 10, borderRadius: 30 }}>
-                <Text style={styles.title}>Sentiment Analysis</Text>
-            </View>
-
-            {ratings.length > 0 ? (
-                <>
-                    {/* Sentiment Summary */}
-                    <View style={styles.sentimentContainer}>
-                        <Text style={styles.sentimentText}>
-                            Most Common Rating: <Text style={styles.ratingNumber}>{highestRating}</Text> {highestEmoji}
-                        </Text>
+        <SafeAreaView>
+            <ImageBackground
+                source={require('../../../../assets/ProgramBG.png')}
+                style={styles.backgroundImage}
+                imageStyle={{ opacity: 2.0 }}
+                blurRadius={2}
+                resizeMode="cover"
+            >
+                <View style={styles.container}>
+                    <View style={{
+                        marginBottom: 10, borderRadius: 30, paddingTop: Constants.statusBarHeight + 35,
+                    }}>
+                        <Text style={styles.title}>Sentiment Analysis</Text>
                     </View>
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 }}>
-                        {Object.entries(emojiSentimentMap).map(([emoji, rating]) => (
-                            <View key={rating} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }}>
-                                <Text style={{ fontSize: 20 }}>{emoji}</Text>
-                                <View
-                                    style={{
-                                        width: 15,
-                                        height: 15,
-                                        marginLeft: 5,
-                                        backgroundColor: getColorForRating(rating),
-                                        borderRadius: 10,
-                                    }}
+
+                    {ratings.length > 0 ? (
+                        <>
+                            {/* Sentiment Summary */}
+                            <View style={styles.sentimentContainer}>
+                                <Text style={styles.sentimentText}>
+                                    Most Common Rating: <Text style={styles.ratingNumber}>{highestRating}</Text> {highestEmoji}
+                                </Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 }}>
+                                {Object.entries(emojiSentimentMap).map(([emoji, rating]) => (
+                                    <View key={rating} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }}>
+                                        <Text style={{ fontSize: 20 }}>{emoji}</Text>
+                                        <View
+                                            style={{
+                                                width: 15,
+                                                height: 15,
+                                                marginLeft: 5,
+                                                backgroundColor: getColorForRating(rating),
+                                                borderRadius: 10,
+                                            }}
+                                        />
+                                    </View>
+                                ))}
+                            </View>
+
+                            {/* Bar Chart */}
+                            <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 20 }}>
+                                <View style={{ backgroundColor: '#FFAC1C', padding: 5, borderRadius: 20, marginBottom: 10 }}>
+                                    <Text style={{
+                                        fontSize: 16,
+                                        fontWeight: 'bold',
+                                        marginVertical: 10,
+                                        color: 'white',
+                                        textAlign: 'center'
+                                    }}>Rating Distribution</Text>
+                                </View>
+                                <BarChart
+                                    data={barChartData}
+                                    barWidth={30}
+                                    spacing={20}
+                                    roundedTop
+                                    roundedBottom
+                                    hideRules
+                                    yAxisThickness={0}
+                                    xAxisThickness={2}
+                                    textColor='white'
+                                    label
                                 />
                             </View>
-                        ))}
-                    </View>
 
-                    {/* Bar Chart */}
-                    <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 20 }}>
-                        <View style={{ backgroundColor: '#FFAC1C', padding: 5, borderRadius: 20, marginBottom: 10 }}>
-                            <Text style={{
-                                fontSize: 16,
-                                fontWeight: 'bold',
-                                marginVertical: 10,
-                                color: 'white',
-                                textAlign: 'center'
-                            }}>Rating Distribution</Text>
-                        </View>
-                        <BarChart
-                            data={barChartData}
-                            barWidth={30}
-                            spacing={20}
-                            roundedTop
-                            roundedBottom
-                            hideRules
-                            yAxisThickness={0}
-                            xAxisThickness={2}
-                            textColor='white'
-                            label
-                        />
-                    </View>
-
-                    {/* Pie Chart */}
-                    <Text style={styles.chartTitle}>Rating Breakdown</Text>
-                    <PieChart
-                        data={pieChartData}
-                        donut
-                        showText
-                        radius={100}
-                        innerRadius={50}
-                        textSize={14}
-                        textColor="white"
-                    />
-                </>
-            ) : (
-                <Text style={styles.noDataText}>No ratings available</Text>
-            )}
-        </View>
+                            {/* Pie Chart */}
+                            <View style={{ marginBottom: 55 }}>
+                                <Text style={styles.chartTitle}>Rating Breakdown</Text>
+                                <PieChart
+                                    data={pieChartData}
+                                    donut
+                                    showText
+                                    radius={100}
+                                    innerRadius={50}
+                                    textSize={14}
+                                    textColor="white"
+                                />
+                            </View>
+                        </>
+                    ) : (
+                        <Text style={styles.noDataText}>No ratings available</Text>
+                    )}
+                </View>
+            </ImageBackground>
+        </SafeAreaView>
     );
 };
 
@@ -148,17 +163,14 @@ export default Statistics;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#353839',
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
-        color: 'black',
+        color: 'white',
         marginTop: 8
     },
     sentimentContainer: {
@@ -179,7 +191,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginVertical: 10,
-        color: 'white'
+        color: 'white',
+        textAlign: 'center'
     },
     noDataText: {
         fontSize: 16,

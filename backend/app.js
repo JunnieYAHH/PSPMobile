@@ -11,6 +11,7 @@ const transactionRoutes = require('./routes/transactionRoutes')
 const availTrainerRoutes = require('./routes/availTrainerRoutes')
 const logRoutes = require('./routes/logRoutes')
 const mlRoutes = require('./routes/mlRoutes')
+const push = require('./routes/push')
 
 
 const app = express();
@@ -40,6 +41,7 @@ app.use('/api/v1/transaction', transactionRoutes);
 app.use('/api/v1/availTrainer', availTrainerRoutes);
 app.use('/api/v1/logs', logRoutes);
 app.use('/api/v1/ml', mlRoutes);
+app.use("/api/v1/push", push);
 
 // Start server
 app.listen(port, () => {

@@ -21,25 +21,68 @@ const EditUserProfile = () => {
     const dispatch = useDispatch();
     const navigation = useNavigation();
     const route = useRoute();
-    const { user } = route.params;
+    // const { user } = route.params || {};
     // console.log('Edit User Profile',user)
+    const { user } = useSelector((state) => state.auth);
 
     const [image, setImage] = useState(
-        user.user && user.user.image && user.user.image[0] ? user.user.image[0].url :
-            (user.image && user.image[0] ? user.image[0].url : null)
+        user?.user && user?.user?.image && user?.user?.image[0] ? user?.user?.image[0]?.url :
+            (user?.image && user?.image[0] ? user?.image[0]?.url : null)
     );
 
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+        Alert.alert(
+            "Select Image Source",
+            "Choose an option",
+            [
+                {
+                    text: "Camera",
+                    onPress: async () => {
+                        const permission = await ImagePicker.requestCameraPermissionsAsync();
+                        if (permission.status !== "granted") {
+                            Alert.alert("Permission Denied", "Camera access is required.");
+                            return;
+                        }
 
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-        }
+                        const result = await ImagePicker.launchCameraAsync({
+                            allowsEditing: true,
+                            aspect: [4, 3],
+                            quality: 1,
+                        });
+
+                        if (!result.canceled) {
+                            setImage(result.assets[0].uri);
+                        }
+                    },
+                },
+                {
+                    text: "Gallery",
+                    onPress: async () => {
+                        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                        if (permission.status !== "granted") {
+                            Alert.alert("Permission Denied", "Gallery access is required.");
+                            return;
+                        }
+
+                        const result = await ImagePicker.launchImageLibraryAsync({
+                            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                            allowsEditing: true,
+                            aspect: [4, 3],
+                            quality: 1,
+                        });
+
+                        if (!result.canceled) {
+                            setImage(result.assets[0].uri);
+                        }
+                    },
+                },
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+            ],
+            { cancelable: true }
+        );
     };
 
     useEffect(() => {

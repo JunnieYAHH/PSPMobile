@@ -41,6 +41,8 @@ const LogCharts = ({ logs }) => {
     const hourMap = Array(24).fill(0);
 
     logs.forEach(log => {
+      if (!log.date || !log.timeIn || !log.timeOut) return; // 🚨 prevent crashing
+
       const date = format(parseISO(log.date), 'yyyy-MM-dd');
       const userId = log.userId;
       const timeIn = parseISO(log.timeIn);

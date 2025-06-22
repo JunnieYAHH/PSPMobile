@@ -8,7 +8,9 @@ import {
     TouchableOpacity,
     FlatList,
     Button,
-    SafeAreaView as RNSafeAreaView
+    Modal,
+    SafeAreaView as RNSafeAreaView,
+    ScrollView
 } from 'react-native';
 import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -25,18 +27,14 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import SubscriptionReminder from '../components/SubscriptionReminder';
+import { Agenda } from 'react-native-calendars';
+import Predictive from '../screens/predictive';
 
 const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
-
 const Training = () => {
-
     const router = useRouter();
     const state = useSelector(state => state.auth);
     const user = useSelector((state) => state.auth.user);
-    const [weightData] = useState({
-        initialWeight: 62, // in kilos
-        currentWeight: 65, // in kilos
-    });
     const [activeCount, setActiveCount] = useState(0);
     const [activeComponent, setActiveComponent] = useState(null);
     const [screenLoading, setScreenLoading] = useState(false);
@@ -45,11 +43,11 @@ const Training = () => {
     const [training, setTraining] = useState(null);
     const [view, setView] = useState('current');
     const [membershipExpiration, setMembershipExpiration] = useState({})
+    const [showCalendar, setShowCalendar] = useState(false);
 
     const getUser = async () => {
         try {
             const data = await axios.get(`${baseURL}/users/get-user/${user?._id || user?.user?._id}`)
-            // console.log(data.data.user,'Data')
             setMembershipExpiration(data.data.user.subscriptionExpiration)
         } catch (error) {
             console.log('Frontend Index Error', error.message)
@@ -97,33 +95,17 @@ const Training = () => {
             logsPrediction();
         }, [])
     );
-
-    // Static Health Data
-    const healthData = {
-        activeMinutes: 124,
-        caloriesBurned: 350,
-        bmi: 24.3,
-        steps: 8000,
-    };
-
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const totalDays = daysInMonth(year, month);
-
-    const weightGains = weightData.currentWeight - weightData.initialWeight;
-
     const userId = user?.user?._id || user?._id
 
     const checkActiveTraining = async () => {
-
         setScreenLoading(true)
         setHasActiveTraining(false)
         setTraining(null)
-
-        // const { user } = state;
         try {
-
             const { data } = await axios.get(`${baseURL}/availTrainer/has-active/${userId}`);
             setHasActiveTraining(data.hasActive);
             setTraining(data.training);
@@ -134,26 +116,35 @@ const Training = () => {
         setScreenLoading(false)
     }
     const [myLogs, setMyLogs] = useState([])
+    const [agendaItems, setAgendaItems] = useState({});
 
     const getMyLogs = async () => {
-        setScreenLoading(true)
-        const { user } = state;
+        setScreenLoading(true);
         try {
-
             const { data } = await axios.get(`${baseURL}/logs/get-my-logs/${userId}`);
             setMyLogs(data.logs);
 
+            const items = {};
+            data.logs.forEach(log => {
+                const date = new Date(log.timeIn).toISOString().split('T')[0];
+                if (!items[date]) items[date] = [];
+
+                items[date].push({
+                    name: "Gym Entry",
+                    time: new Date(log.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                });
+            });
+
+            setAgendaItems(items);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-        setScreenLoading(false)
-    }
-    // console.log(myLogs)
+        setScreenLoading(false);
+    };
     const gymDays = myLogs.map(log => new Date(log.timeIn).getDate());
 
     const renderDay = ({ item }) => {
         const isGymDay = gymDays.includes(item);
-
         return (
             <View
                 style={[
@@ -165,16 +156,12 @@ const Training = () => {
             </View>
         );
     };
-
-    // console.log(gymDays, 'Gym Days')
-
     useFocusEffect(
         useCallback(() => {
             checkActiveTraining();
             getMyLogs();
         }, [])
     )
-
     return (
         <>
             {screenLoading ? (
@@ -191,9 +178,12 @@ const Training = () => {
                         resizeMode="cover"
                     >
                         {hasActiveTraining && training ? (
-                            <View style={{ height: '100%' }}>
+                            <View>
                                 {hasActiveTraining && training && (
                                     <SafeAreaView>
+                                        <TouchableOpacity onPress={() => setShowCalendar(true)} style={{ backgroundColor: '#FFBF00', padding: 10, borderRadius: 5, marginTop: 10 }}>
+                                            <Text style={{ color: 'black', fontWeight: 'bold', textAlign: 'center' }}>My logs in {today.toLocaleString('default', { month: 'long' })} {year}</Text>
+                                        </TouchableOpacity>
                                         <SubscriptionReminder expirationDate={membershipExpiration} userId={user?._id || user?.user?._id} />
                                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                                             <View style={{ backgroundColor: '#CC5500', height: 130, width: 200, borderRadius: 7, marginTop: 10 }}>
@@ -230,12 +220,6 @@ const Training = () => {
                                                             </TouchableOpacity>
                                                         </View>
                                                     </View>
-                                                    <View style={{ padding: 15 }}>
-                                                        <TouchableOpacity onPress={() => router.push('/components/Client/screens/predictive')}>
-                                                            <MaterialCommunityIcons name="sale" size={24} color="white" style={{ marginLeft: 3, }} />
-                                                            <Text style={{ color: 'white', fontSize: 8 }}>Predictive</Text>
-                                                        </TouchableOpacity>
-                                                    </View>
                                                 </View>
                                             </View>
                                         </View>
@@ -254,31 +238,52 @@ const Training = () => {
                                         </View>
 
                                         {view === 'current' && (
-                                            <View style={{ padding: 10, marginBottom: 50 }}>
+                                            <View style={{ padding: 10, }}>
                                                 <Text style={{ fontWeight: '900', fontSize: 16, marginBottom: 10, color: 'white' }}>Client Availed Services</Text>
                                                 <ServicesAvailedLists key={hasActiveTraining + "current"} />
-                                                <Text style={styles.header}>
-                                                    Gym Calendar - {today.toLocaleString('default', { month: 'long' })} {year}
-                                                </Text>
-
-                                                {/* Calendar Section */}
-                                                <FlatList
-                                                    data={Array.from({ length: totalDays }, (_, i) => i + 1)}
-                                                    keyExtractor={(item) => item.toString()}
-                                                    numColumns={7}
-                                                    renderItem={renderDay}
-                                                    contentContainerStyle={styles.calendarContainer}
+                                                <Predictive />
+                                            </View>
+                                        )}
+                                        <Modal
+                                            visible={showCalendar}
+                                            transparent={false}
+                                            animationType="slide"
+                                            onRequestClose={() => setShowCalendar(false)}
+                                        >
+                                            <View style={{ flex: 1, backgroundColor: 'black' }}>
+                                                <TouchableOpacity
+                                                    onPress={() => setShowCalendar(false)}
+                                                    style={{ padding: 15, alignSelf: 'flex-end' }}
+                                                >
+                                                    <Text style={{ color: 'white' }}>Close</Text>
+                                                </TouchableOpacity>
+                                                <Agenda
+                                                    items={agendaItems}
+                                                    selected={Object.keys(agendaItems)[0] || new Date().toISOString().split('T')[0]}
+                                                    renderItem={(item, firstItemInDay) => (
+                                                        <View style={{ backgroundColor: '#333', padding: 10, marginVertical: 5, borderRadius: 5 }}>
+                                                            <Text style={{ color: 'white', fontWeight: 'bold' }}>{item.name}</Text>
+                                                            <Text style={{ color: 'white' }}>Time: {item.time}</Text>
+                                                        </View>
+                                                    )}
+                                                    theme={{
+                                                        backgroundColor: 'black',
+                                                        calendarBackground: 'black',
+                                                        agendaBackgroundColor: 'black',
+                                                        dayTextColor: 'white',
+                                                        textSectionTitleColor: 'white',
+                                                        selectedDayBackgroundColor: '#1E90FF',
+                                                        selectedDayTextColor: 'white',
+                                                        todayTextColor: 'orange',
+                                                        agendaKnobColor: 'white',
+                                                    }}
                                                 />
                                             </View>
-                                        )}
-
-                                        {view === 'all' && (
-                                            <View style={{ marginBottom: 100 }}>
-                                                <ClientServiceDetail key={hasActiveTraining + "all"} trainerIdProps={training._id} />
-                                            </View>
-                                        )}
-
+                                        </Modal>
                                     </SafeAreaView >
+                                )}
+                                {view === 'all' && (
+                                    <ClientServiceDetail key={hasActiveTraining + "all"} trainerIdProps={training._id} />
                                 )}
                             </View>
                         ) : (
@@ -322,7 +327,7 @@ const Training = () => {
                                                 <View style={{ backgroundColor: 'black', height: 120, width: 140, alignSelf: 'center', marginTop: 5, borderRadius: 20 }}>
                                                     <View style={{ padding: 15 }}>
                                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                                                            <TouchableOpacity onPress={() => setActiveComponent('History')}>
+                                                            <TouchableOpacity onPress={() => router.push('/components/Client/screens/history')}>
                                                                 <MaterialIcons name="create-new-folder" size={24} color="white" />
                                                                 <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>History</Text>
                                                             </TouchableOpacity>

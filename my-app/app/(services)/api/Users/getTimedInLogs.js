@@ -1,9 +1,8 @@
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
 
-// Get User Data by ID
-const getTimedInLogs = async () => {
-    const response = await axios.get(`${baseURL}/users/get-timedin-logs`);
+const getTimedInLogs = async ({ userBranch }) => {
+    const response = await axios.post(`${baseURL}/users/get-timedin-logs`, { userBranch });
     return response.data;
 };
 

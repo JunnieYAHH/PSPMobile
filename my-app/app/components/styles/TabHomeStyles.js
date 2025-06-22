@@ -80,17 +80,14 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginHorizontal: 20,
   },
   tabCard: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    paddingHorizontal: 15,
     paddingVertical: 10,
     margin: 5,
     justifyContent: 'center',
-    width: '30%',
+    width: '22%',
   },
   tabText: {
     fontSize: 14,

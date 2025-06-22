@@ -20,6 +20,9 @@ import { FontAwesome } from "@expo/vector-icons";
 import Constants from 'expo-constants';
 import LoadingScreen from "../components/LodingScreen";
 import LottieView from 'lottie-react-native';
+import { registerForPushNotificationsAsync } from "../../hooks/usePushNotifications";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebaseConfig";
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Required"),
@@ -98,11 +101,19 @@ const Login = () => {
                                     onSubmit={(values) => {
                                         setIsLoading(true);
                                         mutation.mutateAsync(values)
-                                            .then((data) => {
+                                            .then(async (data) => {
                                                 dispatch(loginAction(data));
+                                                const token = await registerForPushNotificationsAsync(data.user._id);
+
+                                                if (token && data?.user?._id) {
+                                                    await setDoc(doc(db, 'users', data.user._id), {
+                                                        expoPushToken: token
+                                                    }, { merge: true });
+                                                }
                                             })
                                             .catch((error) => {
                                                 setIsLoading(false);
+                                                console.log(error.message)
                                                 Alert.alert(
                                                     "Login Failed", "Your Email or Password is Incorrent. Try Again",
                                                     [{ text: "OK" }]

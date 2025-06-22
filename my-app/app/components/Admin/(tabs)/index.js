@@ -23,11 +23,13 @@ const AdminIndex = () => {
   const router = useRouter();
   const [activeCount, setActiveCount] = useState(0);
   const [activeComponent, setActiveComponent] = useState(null);
+  const { user } = useSelector((state) => state.auth);
+  const userBranch = user?.user?.userBranch || '';
   console.log(activeCount, 'counts')
   const getActiveLogs = async () => {
     try {
-      const data = await getTimedInLogs();
-      console.log(data,'Logs')
+      const data = await getTimedInLogs({ userBranch });
+      console.log(data, 'Logs')
       if (data && data.activeLogs) {
         const logsArray = Array.isArray(data.activeLogs) ? data.activeLogs : [data.activeLogs];
         const activeLogsCount = logsArray.filter(log => log.timeOut === null).length;
@@ -48,9 +50,7 @@ const AdminIndex = () => {
 
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const { user } = useSelector((state) => state.auth);
   const animation = useRef(null)
-
   useFocusEffect(
     useCallback(() => {
       let isMounted = true;
@@ -59,10 +59,10 @@ const AdminIndex = () => {
         try {
           const response = await axios.get(`${baseURL}/users/get-all-users`);
           if (isMounted) {
-            const adminBranchId = user?.userBranch?._id;
+            const adminBranchId = user?.user?.userBranch;
 
             const filteredUsers = response.data.users.filter(
-              (user) => user.role !== "admin" && user.role !== "user" && user.userBranch?._id === adminBranchId
+              (user) => user.role !== "admin" && user.role !== "superadmin" && user.role !== "user" && user.userBranch === adminBranchId
             );
 
             setUsers(filteredUsers);
@@ -104,8 +104,8 @@ const AdminIndex = () => {
             <Text style={styles.dashboardText}>DASHBOARD</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
-            <View style={{ backgroundColor: '#CC5500', height: 130, width: 200, borderRadius: 7, marginTop: 10 }}>
-              <View style={{ backgroundColor: 'black', height: 115, width: 180, alignSelf: 'center', marginTop: 7, borderRadius: 10 }}>
+            <View style={{ backgroundColor: '#CC5500', height: 130, width: 350, borderRadius: 7, marginTop: 10 }}>
+              <View style={{ backgroundColor: 'black', height: 115, width: 320, alignSelf: 'center', marginTop: 7, borderRadius: 10 }}>
                 <View style={{ flexDirection: 'row' }}>
                   <View style={{ padding: 10 }}>
                     <View style={{ backgroundColor: '#FFAC1C', height: 60, width: 65, padding: 2, borderRadius: 40 }}>
@@ -126,22 +126,13 @@ const AdminIndex = () => {
                       <Text style={{ color: 'white', fontSize: 10 }}> ----- See More</Text>
                     </TouchableOpacity>
                   </View>
-                </View>
-              </View>
-            </View>
-            <View style={{ backgroundColor: '#CC5500', height: 130, width: 150, borderRadius: 7, marginTop: 10, marginLeft: 10 }}>
-              <View style={{ backgroundColor: 'black', height: 120, width: 140, alignSelf: 'center', marginTop: 5, borderRadius: 20 }}>
-                <View style={{ padding: 15 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                    <TouchableOpacity onPress={() => setActiveComponent('Users')}>
-                      <MaterialIcons name="create-new-folder" size={24} color="white" />
-                      <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Users</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setActiveComponent('Statistics')}>
-                      <AntDesign name="barschart" size={24} color="white" />
-                      <Text style={{ color: 'white', fontSize: 8, marginLeft: 2 }}>Stats</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <LottieView
+                    ref={animation}
+                    source={require('../../../../assets/DumbellPress.json')}
+                    autoPlay
+                    loop
+                    style={{ width: 170, height: 100, position: 'absolute', marginLeft: 170 }}
+                  />
                 </View>
               </View>
             </View>
@@ -163,13 +154,6 @@ const AdminIndex = () => {
                 <TouchableOpacity style={styles.ntbutton} onPress={() => filterUsersByRole('coach')}>
                   <Text style={styles.ntbuttonText}>Coaches</Text>
                 </TouchableOpacity>
-                <LottieView
-                  ref={animation}
-                  source={require('../../../../assets/DumbellPress.json')}
-                  autoPlay
-                  loop
-                  style={{ width: 170, height: 200, position: 'absolute', marginTop: 100 }}
-                />
               </View>
 
               <View style={styles.userListContainer}>

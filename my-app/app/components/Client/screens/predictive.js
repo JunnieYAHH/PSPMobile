@@ -48,59 +48,46 @@ const Predictive = () => {
     const yAxisLabelTexts = Array.from({ length: steps + 1 }, (_, i) => String(i * stepSize));
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={{ marginTop: 20, }}>
             <Text style={styles.title}>Predicted Logs (Next 3 Days)</Text>
             <Text style={styles.subtext}>Estimated login counts based on historical usage patterns.</Text>
-            {loading ? (
-                <ActivityIndicator size="large" color="#FFAC1C" style={styles.loadingIndicator} />
-            ) : formattedPredictionData.length > 0 ? (
-                <>
-                    <View style={styles.chartContainer}>
-                        <LineChart
-                            data={formattedPredictionData}
-                            thickness={3}
-                            hideDataPoints={false}
-                            isAnimated
-                            xAxisLabelTextStyle={{ color: 'white', fontWeight: 'bold' }}
-                            yAxisTextStyle={{ color: 'white', fontWeight: 'bold' }}
-                            yAxisLabelTexts={yAxisLabelTexts}
-                            yAxisLabelWidth={35}
-                            noOfSections={steps}
-                            maxValue={roundedMax}
-                            areaChart
-                            curved
-                            width={280}
-                            height={250}
-                            rulesColor="gray"
-                        />
-                    </View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
-                        {['Orange', 'Green', 'Red'].map((label, i) => (
-                            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 8 }}>
-                                <View style={{ width: 10, height: 10, backgroundColor: ['#FFAC1C', '#00C897', '#FF6666'][i], marginRight: 4, borderRadius: 2 }} />
-                                <Text style={{ color: 'white', fontSize: 12 }}>{label}</Text>
-                            </View>
-                        ))}
-                    </View>
-                </>
+            {
+                loading ? (
+                    <ActivityIndicator size="large" color="#FFAC1C" style={styles.loadingIndicator} />
+                ) : formattedPredictionData.length > 0 ? (
+                    <>
+                        <View style={styles.chartContainer}>
+                            <LineChart
+                                data={formattedPredictionData}
+                                thickness={3}
+                                hideDataPoints={false}
+                                isAnimated
+                                xAxisLabelTextStyle={{ color: 'white', fontWeight: 'bold' }}
+                                yAxisTextStyle={{ color: 'white', fontWeight: 'bold' }}
+                                yAxisLabelTexts={yAxisLabelTexts}
+                                yAxisLabelWidth={35}
+                                noOfSections={steps}
+                                maxValue={roundedMax}
+                                areaChart
+                                curved
+                                width={150}
+                                height={100}
+                                rulesColor="gray"
+                            />
+                        </View>
+                    </>
 
-            ) : (
-                <Text style={styles.noDataText}>No prediction data available</Text>
-            )}
-        </ScrollView>
+                ) : (
+                    <Text style={styles.noDataText}>No prediction data available</Text>
+                )
+            }
+        </View>
     );
 };
 
 export default Predictive;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        alignItems: 'center',
-        backgroundColor: '#1E1E1E',
-        justifyContent: 'center',
-    },
     title: {
         color: '#FFAC1C',
         fontSize: 24,
@@ -120,20 +107,20 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         width: '90%',
     },
-
     chartContainer: {
         backgroundColor: '#2C2C2C',
         borderRadius: 15,
         paddingVertical: 15,
         paddingHorizontal: 10,
         shadowColor: '#000',
-        width: 360,
+        width: 250,
         borderWidth: 1,
         borderColor: '#444',
         shadowOpacity: 0.2,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 5 },
         elevation: 6,
+        marginLeft: 70,
     },
     loadingIndicator: {
         marginTop: 50,

@@ -4,43 +4,64 @@ import { useDispatch, useSelector } from 'react-redux';
 import Icon from "react-native-vector-icons/FontAwesome";
 import { logoutAction } from '../../../(redux)/authSlice';
 import styles from '../../styles/Client/ClientHomeStyles';
-import { View, Text, StatusBar, TouchableOpacity, FlatList, Pressable, Image, StyleSheet } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity, FlatList, Pressable, Image, StyleSheet, Modal } from 'react-native';
 import LoadingScreen from '../../LodingScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Agenda } from 'react-native-calendars';
 
 export default function ServicesAvailedLists() {
 
     const state = useSelector(state => state.auth);
     const user = useSelector((state) => state.auth.user);
     const userId = user?.user?._id || user?._id
-
     const [screenLoading, setScreenLoading] = useState(false);
-
     const [services, setServices] = useState([]);
-
+    const [agendaItems, setAgendaItems] = useState({});
+    const [showCalendar, setShowCalendar] = useState(false);
     const getAvailedServices = async () => {
-        setScreenLoading(true)
-        // console.log(user)
         try {
-
             const { data } = await axios.get(`${baseURL}/availTrainer/client/${userId}`);
-
             setServices(data);
 
+            const items = {};
+            data.forEach((service) => {
+                service.schedule.forEach((sched) => {
+                    const date = sched.timeAssigned?.split('T')[0];
+                    if (!items[date]) items[date] = [];
+
+                    items[date].push({
+                        name: `Training with ${service.coachID?.name || 'N/A'}`,
+                        time: new Date(sched.timeAssigned).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        trainings: service.package,
+                        coach: service.coachID?.email,
+                        color: '#2ba84a',
+                    });
+                });
+            });
+
+            setAgendaItems(items);
         } catch (err) {
             console.log(err);
         }
-        setScreenLoading(false)
-    }
+    };
 
     useFocusEffect(
         useCallback(() => {
-            getAvailedServices()
+            getAvailedServices();
         }, [])
-    )
+    );
+
+    const renderItem = (item) => (
+        <View style={{ backgroundColor: "#FFAC1A", padding: 10, borderRadius: 10, marginRight: 10, marginTop: 10 }}>
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>{item.name}</Text>
+            <Text style={{ color: 'white' }}>Time: {item.time}</Text>
+            <Text style={{ color: 'white' }}>Coach: {item.coach}</Text>
+            <Text style={{ color: 'white' }}>Training: {item.trainings}</Text>
+        </View>
+    );
 
     return (
         <>
@@ -50,13 +71,49 @@ export default function ServicesAvailedLists() {
                 </View>
                 :
                 <View>
+                    <TouchableOpacity
+                        onPress={() => setShowCalendar(true)}
+                        style={{ backgroundColor: '#FFAC1A', padding: 10, borderRadius: 10, margin: 10 }}
+                    >
+                        <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>View Schedules Calendar</Text>
+                    </TouchableOpacity>
+
                     <FlatList
                         showsVerticalScrollIndicator={false}
                         data={services}
-                        key={item => item._id}
+                        keyExtractor={(item) => item._id}
                         renderItem={({ item }) => <ServiceDetail item={item} />}
                     />
-                </View >
+
+                    <Modal visible={showCalendar} animationType="slide">
+                        <View style={{ flex: 1, backgroundColor: 'black' }}>
+                            <TouchableOpacity
+                                onPress={() => setShowCalendar(false)}
+                                style={{ padding: 15, alignSelf: 'flex-end' }}
+                            >
+                                <Text style={{ color: 'white' }}>Close</Text>
+                            </TouchableOpacity>
+
+                            <Agenda
+                                items={agendaItems}
+                                selected={Object.keys(agendaItems)[0] || new Date().toISOString().split('T')[0]}
+                                renderItem={renderItem}
+                                showOnlySelectedDayItems={false}
+                                theme={{
+                                    backgroundColor: 'black',
+                                    calendarBackground: 'black',
+                                    agendaBackgroundColor: 'black',
+                                    dayTextColor: 'white',
+                                    textSectionTitleColor: 'white',
+                                    selectedDayBackgroundColor: '#1E90FF',
+                                    selectedDayTextColor: 'white',
+                                    todayTextColor: 'orange',
+                                    agendaKnobColor: 'white',
+                                }}
+                            />
+                        </View>
+                    </Modal>
+                </View>
             }
         </>
     )
@@ -84,7 +141,7 @@ const ServiceDetail = ({ item }) => {
 
     return (
         <Pressable>
-            <View style={{ padding: 10, borderRadius: 10, borderWidth: 1, marginBottom: 10, borderColor: 'white' }} >
+            <View style={{ padding: 10, borderRadius: 10, borderWidth: 1, borderColor: 'white', }} >
                 <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10, }}>
                     {item?.coachID?.image[0]?.url ? (
                         <Image height={65} width={65} borderRadius={5} source={{ uri: item?.coachID?.image[0]?.url }} />
@@ -139,39 +196,9 @@ const ServiceDetail = ({ item }) => {
 
                 <View style={{ marginTop: 5, flexDirection: 'row', gap: 10 }}>
                     <Text style={{ color: 'white' }}>Status: {item.status}</Text>
-
-                    <Text style={{ color: 'white' }}>
-                        |
-                    </Text>
-
-                    <Text style={{ color: 'white' }}>
-                        Next Schedule: {item?.schedule && formatDate(getNextScheduleAfterLatestCompleted(item)?.dateAssigned)}
-                    </Text>
-
                 </View>
 
             </View>
         </Pressable>
     )
-}
-
-function getNextScheduleAfterLatestCompleted(item) {
-    // console.log(item)
-    const sortedSchedules = item?.schedule?.sort((a, b) => new Date(a?.dateAssigned) - new Date(b?.dateAssigned));
-
-    const lastCompletedIndex = sortedSchedules?.findLastIndex(s => s.status === "completed");
-
-    return lastCompletedIndex !== -1 && lastCompletedIndex < sortedSchedules?.length - 1
-        ? sortedSchedules[lastCompletedIndex + 1]
-        : null;
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-        return "Not Specified";
-    }
-
-    const options = { month: "short", day: "numeric", year: "numeric" };
-    return date.toLocaleDateString("en-US", options).replace(",", "");
 }

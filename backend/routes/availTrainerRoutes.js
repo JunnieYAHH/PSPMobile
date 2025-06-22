@@ -3,7 +3,7 @@ const router = express.Router();
 const availTrainerController = require('../controller/availTrainerController');
 
 router.post('/create', availTrainerController.createTrainer);
-router.get('/', availTrainerController.getAllTrainers);
+router.post('/', availTrainerController.getAllTrainers);
 router.get('/:id', availTrainerController.getTrainerById);
 router.put('/:id', availTrainerController.updateTrainer);
 router.delete('/:id', availTrainerController.deleteTrainer);

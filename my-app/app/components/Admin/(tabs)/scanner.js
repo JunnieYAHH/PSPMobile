@@ -35,7 +35,7 @@ export default function Scanner() {
       setScanning(false);
 
       const userId = scannedData.data;
-      const adminBranchId = user?.user?._id;
+      const adminBranchId = user?.user?.userBranch;
 
       try {
         const response = await userLog(userId, adminBranchId);

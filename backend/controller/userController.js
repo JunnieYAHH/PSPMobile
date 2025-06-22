@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../model/user");
 const AvailTrainer = require("../model/availTrainer");
 const Log = require('../model/logs');
+const Transaction = require('../model/transaction');
 const Rating = require('../model/rating');
 const user = require('../model/user');
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
@@ -234,19 +235,32 @@ const userController = {
   changeUserRole: asyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
-
       if (!user) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
 
+      // Downgrade user
       user.role = 'user';
       user.isClient = false;
-      user.subscriptionExpiration = null;
       user.subscribedDate = null;
-
+      user.subscriptionExpiration = null;
       await user.save();
 
-      res.status(200).json({ success: true, message: 'Client was downgraded to regular user' });
+      // Find one active transaction
+      const transaction = await Transaction.findOne({
+        userId: req.params.id,
+        status: 'active',
+      });
+
+      if (transaction) {
+        transaction.status = 'inactive';
+        await transaction.save();
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Client downgraded to regular user and active transaction (if any) marked as inactive.',
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -307,10 +321,11 @@ const userController = {
   }),
   getTimeInLogs: async (req, res) => {
     try {
+      const { userBranch } = req.body;
       const today = new Date().setHours(0, 0, 0, 0);
-      let activeLogs = await Log.find({ date: today, timeOut: null });
+      let activeLogs = await Log.find({ date: today, timeOut: null, adminBranchId: userBranch });
 
-      console.log(activeLogs,'logs')
+      console.log(activeLogs, 'logs')
       res.status(201).json({ message: "Logs fetch successfully", activeLogs });
     } catch (error) {
       console.error("Fetch All Logs Error:", error.message);
@@ -402,7 +417,8 @@ const userController = {
   }),
   getCoachClients: asyncHandler(async (req, res) => {
     try {
-      const coaches = await User.find({ role: 'coach' }).select('_id name email image');
+      const { userBranch } = req.body
+      const coaches = await User.find({ role: 'coach', userBranch: userBranch }).select('_id name email image');
 
       const coachClientList = await Promise.all(
         coaches.map(async (coach) => {

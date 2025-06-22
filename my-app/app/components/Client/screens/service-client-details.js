@@ -84,9 +84,8 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
             {!trainerIdProps && (
                 <View style={{ marginTop: 30, }} />
             )}
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ padding: 10, marginBottom: 275 }}>
-
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingBottom: 100 }}>
+                <View style={{ paddingBottom: 200 }}>
                     <View style={{ marginBottom: 10, }}>
                         <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, color: 'white' }}>Coach Info</Text>
                         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
@@ -128,7 +127,6 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                             </View>
                         </View>
                     </View>
-
                     <View style={{ marginBottom: 10, }}>
                         <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: 900, color: 'white' }}>Service Info</Text>
                         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, }}>
@@ -146,13 +144,15 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
                                     <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Session Rate:</Text>
                                     <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>P{serviceDetails?.sessionRate}</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', }}>
+                                <View style={{ flexDirection: 'row' }}>
                                     <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Start Date:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{serviceDetails?.startDate || "Not specified"}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', }}>
-                                    <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>End Date:</Text>
-                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>{new Date(serviceDetails?.endDate).toLocaleDateString()}</Text>
+                                    <Text style={{ textAlign: 'center', width: '50%', fontSize: 16, color: 'white' }}>
+                                        {
+                                            serviceDetails?.schedule?.length > 0 && serviceDetails?.schedule[0]?.timeAssigned
+                                                ? new Date(serviceDetails.schedule[0].timeAssigned).toLocaleDateString()
+                                                : 'Not Assigned'
+                                        }
+                                    </Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', }}>
                                     <Text style={{ textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900, color: 'white' }}>Total:</Text>
@@ -170,11 +170,9 @@ const ClientServiceDetail = ({ trainerIdProps = null }) => {
 
                         </View>
                     </View>
-
                     <Schedules schedules={serviceDetails?.schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
-
                 </View>
-            </ScrollView >
+            </ScrollView>
         </>
     )
 }
@@ -248,7 +246,7 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
 
 const formatTime = (date) => {
     if (!date) {
-        return "Please wait your coach to assigned"
+        return "Please wait your coach to assign."
     }
     return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
 };

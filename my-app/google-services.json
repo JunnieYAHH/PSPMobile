@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "282671832773",
+    "project_id": "pspmessage",
+    "storage_bucket": "pspmessage.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282671832773:android:e217454439ffc296385aac",
+        "android_client_info": {
+          "package_name": "com.junnieyahh.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUWcCtSfZ7MPwzfeOKP6P0dX54KuBiBic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

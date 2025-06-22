@@ -121,7 +121,10 @@ const Profile = () => {
                                                 />
                                                 <TouchableOpacity
                                                     style={styles.iconContainer}
-                                                    onPress={() => navigation.navigate('components/User/EditUserProfile', { user })}
+                                                    onPress={() => router.push({
+                                                        pathname: '/components/User/EditUserProfile',
+                                                        params: { user },
+                                                    })}
                                                 >
                                                     <FontAwesome name="pencil" size={24} color="black" />
                                                 </TouchableOpacity>

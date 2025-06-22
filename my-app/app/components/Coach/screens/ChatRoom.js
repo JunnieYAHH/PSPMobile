@@ -34,6 +34,9 @@ const ChatRoom = () => {
         fetchChatParticipants();
     }, [userId, receiverId]);
 
+    const receiver = participants.find(p => p._id === receiverId);
+    const receiverName = receiver?.name
+    const targetRole = receiver?.role
     useEffect(() => {
         if (!roomId) return;
         const unsubscribe = subscribeToMessages(roomId, (msgs) => {
@@ -46,7 +49,7 @@ const ChatRoom = () => {
     const handleSend = async () => {
         if (!inputText.trim()) return;
         try {
-            await sendMessage(roomId, userId, receiverId, inputText.trim());
+            await sendMessage(roomId, userId, receiverId, inputText.trim(), receiverName, targetRole);
             setInputText("");
         } catch (error) {
             console.error("Failed to send message:", error);

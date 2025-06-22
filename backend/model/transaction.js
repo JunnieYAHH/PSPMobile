@@ -8,7 +8,7 @@ const transactionSchema = new mongoose.Schema({
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: true,
     },
     userBranch: {
@@ -77,6 +77,11 @@ const transactionSchema = new mongoose.Schema({
     stripeSubscriptionId: {
         type: String,
         required: true,
+    },
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active',
     },
     createdAt: {
         type: Date,

@@ -29,10 +29,9 @@ const CoachIndex = () => {
 
   const tabs = [
     { name: 'Exercise', screen: 'ExerciseDetails', scrollTo: 1000, color: 'white' },
-    { name: 'About PSP', screen: 'AboutScreen', scrollTo: 250, color: 'white' },
-    { name: 'This App', screen: 'AppInfoScreen', scrollTo: 680, color: 'white' },
+    { name: 'About', screen: 'AboutScreen', scrollTo: 250, color: 'white' },
+    { name: 'App', screen: 'AppInfoScreen', scrollTo: 680, color: 'white' },
     { name: 'Branches', screen: 'BranchesScreen', scrollTo: 1200, color: 'white' },
-    { name: 'BMI', screen: 'BMI', scrollTo: 1400, color: 'white' },
   ];
 
   //Get API EXERCISE
@@ -106,21 +105,6 @@ const CoachIndex = () => {
 
                     {/* Content Header */}
                     <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
-
-                      {/* Search */}
-                      <View style={styles.searchContainer}>
-                        <View style={styles.searchBox}>
-                          <FontAwesome6 name="magnifying-glass" size={16} color="gray" style={{ marginTop: 6 }} />
-                          <TextInput
-                            placeholder='Search'
-                            style={styles.searchInput}
-                          />
-                          <View style={styles.searchFilter}>
-                            <MaterialIcons name="filter-list" size={24} color="black" style={{ marginLeft: 10 }} />
-                          </View>
-                        </View>
-                      </View>
-
                       {/* Header */}
                       <View style={styles.headerContainer}>
                         <Text style={styles.headerText}>Philippines</Text>
@@ -194,7 +178,7 @@ const CoachIndex = () => {
                       </View>
 
                       {/* Conditionally Render Sections */}
-                      {activeTab === 'About PSP' && (
+                      {activeTab === 'About' && (
                         <View style={styles.aboutContainer}>
                           <Text style={styles.aboutTitle}>About Philippine Sports Performance Gym (PSP)</Text>
                           <View style={styles.aboutCard}>
@@ -216,7 +200,7 @@ const CoachIndex = () => {
                         </View>
                       )}
 
-                      {activeTab === 'This App' && (
+                      {activeTab === 'App' && (
                         <View style={styles.aboutContainer}>
                           <Text style={styles.aboutTitle}>About This Application</Text>
                           <View style={styles.aboutCard}>

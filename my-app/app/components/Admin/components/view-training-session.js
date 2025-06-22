@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View, ScrollView, StatusBar, ImageBackground, Image, Button, Modal, FlatList, Pressable, Alert } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import Constants from 'expo-constants';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useSelector } from 'react-redux';
 
 const TrainingSession = () => {
 
@@ -13,7 +15,10 @@ const TrainingSession = () => {
     const [selectedCoachId, setSelectedCoachId] = useState(null);
     const [coaches, setCoaches] = useState([]);
     const { id } = useLocalSearchParams();
-
+    const user = useSelector((state) => state.auth.user);
+    const userId = user?.user?._id || user?._id
+    const userBranch = user?.user?.userBranch || user?.userBranch
+    console.log(trainingSession, 'Training Session')
     const getTrainingSession = async () => {
         try {
 
@@ -40,7 +45,7 @@ const TrainingSession = () => {
 
     const fetchCoachClients = async () => {
         try {
-            const { data } = await axios.get(`${baseURL}/users/coach-clients`);
+            const { data } = await axios.post(`${baseURL}/users/coach-clients`, { userBranch });
             console.log("Coach Clients:", data.coachesWithClients);
             setCoaches(data.coachesWithClients);
         } catch (err) {
@@ -94,8 +99,21 @@ const TrainingSession = () => {
                                             <Text style={{ color: 'white', fontSize: 15, }}>{trainingSession?.userId.email}</Text>
                                         </View>
                                     </View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            router.push({
+                                                pathname: '/components/Client/Chat/ChatRoom',
+                                                params: {
+                                                    userId: userId,
+                                                    receiverId: trainingSession?.userId._id,
+                                                },
+                                            });
+                                        }}
+                                        style={{ padding: 8 }}
+                                    >
+                                        <FontAwesome name="comments" size={24} color="white" />
+                                    </TouchableOpacity>
                                 </View>
-
                             </View>
                         </View>
 
@@ -118,7 +136,7 @@ const TrainingSession = () => {
                                     </View>
                                     <View style={{ flexDirection: 'row', }}>
                                         <Text style={{ color: 'white', textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>Start Date:</Text>
-                                        <Text style={{ color: 'white', textAlign: 'center', width: '50%', fontSize: 16 }}>{trainingSession?.startDate || "Not specified"}</Text>
+                                        <Text style={{ color: 'white', textAlign: 'center', width: '50%', fontSize: 16 }}>{new Date(trainingSession?.schedule[0].timeAssigned || "Not specified").toLocaleDateString()}</Text>
                                     </View>
                                     <View style={{ flexDirection: 'row', }}>
                                         <Text style={{ color: 'white', textAlign: 'left', width: '50%', fontSize: 16, fontWeight: 900 }}>End Date:</Text>
@@ -157,11 +175,6 @@ const TrainingSession = () => {
 
                                                 <View>
                                                     <Text style={{ color: 'white', fontSize: 15, fontWeight: 900, }}>Email:</Text>
-                                                    <Text style={{ color: 'white', fontSize: 15, }}>{trainingSession?.coachID.email}</Text>
-                                                </View>
-
-                                                <View>
-                                                    <Text style={{ color: 'white', fontSize: 15, fontWeight: 900, }}>Contact No:</Text>
                                                     <Text style={{ color: 'white', fontSize: 15, }}>{trainingSession?.coachID.email}</Text>
                                                 </View>
                                             </View>

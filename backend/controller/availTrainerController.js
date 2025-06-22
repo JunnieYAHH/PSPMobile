@@ -88,16 +88,34 @@ exports.createTrainer = async (req, res) => {
 // Get all trainers
 exports.getAllTrainers = async (req, res) => {
     try {
-        const trainers = await AvailTrainer.find().populate({
-            path: 'userId',
-            model: 'users'
-        }).populate({
-            path: 'coachID',
-            model: 'users'
-        })
-        res.status(200).json(trainers);
+        const { userBranch } = req.body;
+
+        const trainers = await AvailTrainer.find()
+            .populate({
+                path: 'userId',
+                model: 'users',
+                select: 'userBranch',
+            })
+            .populate({
+                path: 'coachID',
+                model: 'users',
+                select: 'email userBranch',
+            })
+            .sort({ createdAt: -1 });
+
+        const filtered = trainers.filter(trainer => {
+            const userBranchId1 = trainer.userId?.userBranch?._id || trainer.userId?.userBranch;
+            const userBranchId2 = trainer.coachID?.userBranch?._id || trainer.coachID?.userBranch;
+
+            return (
+                userBranchId1?.toString() === userBranch ||
+                userBranchId2?.toString() === userBranch
+            );
+        });
+
+        res.status(200).json(filtered);
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).json({ message: 'Error fetching trainers', error: error.message });
     }
 };
@@ -318,27 +336,27 @@ exports.hasActiveTraining = async (req, res) => {
 
 exports.getCoachDateSessions = async (req, res) => {
     try {
-      const { coachId } = req.params;
-  
-      // Find clients assigned to the coach
-      const clients = await AvailTrainer.find({ coachID: coachId }).populate('userId');
-  
-      if (!clients.length) {
-        return res.status(404).json({ message: "No clients found" });
-      }
-  
-      // Sort clients by the most recent session date
-      clients.sort((a, b) => {
-        const dateA = new Date(a.schedule[a.schedule.length - 1]?.dateAssigned || 0);
-        const dateB = new Date(b.schedule[b.schedule.length - 1]?.dateAssigned || 0);
-        return dateB - dateA; // Descending order
-      });
-  
-      // Return the client with the most recent session
-      res.status(200).json({ recentClient: clients[0] });
-  
+        const { coachId } = req.params;
+
+        // Find clients assigned to the coach
+        const clients = await AvailTrainer.find({ coachID: coachId }).populate('userId');
+
+        if (!clients.length) {
+            return res.status(404).json({ message: "No clients found" });
+        }
+
+        // Sort clients by the most recent session date
+        clients.sort((a, b) => {
+            const dateA = new Date(a.schedule[a.schedule.length - 1]?.dateAssigned || 0);
+            const dateB = new Date(b.schedule[b.schedule.length - 1]?.dateAssigned || 0);
+            return dateB - dateA; // Descending order
+        });
+
+        // Return the client with the most recent session
+        res.status(200).json({ recentClient: clients[0] });
+
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal server error" });
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" });
     }
-  };
+};
