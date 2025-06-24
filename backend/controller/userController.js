@@ -295,10 +295,11 @@ const userController = {
     const { adminBranchId } = req.body;
 
     try {
-      const today = new Date().setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Correctly set to midnight
 
       let activeLog = await Log.findOne({ userId: id, date: today, timeOut: null });
-      let user = await User.findById(id)
+      let user = await User.findById(id);
 
       if (activeLog) {
         activeLog.timeOut = new Date();
@@ -310,9 +311,10 @@ const userController = {
         userId: id,
         adminBranchId: adminBranchId,
         timeIn: new Date(),
-        date: today
+        date: today,
       });
 
+      console.log(newLog, 'newLogs');
       res.status(201).json({ message: "Timed In Complete.", log: newLog, user });
     } catch (error) {
       console.error(error);
@@ -325,7 +327,7 @@ const userController = {
       const today = new Date().setHours(0, 0, 0, 0);
       let activeLogs = await Log.find({ date: today, timeOut: null, adminBranchId: userBranch });
 
-      console.log(activeLogs, 'logs')
+      console.log(activeLogs, 'Activelogs')
       res.status(201).json({ message: "Logs fetch successfully", activeLogs });
     } catch (error) {
       console.error("Fetch All Logs Error:", error.message);

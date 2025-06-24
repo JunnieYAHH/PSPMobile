@@ -50,7 +50,7 @@ const availTrainerSchema = new mongoose.Schema({
     },
     coachID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users',
+        ref: 'users',
         default: null,
     },
     status: {

@@ -88,7 +88,7 @@ exports.createTrainer = async (req, res) => {
 
         const notifyAdmins = admins.map(async (admin) => {
             const title = 'New Trainer Session';
-            const body = `${name} booked ${req.body.sessions} training session(s).`;
+            const body = `${name} booked ${req.body.sessions} training session(s). Assign a Coach Now.`;
 
             // Push notification
             await sendPushNotification(admin.expoPushToken, title, body, admin.role);

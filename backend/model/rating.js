@@ -4,12 +4,12 @@ const ratingSchema = new mongoose.Schema(
     {
         coachId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "users",
             required: true,
         },
         clientId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "users",
             required: true,
         },
         rating: {
