@@ -55,7 +55,7 @@ const QuestionnaireForm = () => {
 
                                 });
                                 if (response && response.user) {
-                                    dispatch(updateUserAction(response.user)); 
+                                    dispatch(updateUserAction(response.user));
                                     await AsyncStorage.setItem("userInfo", JSON.stringify(response.user));
                                 }
                                 Alert.alert(
@@ -117,6 +117,9 @@ const QuestionnaireForm = () => {
 
                                 <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                                     <Text style={styles.buttonText}>Submit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.button} onPress={() => router.push('components/Client/')}>
+                                    <Text style={styles.buttonText}>back</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

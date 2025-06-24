@@ -4,7 +4,7 @@
 node_modules/
 /assets/common/baseUrl.js
 firebase/
-echo "/google-services.json" >> .gitignore
+/google-services
 
 # Expo
 .expo/

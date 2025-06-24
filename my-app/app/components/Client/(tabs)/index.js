@@ -8,7 +8,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getAllExercise } from '../../../(services)/api/Exercises/getAllExercise';
 import ExerciseCardDisplay from '../../Exercise/ExerciseCardDisplay';
-import { Alert, Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Image, ImageBackground, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import SubscriptionReminder from '../components/SubscriptionReminder';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
@@ -108,6 +108,15 @@ const ClientIndex = () => {
       navigation.navigate(tab.screen);
     }
   };
+
+  const equipmentData = [
+    { name: "Front Desk", image: require('../../../../assets/frontDesk.jpg') },
+    { name: "Dumbbell Rack", image: require('../../../../assets/dumbellRack.jpg') },
+    { name: "Mat Area", image: require('../../../../assets/matArea.jpg') },
+    { name: "Lat Pulldown", image: require('../../../../assets/latPullDown.jpg') },
+    { name: "Pull Row Machine", image: require('../../../../assets/pullRowMachine.jpg') },
+    { name: "Smith Machine", image: require('../../../../assets/smithMachine.jpg') },
+  ];
 
   return (
     <>
@@ -246,16 +255,39 @@ const ClientIndex = () => {
 
                       {activeTab === 'Exercise' && (
                         <View style={styles.exerciseSection}>
+
+                          {/* Equipment Section */}
+                          <Text style={[styles.exerciseHeader, { marginBottom: 10, }]}>Gym Equipment:</Text>
+                          <View style={{ marginLeft: 23, marginBottom: 25 }}>
+                            <FlatList
+                              data={equipmentData}
+                              horizontal
+                              keyExtractor={(item, index) => index.toString()}
+                              showsHorizontalScrollIndicator={false}
+                              contentContainerStyle={{ paddingHorizontal: 10 }}
+                              renderItem={({ item }) => (
+                                <View style={{ marginRight: 15, alignItems: 'center' }}>
+                                  <Image
+                                    source={item.image}
+                                    style={{
+                                      width: 200,
+                                      height: 130,
+                                      borderRadius: 10,
+                                    }}
+                                    resizeMode="cover"
+                                  />
+                                  <Text style={{ color: 'white', marginTop: 5, fontWeight: 'bold' }}>{item.name}</Text>
+                                </View>
+                              )}
+                            />
+                          </View>
                           <Text style={styles.exerciseHeader}>Exercises:</Text>
                           <ScrollView horizontal showsHorizontalScrollIndicator={false}
                             contentContainerStyle={{ paddingHorizontal: 20, height: 450 }}
                           >
-
-                            {
-                              exercises.map((exercise, index) => (
-                                <ExerciseCardDisplay exercise={exercise} index={index} key={index} />
-                              ))
-                            }
+                            {exercises.map((exercise, index) => (
+                              <ExerciseCardDisplay exercise={exercise} index={index} key={index} />
+                            ))}
                           </ScrollView>
                         </View>
                       )}

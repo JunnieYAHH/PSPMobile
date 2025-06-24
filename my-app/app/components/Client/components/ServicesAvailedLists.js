@@ -21,30 +21,42 @@ export default function ServicesAvailedLists() {
     const [services, setServices] = useState([]);
     const [agendaItems, setAgendaItems] = useState({});
     const [showCalendar, setShowCalendar] = useState(false);
+
     const getAvailedServices = async () => {
         try {
             const { data } = await axios.get(`${baseURL}/availTrainer/client/${userId}`);
             setServices(data);
 
             const items = {};
-            data.forEach((service) => {
-                service.schedule.forEach((sched) => {
-                    const date = sched.timeAssigned?.split('T')[0];
-                    if (!items[date]) items[date] = [];
 
-                    items[date].push({
-                        name: `Training with ${service.coachID?.name || 'N/A'}`,
-                        time: new Date(sched.timeAssigned).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                        trainings: service.package,
-                        coach: service.coachID?.email,
-                        color: '#2ba84a',
+            if (data.length > 0) {
+                data.forEach((service) => {
+                    service.schedule.forEach((sched) => {
+                        if (!sched.timeAssigned) return;
+
+                        const date = new Date(sched.timeAssigned).toISOString().split('T')[0];
+                        if (!items[date]) items[date] = [];
+
+                        items[date].push({
+                            name: `Training with ${service.coachID?.name || 'N/A'}`,
+                            time: new Date(sched.timeAssigned).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            trainings: service.package,
+                            coach: service.coachID?.email,
+                            color: '#2ba84a',
+                        });
                     });
                 });
-            });
+            }
+
+            // 💡 Always set at least one valid date with an empty array
+            const today = new Date().toISOString().split('T')[0];
+            if (Object.keys(items).length === 0) {
+                items[today] = []; // <- ensures Agenda won't crash
+            }
 
             setAgendaItems(items);
         } catch (err) {
-            console.log(err);
+            console.log('getAvailedServices error:', err);
         }
     };
 
@@ -87,16 +99,13 @@ export default function ServicesAvailedLists() {
 
                     <Modal visible={showCalendar} animationType="slide">
                         <View style={{ flex: 1, backgroundColor: 'black' }}>
-                            <TouchableOpacity
-                                onPress={() => setShowCalendar(false)}
-                                style={{ padding: 15, alignSelf: 'flex-end' }}
-                            >
-                                <Text style={{ color: 'white' }}>Close</Text>
-                            </TouchableOpacity>
-
                             <Agenda
                                 items={agendaItems}
-                                selected={Object.keys(agendaItems)[0] || new Date().toISOString().split('T')[0]}
+                                selected={
+                                    Object.keys(agendaItems).length > 0
+                                        ? Object.keys(agendaItems)[0]
+                                        : new Date().toISOString().split('T')[0]
+                                }
                                 renderItem={renderItem}
                                 showOnlySelectedDayItems={false}
                                 theme={{
@@ -111,6 +120,13 @@ export default function ServicesAvailedLists() {
                                     agendaKnobColor: 'white',
                                 }}
                             />
+                            <TouchableOpacity onPress={() => setShowCalendar(false)} style={{
+                                backgroundColor: 'orange',
+                                padding: 10,
+                                alignItems: 'center',
+                            }}>
+                                <Text style={styles.closeText}>Close Calendar</Text>
+                            </TouchableOpacity>
                         </View>
                     </Modal>
                 </View>

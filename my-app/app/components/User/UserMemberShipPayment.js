@@ -34,6 +34,7 @@ const UserMemberShipPayment = () => {
     const [stripeSubscriptionId, setStripeSubscriptionId] = useState('');
     const signatureRef = useRef(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [termsConditionVisible, setTermsConditionVisible] = useState(false);
     const [signature, setSignature] = useState(null);
 
     // Get All branches and transactions
@@ -390,9 +391,9 @@ const UserMemberShipPayment = () => {
                                                         <View style={{
                                                             backgroundColor: 'white',
                                                             borderRadius: 40,
-                                                            padding: 10, 
+                                                            padding: 10,
                                                             width: 300,
-                                                            alignSelf:'center'
+                                                            alignSelf: 'center'
                                                         }}>
                                                             <View style={{
                                                                 borderWidth: 1,
@@ -493,15 +494,57 @@ const UserMemberShipPayment = () => {
                                                         marginBottom: 10,
                                                         marginTop: 15
                                                     }}>
-                                                        <TouchableOpacity onPress={() => setFieldValue('agreeTerms', !values.agreeTerms)} >
+                                                        <TouchableOpacity onPress={() => setFieldValue('agreeTerms', !values.agreeTerms)}>
                                                             <FontAwesome
                                                                 name={values.agreeTerms ? "check-square" : "square-o"}
                                                                 size={24}
                                                                 color={values.agreeTerms ? "#00FFFF" : "white"}
                                                             />
                                                         </TouchableOpacity>
-                                                        <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>Accept Terms and Conditions</Text>
+
+                                                        <TouchableOpacity onPress={() => setTermsConditionVisible(true)}>
+                                                            <Text style={{ marginLeft: 10, color: 'white', marginTop: 3 }}>
+                                                                Accept Terms and Conditions
+                                                            </Text>
+                                                        </TouchableOpacity>
                                                     </View>
+
+                                                    <Modal
+                                                        animationType="slide"
+                                                        transparent={true}
+                                                        visible={termsConditionVisible}
+                                                        onRequestClose={() => setTermsConditionVisible(false)}
+                                                    >
+                                                        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', padding: 20, justifyContent: 'center' }}>
+                                                            <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, maxHeight: '80%' }}>
+                                                                <ScrollView>
+                                                                    <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 10 }}>
+                                                                        Terms and Conditions for PSP Fitness Gym.
+                                                                    </Text>
+                                                                    <Text style={{ fontSize: 14 }}>
+                                                                        Welcome to the PSP Fitness Gym Application. By downloading the App, you agree to comply with and also be bound by the following Terms and Conditions. Please review and read them carefully before using the Application. If you do not agree to these terms, you should not use the Application.
+
+                                                                        {'\n\n'}1. You must be at least 18 years old to use the application.
+                                                                        {'\n\n'}2. To access certain features of the application, you may need to register and create an account. You are responsible on maintaining the confidentiality of your account information and for all activities that occur under your account.
+                                                                        {'\n\n'}3. There are limited features when you finished creating your own account, to view more features, you need to subscribe for the membership of the PSP Fitness Gym application.
+                                                                        {'\n\n'}4. The app offer gym memberships plan that provide access to gym services.
+                                                                        {'\n\n'}5. The app also offers booking of your own personal trainer/coach which is separate on the gym membership fee.
+                                                                        {'\n\n'}6. If you are going to apply to become a member of the PSP Fitness Gym, the app collects personal information such as your name, age, email, address, phone number, signature, and it also collects your physical activity readiness to see if you have medical conditions before becoming a member of the PSP Fitness Gym.
+                                                                        {'\n\n'}7. You can pay through this app with the following payment methods: Mastercard, VISA, BDO, Maya, or pay through personal by visiting the PSP Fitness Gym Taguig Jr.
+                                                                        {'\n\n'}8. There are no reservations of the gym equipment.
+                                                                        {'\n\n'}9. Member or not, you can visit the PSP Fitness Gym Taguig Jr. to see the gym facility by yourself.
+                                                                    </Text>
+                                                                </ScrollView>
+
+                                                                <TouchableOpacity
+                                                                    style={{ marginTop: 20, alignSelf: 'flex-end' }}
+                                                                    onPress={() => setTermsConditionVisible(false)}
+                                                                >
+                                                                    <Text style={{ color: '#007AFF', fontWeight: 'bold' }}>Close</Text>
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                        </View>
+                                                    </Modal>
 
                                                     <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                                                         <Text style={styles.buttonText}>Pay</Text>

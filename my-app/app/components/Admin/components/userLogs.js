@@ -4,14 +4,16 @@ import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { getTimedInLogs } from '../../../(services)/api/Users/getTimedInLogs';
 import { getAllUsers } from '../../../(services)/api/Users/getAllUsers';
+import { useSelector } from 'react-redux';
 
 const UserLogs = () => {
     const router = useRouter();
+    const { user } = useSelector((state) => state.auth);
     const [activeLogs, setActiveLogs] = useState([]);
-
+    const userBranch = user?.user?.userBranch
     const getActiveLogs = async () => {
         try {
-            const logData = await getTimedInLogs();
+            const logData = await getTimedInLogs({ userBranch });
             const users = await getAllUsers();
 
             if (!users || !Array.isArray(users)) {
@@ -50,11 +52,14 @@ const UserLogs = () => {
                 };
             });
 
+            // console.log(logData, 'Logs Data')
             setActiveLogs(logsWithUserDetails);
         } catch (error) {
             console.error("Error fetching logs:", error);
         }
     };
+
+    console.log(activeLogs, 'Active lgos')
 
     useFocusEffect(
         useCallback(() => {

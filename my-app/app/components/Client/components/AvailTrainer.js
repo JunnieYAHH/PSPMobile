@@ -33,7 +33,7 @@ const Training = () => {
     const [showBirthDate, setShowBirthDate] = useState(false);
     const [showEndDate, setShowEndDate] = useState(false);
     const { user } = useSelector((state) => state.auth);
-
+    // console.log(user?.user?.userBranch, 'Branch')
     // State for package selection
     const [selectedPackage, setSelectedPackage] = useState('');
     const [name, setName] = useState(user?.user?.name || user?.name || '');
@@ -121,6 +121,7 @@ const Training = () => {
 
         const data = {
             userId: user?.user?._id || user?._id,
+            userBranch: user?.user?.userBranch,
             name: name,
             birthdate: birthdate,
             address: address,

@@ -8,6 +8,7 @@ import { Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import LoadingScreen from '../../LodingScreen';
 import { Picker } from '@react-native-picker/picker';
+import { useSelector } from 'react-redux';
 
 const ClientServiceDetail = () => {
 
@@ -31,7 +32,15 @@ const ClientServiceDetail = () => {
             getClientService()
         }, [])
     )
-    console.log(serviceDetails, 'Service Details')
+    // console.log(serviceDetails, 'Service Details')
+
+    if (!serviceDetails || !serviceDetails.userId || !serviceDetails.userId.image?.[0]?.url) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+                <Text style={{ color: 'white' }}>Loading training session...</Text>
+            </View>
+        );
+    }
     return (
         <>
             <SafeAreaView>
@@ -116,7 +125,7 @@ const ClientServiceDetail = () => {
                                 </View>
                             </View>
 
-                            <Schedules schedules={serviceDetails?.schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
+                            <Schedules schedules={serviceDetails?.schedule} serviceDetails={serviceDetails} getClientService={getClientService} clientID={serviceDetails?.userId._id} />
 
                         </View>
                     </ScrollView>
@@ -126,12 +135,12 @@ const ClientServiceDetail = () => {
     )
 }
 
-const Schedules = ({ schedules, serviceDetails, getClientService }) => {
+const Schedules = ({ schedules, serviceDetails, getClientService, clientID }) => {
     return (
         <View style={{ marginBottom: 10 }}>
             <Text style={{ fontSize: 18, marginBottom: 5, textAlign: 'left', fontWeight: '900', color: 'white' }}>Schedule a Session</Text>
             {schedules?.map((schedule, index) => (
-                <Session key={schedule._id} index={index} item={schedule} serviceDetails={serviceDetails} getClientService={getClientService} />
+                <Session key={schedule._id} index={index} item={schedule} serviceDetails={serviceDetails} getClientService={getClientService} clientID={clientID} />
             ))}
         </View>
     )
@@ -139,7 +148,7 @@ const Schedules = ({ schedules, serviceDetails, getClientService }) => {
 
 const trainings = ['Chest', 'Back', 'Arms', 'Legs', 'Core', 'Cardio'];
 
-const Session = ({ item, index, serviceDetails, getClientService }) => {
+const Session = ({ item, index, serviceDetails, getClientService, clientID }) => {
 
     const [date, setDate] = useState(null);
     const [time, setTime] = useState(null);
@@ -147,6 +156,8 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
     const [show, setShow] = useState(false);
     const [status, setStatus] = useState('pending');
     const [selectedTrainings, setSelectedTrainings] = useState([]);
+
+    // console.log(clientID, 'UserId')
 
     const onChange = (event, selectedDate) => {
         setShow(false);
@@ -194,13 +205,15 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
         );
     };
 
-    // console.log(selectedTrainings)
+    const { user } = useSelector((state) => state.auth);
+    const coachName = user?.user?.name || user?.name
+    // console.log(name)
     const saveDateTimeSession = async () => {
         try {
 
             const { data } = await axios.put(
                 `${baseURL}/availTrainer/update/session/${serviceDetails._id}?sessionId=${item._id}`,
-                { sessionId: item._id, date, time, trainings: selectedTrainings }
+                { sessionId: item._id, date, time, trainings: selectedTrainings, clientID, coachName }
             )
 
             getClientService()
@@ -223,7 +236,7 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
         try {
 
             const { data } = await axios.put(
-                `${baseURL}/availTrainer/cancel/session/${serviceDetails._id}?sessionId=${item._id}`,)
+                `${baseURL}/availTrainer/cancel/session/${serviceDetails._id}?sessionId=${item._id}`, { coachName, clientID })
 
             await getClientService()
 
@@ -267,7 +280,7 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
         const currentDate = new Date();
 
         const futureDate = new Date();
-        futureDate.setDate(currentDate.getDate() + 2);
+        futureDate.setDate(currentDate.getDate() + 1);
 
         const itemDateObj = new Date(itemDate);
 

@@ -34,7 +34,7 @@ const ChatRoom = () => {
         fetchChatParticipants();
     }, [userId, receiverId]);
 
-    const receiver = participants.find(p => p._id === receiverId);
+    const receiver = participants.find(p => p._id === userId);
     const receiverName = receiver?.name
     const targetRole = receiver?.role
     useEffect(() => {

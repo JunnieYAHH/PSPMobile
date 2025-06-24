@@ -11,6 +11,7 @@ import {
   Pressable,
   Image,
 } from 'react-native';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Agenda } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
@@ -43,7 +44,7 @@ const Schedule = () => {
     }
     setScreenLoading(false);
   };
-
+  
   useFocusEffect(
     useCallback(() => {
       getCoachClients();
@@ -103,7 +104,7 @@ const Schedule = () => {
       ) : (
         <>
           <SafeAreaView style={styles.safeArea}>
-            
+
             <ImageBackground
               source={require('../../../../assets/ProgramBG.png')}
               style={styles.backgroundImage}
@@ -297,7 +298,7 @@ const ClientServiceDetail = ({ item }) => {
 
     return scheduleDate.getTime() === today.getTime();
   };
-
+  // console.log(item?.userId,'Id')
   return (
     <Pressable onPress={goToDetail}>
       <View style={styles.clientDetail}>
@@ -308,6 +309,20 @@ const ClientServiceDetail = ({ item }) => {
             <Text>Email: {item.userId.email}</Text>
             <Text>Phone: {item.userId.phone}</Text>
           </View>
+          <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: '/components/Coach/screens/ChatRoom',
+                params: {
+                  userId: user?.user?._id || user?._id,
+                  receiverId: item?.userId?._id,
+                },
+              });
+            }}
+            style={{ padding: 8 }}
+          >
+            <FontAwesome name="comments" size={24} color="white" />
+          </TouchableOpacity>
         </View>
 
         <View style={{ flexDirection: 'row', gap: 10 }}>

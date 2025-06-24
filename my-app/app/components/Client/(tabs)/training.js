@@ -109,7 +109,7 @@ const Training = () => {
             const { data } = await axios.get(`${baseURL}/availTrainer/has-active/${userId}`);
             setHasActiveTraining(data.hasActive);
             setTraining(data.training);
-
+            console.log(data,'log')
         } catch (error) {
             console.log(error)
         }
@@ -436,8 +436,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: 20,
-        backgroundColor: '#D27D2D',
+        backgroundColor: '#FFAC1C',
         borderRadius: 20,
+        padding: 5,
     },
     dayContainer: {
         width: 40,
@@ -462,12 +463,13 @@ const styles = StyleSheet.create({
     },
     button: {
         height: 50,
-        width: '80%',
-        backgroundColor: '#4caf50',
+        width: '50%',
+        backgroundColor: '#FFAC1C',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 8,
         marginTop: 20,
+        marginBottom:20
     },
     buttonText: {
         fontSize: 16,

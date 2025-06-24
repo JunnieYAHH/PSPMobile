@@ -17,8 +17,9 @@ const TrainingSession = () => {
     const { id } = useLocalSearchParams();
     const user = useSelector((state) => state.auth.user);
     const userId = user?.user?._id || user?._id
+    const clientId = trainingSession?.userId._id
     const userBranch = user?.user?.userBranch || user?.userBranch
-    console.log(trainingSession, 'Training Session')
+    console.log(trainingSession?.userId._id, 'Training Session')
     const getTrainingSession = async () => {
         try {
 
@@ -34,7 +35,7 @@ const TrainingSession = () => {
 
     const setCoach = async () => {
         try {
-            const { data } = await axios.put(`${baseURL}/availTrainer/${id}`, { coachID: selectedCoachId, })
+            const { data } = await axios.put(`${baseURL}/availTrainer/${id}`, { coachID: selectedCoachId, clientId })
             // getCoaches();
             getTrainingSession()
             setIsModalOpen(false);
@@ -59,6 +60,14 @@ const TrainingSession = () => {
             getTrainingSession()
         }, [])
     )
+
+    if (!trainingSession || !trainingSession.userId || !trainingSession.userId.image?.[0]?.url) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+                <Text style={{ color: 'white' }}>Loading training session...</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>

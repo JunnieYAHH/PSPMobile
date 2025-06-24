@@ -3,7 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { loadUser } from "./authSlice";
 import { Stack, useRouter } from "expo-router";
 import LoadingScreen from "../components/LodingScreen";
+import * as Notifications from "expo-notifications";
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 function AppWrapper() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -13,19 +21,26 @@ function AppWrapper() {
     dispatch(loadUser());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (!loading) {
-  //     if (!user) {
-  //       router.replace("/");
-  //     } else if (user.role === 'user') {
-  //       router.replace("/(tabs)");
-  //     } else if (user.role === 'client') {
-  //       router.replace("/components/Client/(tabs)");
-  //     } else if (user.role === 'coach') {
-  //       router.replace("/components/Coach/(tabs)");
-  //     }
-  //   }
-  // }, [loading, user, router]);
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const { screen, roomId, targetRole } = response.notification.request.content.data || {};
+
+      if (screen === "Chat" && roomId && targetRole) {
+        switch (targetRole) {
+          case "client":
+            router.push(`/components/Client/Chat/Chats?roomId=${roomId}`);
+            break;
+          case "composter":
+            router.push(`/components/Composter/components/Chat/Chats?roomId=${roomId}`);
+            break;
+          default:
+            console.warn("Unknown targetRole in push notification:", targetRole);
+        }
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   if (loading) {
     return <LoadingScreen />;
