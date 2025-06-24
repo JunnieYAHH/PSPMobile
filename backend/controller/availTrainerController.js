@@ -2,6 +2,7 @@ const AvailTrainer = require('../model/availTrainer');
 const User = require('../model/user')
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const { cloudinary, secretKey } = require('../config/cloudinaryConfig')
+const sendPushNotification = require("../utils/sendNotification");
 
 // Create payment intent
 exports.createPaymentIntent = async (req, res) => {
@@ -38,7 +39,6 @@ exports.createPaymentIntent = async (req, res) => {
 
 // Create a new trainer
 exports.createTrainer = async (req, res) => {
-    // console.log(req.body)
     try {
         req.body.schedule = [];
         for (let i = 0; i < req.body.sessions; i++) {
@@ -50,6 +50,7 @@ exports.createTrainer = async (req, res) => {
                 trainings: [],
             });
         }
+
         let signatureData = [];
         if (req.body.signature) {
             try {
@@ -74,9 +75,26 @@ exports.createTrainer = async (req, res) => {
             signature: signatureData,
         });
 
-        console.log("Trainer saved:", trainer);
         await trainer.save();
 
+        // 🔔 Notify admins from the same branch
+        const { userId, userBranch, name } = req.body;
+
+        const admins = await User.find({
+            role: 'admin',
+            userBranch: userBranch,
+            expoPushToken: { $ne: null },
+        });
+
+        const notifyAdmins = admins.map(async (admin) => {
+            const title = 'New Trainer Session';
+            const body = `${name} booked ${req.body.sessions} training session(s).`;
+
+            // Push notification
+            await sendPushNotification(admin.expoPushToken, title, body, admin.role);
+        });
+
+        await Promise.all(notifyAdmins);
 
         res.status(201).json({ message: 'Trainer created successfully', trainer });
     } catch (error) {
@@ -139,19 +157,66 @@ exports.getTrainerById = async (req, res) => {
     }
 };
 
-// Update a trainer by ID
 exports.updateTrainer = async (req, res) => {
     try {
-        const trainer = await AvailTrainer.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
+        const { coachID, clientId } = req.body;
+
+        const trainer = await AvailTrainer.findByIdAndUpdate(
+            req.params.id,
+            { coachID: coachID },
+            { new: true, runValidators: true }
+        );
+
         if (!trainer) {
             return res.status(404).json({ message: 'Trainer not found' });
         }
-        res.status(200).json({ message: 'Trainer updated successfully', trainer });
+
+        const coach = await User.findById(coachID);
+        const client = await User.findById(clientId);
+
+        if (!coach || !client) {
+            return res.status(404).json({ message: 'Coach or Client not found' });
+        }
+
+        const notifBodyForCoach = `${client.name} has been assigned to you for training.`;
+        const notifBodyForClient = `Coach ${coach.name} has been assigned to you for your training.`;
+
+        const pushNotifications = [];
+
+        if (coach.expoPushToken) {
+            pushNotifications.push(
+                sendPushNotification(
+                    coach.expoPushToken,
+                    'New Client Assigned',
+                    notifBodyForCoach,
+                    coach.role
+                )
+            );
+        }
+
+        if (client.expoPushToken) {
+            pushNotifications.push(
+                sendPushNotification(
+                    client.expoPushToken,
+                    'Trainer Assigned',
+                    notifBodyForClient,
+                    client.role
+                )
+            );
+        }
+
+        await Promise.all(pushNotifications);
+
+        res.status(200).json({
+            message: 'Trainer updated successfully, notifications sent.',
+            trainer,
+        });
     } catch (error) {
-        res.status(400).json({ message: 'Error updating trainer', error: error.message });
+        console.error('Error updating trainer:', error);
+        res.status(400).json({
+            message: 'Error updating trainer',
+            error: error.message,
+        });
     }
 };
 
@@ -213,50 +278,78 @@ exports.getClientsAvailedServices = async (req, res,) => {
 
 }
 
-exports.updateSessionSchedule = async (req, res,) => {
-
+exports.updateSessionSchedule = async (req, res) => {
     try {
-        // console.log(req.body.trainings)
+        const { clientID, coachName, date, time, trainings } = req.body;
+
         const servicesAvailed = await AvailTrainer.findById(req.params.id);
 
         servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
             if (session._id.toString() === req.query.sessionId) {
                 return {
                     ...session._doc,
-                    dateAssigned: req.body.date,
-                    timeAssigned: req.body.time,
+                    dateAssigned: date,
+                    timeAssigned: time,
                     status: 'waiting',
-                    trainings: req.body.trainings || [],
+                    trainings: trainings || [],
                 };
             }
             return session;
         });
-
         await servicesAvailed.save();
 
-        res.status(200).json({
-            message: "Session schedule updated",
+        const client = await User.findById(clientID);
+        // Convert to readable date/time formats
+        const formattedDate = new Date(date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+        const formattedTime = new Date(time).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
         });
 
+        // console.log(client,'Client')
+        if (client.expoPushToken) {
+            await sendPushNotification(
+                client.expoPushToken,
+                'New Training Session Scheduled',
+                `Coach ${coachName} scheduled a session on ${formattedDate} at ${formattedTime}.`,
+                client.role
+            );
+        }
+        res.status(200).json({
+            message: 'Session schedule updated and notification sent',
+        });
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: 'Error fetching trainers', error: error.message });
+        console.error('Error updating session schedule:', error);
+        res.status(500).json({
+            message: 'Error updating session schedule',
+            error: error.message,
+        });
     }
-
-}
+};
 
 exports.cancelSessionSchedule = async (req, res,) => {
-
     try {
-        const servicesAvailed = await AvailTrainer.findById(req.params.id);
+        const { coachName, clientID } = req.body;
 
-        servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
+        const servicesAvailed = await AvailTrainer.findById(req.params.id);
+        if (!servicesAvailed) {
+            return res.status(404).json({ message: "Training service not found" });
+        }
+
+        let cancelledSession;
+        servicesAvailed.schedule = servicesAvailed.schedule.map((session) => {
             if (session._id.toString() === req.query.sessionId) {
+                cancelledSession = session;
                 return {
-                    ...session._doc,  // Ensures document properties are spread correctly
+                    ...session._doc,
                     dateAssigned: null,
                     timeAssigned: null,
-                    status: 'pending',
+                    status: "pending",
                 };
             }
             return session;
@@ -264,15 +357,40 @@ exports.cancelSessionSchedule = async (req, res,) => {
 
         await servicesAvailed.save();
 
-        res.status(200).json({
-            message: "Session schedule cancelled",
-        });
+        let formattedDate = "previous date";
+        let formattedTime = "previous time";
+        if (cancelledSession?.dateAssigned && cancelledSession?.timeAssigned) {
+            formattedDate = new Date(cancelledSession.dateAssigned).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            });
 
+            formattedTime = new Date(cancelledSession.timeAssigned).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+            });
+        }
+
+        const message = `Coach ${coachName} cancelled your scheduled session on ${formattedDate} at ${formattedTime}.`;
+
+        // Get client's push token and send push notification
+        const client = await User.findById(clientID);
+        if (client?.expoPushToken) {
+            await sendPushNotification(
+                client.expoPushToken,
+                "Training Session Cancelled",
+                message,
+                client.role
+            );
+        }
+
+        res.status(200).json({ message: "Session schedule cancelled and client notified." });
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: 'Error fetching trainers', error: error.message });
+        console.error("Cancel Session Error:", error);
+        res.status(500).json({ message: "Error cancelling session", error: error.message });
     }
-
 }
 
 exports.completeSessionSchedule = async (req, res,) => {

@@ -3,6 +3,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const User = require('../model/user');
 const { cloudinary, secretKey } = require('../config/cloudinaryConfig')
 const Transaction = require('../model/transaction');
+const sendPushNotification = require("../utils/sendNotification");
 const priceId = process.env.STRIPE_PRICE_ID
 const berMonthsPromo = process.env.STRIPE_BERMONTHS_PROMO
 const summerPromo = process.env.STRIPE_SUMMER_PROMO
@@ -217,6 +218,24 @@ const paymentController = {
 
                 await transaction.save();
             }
+
+            // 🔔 Notify admins in the same branch
+            const admins = await User.find({
+                role: 'admin',
+                userBranch: userBranch,
+                expoPushToken: { $ne: null }, // Ensure they have a push token
+            });
+
+            const notifyAdmins = admins.map(async (admin) => {
+                const title = 'New PSP Membership';
+                const body = `${user.name} has successfully subscribed at your branch.`;
+
+                // Push notification
+                await sendPushNotification(admin.expoPushToken, title, body, admin.role);
+            });
+
+            await Promise.all(notifyAdmins);
+
 
             return res.status(201).json({
                 success: true,

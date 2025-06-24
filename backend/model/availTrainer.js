@@ -6,6 +6,10 @@ const availTrainerSchema = new mongoose.Schema({
         ref: 'users',
         required: true,
     },
+    userBranch: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "branch",
+    },
     name: {
         type: String,
         required: true

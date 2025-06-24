@@ -17,12 +17,12 @@ const transactionController = {
 
     try {
       const transaction = await Transaction.findOne({ userId: id });
-      if (!transaction) {
-        return res.status(404).json({
-          success: false,
-          message: "Transaction not found",
-        });
-      }
+      // if (!transaction) {
+      //   return res.status(404).json({
+      //     success: false,
+      //     message: "Transaction not found",
+      //   });
+      // }
 
       console.log(transaction)
 
