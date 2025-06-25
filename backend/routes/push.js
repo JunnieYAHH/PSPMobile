@@ -6,18 +6,22 @@ const axios = require('axios');
 router.put('/update/token', async (req, res) => {
   const { userId, expoPushToken } = req.body;
 
+  console.log("Received token update request:", { userId, expoPushToken });
+
   if (!userId || !expoPushToken) {
     return res.status(400).json({ error: 'userId and expoPushToken are required' });
   }
 
   try {
-    await User.findByIdAndUpdate(userId, { expoPushToken }, { new: true });
+    const updated = await User.findByIdAndUpdate(userId, { expoPushToken }, { new: true });
+    console.log("Updated user:", updated);
     res.status(200).json({ success: true, message: 'Push token updated' });
   } catch (error) {
     console.error('Error updating token:', error.message);
     res.status(500).json({ error: 'Failed to update token' });
   }
 });
+
 
 // Send notification to user using Expo's push API
 router.post('/send', async (req, res) => {
