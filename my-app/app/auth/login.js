@@ -113,9 +113,10 @@ const Login = () => {
                                             })
                                             .catch((error) => {
                                                 setIsLoading(false);
-                                                console.log(error.message)
+                                                console.log("Login Error:", error);
                                                 Alert.alert(
-                                                    "Login Failed", "Your Email or Password is Incorrent. Try Again",
+                                                    "Login Failed",
+                                                    error.response?.data?.message || "An error occurred",
                                                     [{ text: "OK" }]
                                                 );
                                             });
