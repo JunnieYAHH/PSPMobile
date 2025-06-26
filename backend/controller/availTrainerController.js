@@ -282,36 +282,45 @@ exports.updateSessionSchedule = async (req, res) => {
     try {
         const { clientID, coachName, date, time, trainings } = req.body;
 
+        // Parse into Date objects
+        const dateObj = new Date(date);
+        const timeObj = new Date(time);
+
+        // Manually convert to Asia/Manila (UTC+8)
+        const phOffsetMs = 8 * 60 * 60 * 1000;
+
+        const datePH = new Date(dateObj.getTime() + phOffsetMs);
+        const timePH = new Date(timeObj.getTime() + phOffsetMs);
         const servicesAvailed = await AvailTrainer.findById(req.params.id);
 
         servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
             if (session._id.toString() === req.query.sessionId) {
                 return {
                     ...session._doc,
-                    dateAssigned: date,
-                    timeAssigned: time,
+                    dateAssigned: datePH,
+                    timeAssigned: timePH,
                     status: 'waiting',
                     trainings: trainings || [],
                 };
             }
             return session;
         });
+
         await servicesAvailed.save();
 
         const client = await User.findById(clientID);
-        // Convert to readable date/time formats
-        const formattedDate = new Date(date).toLocaleDateString('en-US', {
+
+        const formattedDate = datePH.toLocaleDateString('en-PH', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric',
+            day: 'numeric'
         });
-        const formattedTime = new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
+        const formattedTime = timePH.toLocaleTimeString('en-PH', {
+            hour: '2-digit',
             minute: '2-digit',
-            hour12: true,
+            hour12: true
         });
 
-        // console.log(client,'Client')
         if (client.expoPushToken) {
             await sendPushNotification(
                 client.expoPushToken,
@@ -320,11 +329,13 @@ exports.updateSessionSchedule = async (req, res) => {
                 client.role
             );
         }
+
         res.status(200).json({
             message: 'Session schedule updated and notification sent',
         });
+
     } catch (error) {
-        console.error('Error updating session schedule:', error);
+        console.error('❌ Error updating session schedule:', error);
         res.status(500).json({
             message: 'Error updating session schedule',
             error: error.message,
