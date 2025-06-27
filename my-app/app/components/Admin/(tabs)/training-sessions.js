@@ -43,13 +43,26 @@ export default function TrainingSessions() {
     sessions.forEach((session) => {
       session.schedule.forEach((sched, index) => {
         if (sched.status === 'waiting' && sched.dateAssigned) {
-          const dateObj = new Date(sched.dateAssigned);
-          const timeObj = new Date(sched.timeAssigned);
+          const rawDate = new Date(sched.dateAssigned);
+          const rawTime = new Date(sched.timeAssigned);
 
-          const dateStr = dateObj.toISOString().split('T')[0];
-          const timeStr = timeObj.toLocaleTimeString([], {
+          const combined = new Date(
+            rawDate.getFullYear(),
+            rawDate.getMonth(),
+            rawDate.getDate(),
+            rawTime.getHours(),
+            rawTime.getMinutes()
+          );
+
+          // ✅ Manually adjust to Asia/Manila (UTC+8)
+          const phTime = new Date(combined.getTime() + 16 * 60 * 60 * 1000);
+
+          const dateStr = phTime.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+
+          const timeStr = phTime.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
+            hour12: true,
           });
 
           if (!agenda[dateStr]) agenda[dateStr] = [];
@@ -60,7 +73,7 @@ export default function TrainingSessions() {
             time: timeStr,
             trainings: sched.trainings?.join(', ') || 'N/A',
             color: stringToColor(session.email || session.name || 'default'),
-            status: sched.status
+            status: sched.status,
           });
         }
       });

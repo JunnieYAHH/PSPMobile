@@ -283,22 +283,14 @@ exports.updateSessionSchedule = async (req, res) => {
         const { clientID, coachName, date, time, trainings } = req.body;
 
         // Parse into Date objects
-        const dateObj = new Date(date);
-        const timeObj = new Date(time);
-
-        // Manually convert to Asia/Manila (UTC+8)
-        const phOffsetMs = 8 * 60 * 60 * 1000;
-
-        const datePH = new Date(dateObj.getTime() + phOffsetMs);
-        const timePH = new Date(timeObj.getTime() + phOffsetMs);
         const servicesAvailed = await AvailTrainer.findById(req.params.id);
 
         servicesAvailed.schedule = servicesAvailed.schedule.map(session => {
             if (session._id.toString() === req.query.sessionId) {
                 return {
                     ...session._doc,
-                    dateAssigned: datePH,
-                    timeAssigned: timePH,
+                    dateAssigned: date,
+                    timeAssigned: time,
                     status: 'waiting',
                     trainings: trainings || [],
                 };
@@ -310,7 +302,8 @@ exports.updateSessionSchedule = async (req, res) => {
 
         const client = await User.findById(clientID);
 
-        const formattedDate = datePH.toLocaleDateString('en-PH', {
+        // Convert to readable date/time formatsAdd commentMore actions
+        const formattedDate = new Date(date).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
