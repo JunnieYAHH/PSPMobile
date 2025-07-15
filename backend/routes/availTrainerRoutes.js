@@ -13,6 +13,8 @@ router.get('/client/:id', availTrainerController.getClientsAvailedServices);
 router.put('/update/session/:id', availTrainerController.updateSessionSchedule);
 router.put('/cancel/session/:id', availTrainerController.cancelSessionSchedule);
 router.put('/complete/session/:id', availTrainerController.completeSessionSchedule);
+router.put('/complete/session/client/:id', availTrainerController.completeSessionScheduleClient);
+router.put('/complete/session/client/rate/:id', availTrainerController.completeSessionScheduleClientRate);
 router.get('/has-active/:id', availTrainerController.hasActiveTraining);
 router.get('/coach/recent-session/:coachId', availTrainerController.getCoachDateSessions);
 

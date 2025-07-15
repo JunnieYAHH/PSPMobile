@@ -412,6 +412,30 @@ exports.completeSessionSchedule = async (req, res,) => {
             return session;
         });
 
+        // const allCompleted = servicesAvailed.schedule.every(session => session.status === 'completed');
+
+        // if (allCompleted) {
+        //     servicesAvailed.status = 'inactive';
+        // }
+
+        await servicesAvailed.save();
+
+        res.status(200).json({
+            message: "Session completed",
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error fetching trainers', error: error.message });
+    }
+
+}
+
+exports.completeSessionScheduleClient = async (req, res,) => {
+
+    try {
+        const servicesAvailed = await AvailTrainer.findById(req.params.id);
+
         const allCompleted = servicesAvailed.schedule.every(session => session.status === 'completed');
 
         if (allCompleted) {
@@ -430,6 +454,48 @@ exports.completeSessionSchedule = async (req, res,) => {
     }
 
 }
+
+exports.completeSessionScheduleClientRate = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rating, review } = req.body;
+
+        const trainer = await AvailTrainer.findById(id);
+        const servicesAvailed = await AvailTrainer.findById(req.params.id);
+
+        if (!trainer) {
+            return res.status(404).json({ message: "Trainer not found" });
+        }
+
+        if (rating) {
+            trainer.rating.push({ value: rating });
+        }
+
+        if (review) {
+            trainer.review.push({ text: review });
+        }
+
+        await trainer.save();
+        const allCompleted = servicesAvailed.schedule.every(session => session.status === 'completed');
+
+        if (allCompleted) {
+            servicesAvailed.status = 'inactive';
+        }
+
+        await servicesAvailed.save();
+
+        res.status(200).json({
+            message: "Rating and review submitted successfully, Sessions All Completed",
+            trainer
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Something went wrong while submitting the review",
+            error: error.message
+        });
+    }
+};
 
 exports.hasActiveTraining = async (req, res) => {
     try {

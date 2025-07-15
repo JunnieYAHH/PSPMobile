@@ -88,7 +88,15 @@ const availTrainerSchema = new mongoose.Schema({
             status: { type: String, default: 'pending', enum: ['pending', 'waiting', 'completed'] },
             trainings: { type: [String], default: [] }
         }
-    ]
+    ],
+    rating: [{
+        value: { type: Number },
+        date: { type: Date, default: Date.now },
+    }],
+    review: [{
+        text: String,
+        date: { type: Date, default: Date.now },
+    }],
 }, {
     timestamps: true // Adds createdAt and updatedAt fields
 });

@@ -1,12 +1,13 @@
-import { Alert, Button, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Button, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
 import baseURL from '../../../../assets/common/baseUrl';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSelector } from 'react-redux';
+import { FontAwesome } from '@expo/vector-icons'; // For star icons
 
 const ClientServiceDetail = ({ trainerIdProps = null }) => {
 
@@ -195,6 +196,34 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
     const [time, setTime] = useState(null);
     const [status, setStatus] = useState('pending');
     const [trainings, setTrainings] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [starRating, setStarRating] = useState(0);
+    const [reviewText, setReviewText] = useState('');
+    const router = useRouter()
+
+    const submitRatingReview = async () => {
+        try {
+            await axios.put(
+                `${baseURL}/availTrainer/complete/session/client/rate/${serviceDetails._id}`,
+                {
+                    rating: starRating,
+                    review: reviewText
+                }
+            );
+
+            setModalVisible(false);
+            Alert.alert('Thank you!', 'Your rating and review have been submitted.');
+
+            setTimeout(() => {
+                router.replace('/components/Client/(tabs)');
+            }, 1500);
+
+        } catch (err) {
+            console.log('Rating error:', err.response?.data || err.message);
+            Alert.alert('Error', 'Something went wrong while submitting your review.');
+        }
+    };
+
 
     useFocusEffect(
         useCallback(() => {
@@ -202,8 +231,12 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
             setTime(item?.timeAssigned ? new Date(item?.timeAssigned) : null)
             setStatus(item?.status)
             setTrainings(item?.trainings || [])
+
+            if (item?.status === 'completed') {
+                setTimeout(() => setModalVisible(true), 500);
+            }
         }, [])
-    )
+    );
 
     return (
         <View style={{ padding: 15, borderStyle: 'solid', borderWidth: 1, borderRadius: 10, marginBottom: 10, }}>
@@ -211,6 +244,40 @@ const Session = ({ item, index, serviceDetails, getClientService }) => {
                 <Text style={{ fontSize: 16, fontWeight: 900, marginBottom: 10, color: 'white' }}>Session {index + 1}</Text>
                 <Text style={{ fontSize: 16, fontWeight: 900, marginBottom: 10, color: 'white' }}>{status?.toUpperCase()}</Text>
             </View>
+            <Modal visible={modalVisible} transparent animationType="slide">
+                <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', padding: 20 }}>
+                    <View style={{ backgroundColor: 'white', borderRadius: 10, padding: 20 }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 10 }}>Rate The Training</Text>
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <TouchableOpacity key={star} onPress={() => setStarRating(star)}>
+                                    <FontAwesome
+                                        name={star <= starRating ? 'star' : 'star-o'}
+                                        size={32}
+                                        color={star <= starRating ? '#FFD700' : '#ccc'}
+                                    />
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        <TextInput
+                            placeholder="Write your review..."
+                            value={reviewText}
+                            onChangeText={setReviewText}
+                            multiline
+                            style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 10, height: 80 }}
+                        />
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                            <Text style={{ color: 'green' }}>Your Training is Complete!</Text>
+                            <TouchableOpacity onPress={submitRatingReview}>
+                                <Text style={{ color: 'blue' }}>Submit</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
             <View style={{ marginBottom: 10 }}>
                 <Text style={{ color: 'white' }}>Date</Text>
                 <Pressable >
